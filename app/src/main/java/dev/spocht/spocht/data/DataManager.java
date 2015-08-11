@@ -32,9 +32,14 @@ public class DataManager {
         }
         return instance;
     }
-
-
-    public void request(String id, Class<? extends ParseObject> po, InfoRetriever callback) {
-        callback.operate(po);
+    
+    public void request(String id, Class<? extends ParseData> obj, final InfoRetriever callback) {
+        try {
+            obj.newInstance().retrieve(id,callback);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }
