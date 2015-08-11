@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import bolts.Task;
+import dev.spocht.spocht.data.DataManager;
 
 public class MapsActivity extends FragmentActivity
     implements
@@ -42,6 +43,8 @@ public class MapsActivity extends FragmentActivity
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     String pos_actual = "bla";
+
+    DataManager dataManager = DataManager.getInstance();
 
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
@@ -59,7 +62,6 @@ public class MapsActivity extends FragmentActivity
 
 
     protected synchronized void buildGoogleApiClient() {
-        System.out.println("Buildung GAC");
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -109,6 +111,8 @@ public class MapsActivity extends FragmentActivity
                 System.out.println("Clicked");
                 ParseQuery<ParseObject> pq = ParseQuery.getQuery("Sportsite");
                 ParseQuery<ParseObject> blutt = ParseQuery.getQuery("Sportsite");
+
+
                 blutt.findInBackground(new FindCallback<ParseObject>() {
                     @Override
 

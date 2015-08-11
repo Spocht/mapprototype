@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import dev.spocht.spocht.data.DataManager;
+
 /**
  * Created by edm on 01.08.15.
  */
@@ -40,6 +42,7 @@ public class Application extends android.app.Application {
     public void onCreate(){
         System.out.println("OnCreateApplication");
         super.onCreate();
+        DataManager.getInstance();
         registerSubclasses();
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd", "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0");
