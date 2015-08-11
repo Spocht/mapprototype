@@ -146,7 +146,7 @@ public class MapsActivity extends FragmentActivity
                         }
                     }
                 });
-                
+
             }
         });
 
@@ -225,6 +225,7 @@ public class MapsActivity extends FragmentActivity
             //longitude.setText(String.valueOf(lastLocation.getLongitude()));
 
         }
+
 
 
 
