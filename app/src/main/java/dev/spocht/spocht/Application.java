@@ -51,7 +51,7 @@ public class Application extends android.app.Application {
 
     private void registerSubclasses(){
         //ParseObject.registerSubclass(MetaModel.class);
-        ParseObject.registerSubclass(MyUser.class);
+
     }
 
 }
