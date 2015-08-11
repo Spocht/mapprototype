@@ -4,6 +4,7 @@ package dev.spocht.spocht;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.StringDef;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -45,7 +46,7 @@ public class Application extends android.app.Application {
         DataManager.getInstance();
         registerSubclasses();
         Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd", "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0");
+        Parse.initialize(this, "@string/parse_application_id", "@string/parse_client_key");
 
     }
 
