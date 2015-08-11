@@ -148,6 +148,7 @@ public class MapsActivity extends FragmentActivity
                 });
             }
         });
+        
         setUpMapIfNeeded();
 
 
