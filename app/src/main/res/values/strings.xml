@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SpochT</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="pos_actual">Position</string>
+</resources>
