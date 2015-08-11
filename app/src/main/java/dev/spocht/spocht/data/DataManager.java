@@ -1,10 +1,13 @@
 package dev.spocht.spocht.data;
 
 import com.parse.Parse;
+import com.parse.ParseAnonymousUtils;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.util.List;
 
+import bolts.Task;
 import dev.spocht.spocht.MapsActivity;
 import dev.spocht.spocht.MyUser;
 
@@ -32,7 +35,26 @@ public class DataManager {
         }
         return instance;
     }
-    
+    public Boolean isAnon()
+    {
+        return(ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser()));
+    }
+    public Boolean isLoggedIn()
+    {
+        return(null != ParseUser.getCurrentUser());
+    }
+    public Boolean login(String mail, String password)
+    {
+        Task<ParseUser> user=ParseUser.logInInBackground(mail,password);
+
+        try {
+            user.waitForCompletion();
+        } catch (InterruptedException e) {
+            return false;
+        }
+        return !user.isFaulted();
+    }
+
     public void request(String id, Class<? extends ParseData> obj, final InfoRetriever callback) {
         try {
             obj.newInstance().retrieve(id,callback);
