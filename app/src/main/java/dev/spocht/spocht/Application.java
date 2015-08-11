@@ -9,6 +9,8 @@ import android.support.annotation.StringDef;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import dev.spocht.spocht.data.DataManager;
+
 /**
  * Created by edm on 01.08.15.
  */
@@ -41,6 +43,7 @@ public class Application extends android.app.Application {
     public void onCreate(){
         System.out.println("OnCreateApplication");
         super.onCreate();
+        DataManager.getInstance();
         registerSubclasses();
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "@string/parse_application_id", "@string/parse_client_key");
