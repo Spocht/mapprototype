@@ -40,6 +40,8 @@ public class MapsActivity extends FragmentActivity
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener{
 
+    private static android.content.Context context;
+
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     String pos_actual = "bla";
@@ -59,6 +61,9 @@ public class MapsActivity extends FragmentActivity
 
     private TextView tv;
 
+    public static android.content.Context getAppContext() {
+        return MapsActivity.context;
+    }
 
 
     protected synchronized void buildGoogleApiClient() {

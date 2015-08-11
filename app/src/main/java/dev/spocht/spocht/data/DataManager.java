@@ -2,6 +2,8 @@ package dev.spocht.spocht.data;
 
 import com.parse.Parse;
 
+import dev.spocht.spocht.MapsActivity;
+
 /**
  * Created by edm on 11.08.15.
  */
@@ -11,8 +13,8 @@ public class DataManager {
 
 
     private DataManager(){
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd", "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0");
+        Parse.enableLocalDatastore(MapsActivity.getAppContext());
+        Parse.initialize(MapsActivity.getAppContext(), "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd", "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0");
 
     }
     public synchronized static DataManager getInstance(){
