@@ -33,6 +33,9 @@ import java.util.List;
 
 import bolts.Task;
 import dev.spocht.spocht.data.DataManager;
+import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.Game;
+import dev.spocht.spocht.data.InfoRetriever;
 
 public class MapsActivity extends FragmentActivity
     implements
@@ -121,12 +124,14 @@ public class MapsActivity extends FragmentActivity
 
                 blutt.findInBackground(new FindCallback<ParseObject>() {
                     @Override
+                    public void done(final List<ParseObject> list, ParseException e) {
+                        DataManager.getInstance().request("name", Facility.class, new InfoRetriever<List<Game>>() {
+                            @Override
+                            public void operate(List<Game> games) {
 
-                    public void done(List<ParseObject> list, ParseException e) {
-                        for (int i = 0; i < list.size(); i++) {
-                            System.out.println(list.get(i).get("name"));
-                            System.out.println(list.get(i).get("location"));
-                        }
+                            }
+                        });
+
                     }
                 });
 

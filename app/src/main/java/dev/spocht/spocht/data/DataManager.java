@@ -34,7 +34,7 @@ public class DataManager {
     }
 
 
-    public void request(String id, Class<? extends ParseObject> po, InfoRetriever<?> callback) {
-
+    public void request(String id, Class<? extends ParseObject> po, InfoRetriever callback) {
+        callback.operate(po);
     }
 }
