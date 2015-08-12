@@ -1,41 +1,22 @@
 package dev.spocht.spocht;
 
-import android.app.Application;
 import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseQueryAdapter;
-import com.parse.ParseUser;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import bolts.Task;
 import dev.spocht.spocht.data.DataManager;
-import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.data.Game;
-import dev.spocht.spocht.data.InfoRetriever;
 
 public class MapsActivity extends FragmentActivity
     implements
@@ -59,9 +40,6 @@ public class MapsActivity extends FragmentActivity
     double longitude =  7.447266;
 
 
-    Button button;
-
-
     private TextView tv;
 
     public static android.content.Context getAppContext() {
@@ -75,8 +53,6 @@ public class MapsActivity extends FragmentActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
-
     }
 
     protected void createLocationRequest(){
@@ -84,7 +60,6 @@ public class MapsActivity extends FragmentActivity
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
     }
 
     protected void startLocationUpdates() {
@@ -107,56 +82,7 @@ public class MapsActivity extends FragmentActivity
 
         tv = (TextView)findViewById(R.id.textView1);
 
-        button = (Button)findViewById(R.id.button);
-
-
-        button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                MyUser user = new MyUser();
-                user.store("Adolf", "Ceaucescu");
-                System.out.println("Clicked");
-                ParseQuery<ParseObject> pq = ParseQuery.getQuery("Sportsite");
-                ParseQuery<ParseObject> blutt = ParseQuery.getQuery("Sportsite");
-
-
-                blutt.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(final List<ParseObject> list, ParseException e) {
-                        DataManager.getInstance().request("name", Facility.class, new InfoRetriever<List<Game>>() {
-                            @Override
-                            public void operate(List<Game> games) {
-
-                            }
-                        });
-
-                    }
-                });
-
-                pq.whereWithinKilometers("location", new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()), 1.0);
-                pq.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> list, ParseException e) {
-                        Iterator<ParseObject> it =list.iterator();
-
-                        while (it.hasNext()) {
-                            System.out.println(it.next().get("name")+"name");
-                        }
-                    }
-                });
-                
-            }
-        });
-
         setUpMapIfNeeded();
-
-
-
-
-
-
     }
 
     @Override
