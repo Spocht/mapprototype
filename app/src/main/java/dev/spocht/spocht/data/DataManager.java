@@ -20,11 +20,10 @@ public class DataManager {
 
     private DataManager(){
 
-        ParseObject.registerSubclass(MyUser.class);
+//        ParseObject.registerSubclass(MyUser.class);
 
-        Parse.enableLocalDatastore(MapsActivity.getAppContext());
-        Parse.initialize(MapsActivity.getAppContext(), "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd", "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0");
-
+//        Parse.enableLocalDatastore(MapsActivity.getAppContext());
+//        Parse.initialize(MapsActivity.getAppContext(), "@string/parse_application_id", "@string/parse_client_key");
     }
     public synchronized static DataManager getInstance(){
         if (instance == null) {

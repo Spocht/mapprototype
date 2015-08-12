@@ -28,8 +28,8 @@
         android:layout_above="@+id/map"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    <fragment
+        android:layout_width="match_parent"
         android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_alignParentStart="true"
