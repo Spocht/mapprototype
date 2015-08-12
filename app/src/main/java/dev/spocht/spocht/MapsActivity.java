@@ -80,8 +80,6 @@ public class MapsActivity extends FragmentActivity
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
 
-        tv = (TextView)findViewById(R.id.textView1);
-
         setUpMapIfNeeded();
     }
 
