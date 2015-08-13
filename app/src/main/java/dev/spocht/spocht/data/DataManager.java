@@ -1,12 +1,8 @@
 package dev.spocht.spocht.data;
 
-import com.parse.Parse;
 import com.parse.ParseObject;
 
 import java.util.List;
-
-import dev.spocht.spocht.MapsActivity;
-import dev.spocht.spocht.MyUser;
 
 /**
  * Created by edm on 11.08.15.

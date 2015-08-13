@@ -1,10 +1,14 @@
-package dev.spocht.spocht;
+package dev.spocht.spocht.activity;
 
+import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,7 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import dev.spocht.spocht.data.DataManager;
+import dev.spocht.spocht.R;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -29,16 +33,9 @@ public class MapsActivity extends AppCompatActivity
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    String pos_actual = "bla";
-
-    DataManager dataManager = DataManager.getInstance();
-
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private LocationRequest locationRequest;
-
-    double latitude = 46.954581;
-    double longitude = 7.447266;
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -79,6 +76,18 @@ public class MapsActivity extends AppCompatActivity
         MapsActivity.context = getApplicationContext();
 
         setUpMapIfNeeded();
+        setUpActionBar();
+    }
+
+    private void setUpActionBar() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // ActionBar was first introduced in HoneyComb
+            ActionBar a = getSupportActionBar();
+            if (a != null) {
+                a.setTitle(R.string.app_name);
+            }
+        }
     }
 
     @Override
@@ -87,6 +96,21 @@ public class MapsActivity extends AppCompatActivity
         inflater.inflate(R.menu.main_menu_actions, menu);
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_stats:
+                return false;
+            case R.id.menu_settings:
+                return false;
+            case R.id.menu_logout:
+                startActivity(new Intent(this, LoginActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -105,7 +129,7 @@ public class MapsActivity extends AppCompatActivity
      * install/update the Google Play services APK on their device.
      * <p/>
      * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
+     * installing/updating/enabling the foo@Google Play services. Since the FragmentActivity may not
      * have been completely destroyed during this process (it is likely that it would only be
      * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
      * method in {@link #onResume()} to guarantee that it will be called.

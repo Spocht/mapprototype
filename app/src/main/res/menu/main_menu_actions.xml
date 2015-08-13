@@ -3,7 +3,7 @@
     <item android:id="@+id/menu_stats"
         android:title="@string/menu_stats"
         app:showAsAction="never" />
-    <item android:id="@+id/btn_settingsmenu"
+    <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
         app:showAsAction="never" />
     <item android:id="@+id/menu_logout"
