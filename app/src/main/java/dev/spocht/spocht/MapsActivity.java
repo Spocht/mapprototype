@@ -2,8 +2,9 @@ package dev.spocht.spocht;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.widget.TextView;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -18,11 +19,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import dev.spocht.spocht.data.DataManager;
 
-public class MapsActivity extends FragmentActivity
-    implements
+public class MapsActivity extends AppCompatActivity
+        implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener {
 
     private static android.content.Context context;
 
@@ -37,10 +38,7 @@ public class MapsActivity extends FragmentActivity
     private LocationRequest locationRequest;
 
     double latitude = 46.954581;
-    double longitude =  7.447266;
-
-
-    private TextView tv;
+    double longitude = 7.447266;
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -55,7 +53,7 @@ public class MapsActivity extends FragmentActivity
                 .build();
     }
 
-    protected void createLocationRequest(){
+    protected void createLocationRequest() {
         locationRequest = new LocationRequest();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
@@ -81,6 +79,14 @@ public class MapsActivity extends FragmentActivity
         MapsActivity.context = getApplicationContext();
 
         setUpMapIfNeeded();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu_actions, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -136,24 +142,6 @@ public class MapsActivity extends FragmentActivity
         createLocationRequest();
 
         startLocationUpdates();
-
-        LatLng currentPosition = new LatLng(latitude, longitude);
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPosition));
-
-        //tv = (TextView)findViewById(R.id.textView1);
-        //tv.setText("bla");
-
-        if (lastLocation != null) {
-            tv.setText(String.valueOf(lastLocation.getLatitude()));
-            //latitude.setText(String.valueOf(lastLocation.getLatitude()));
-            //longitude.setText(String.valueOf(lastLocation.getLongitude()));
-
-        }
-
-
-
-
-
     }
 
     @Override
@@ -171,10 +159,9 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        lastLocation = location;
-        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        tv.setText(String.valueOf(lastLocation.getLatitude()));
+        System.out.println(location.getLatitude() + " " + location.getLongitude());
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
     }
 }
