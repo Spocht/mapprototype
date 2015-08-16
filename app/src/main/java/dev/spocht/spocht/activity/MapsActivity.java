@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -21,7 +22,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.mock.location.Lorrainepark;
+import dev.spocht.spocht.mock.location.Lorrainestrasse;
+import dev.spocht.spocht.mock.location.Spitalacker;
+import dev.spocht.spocht.mock.location.Steckweg;
+import dev.spocht.spocht.mock.location.Stub;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -36,6 +45,7 @@ public class MapsActivity extends AppCompatActivity
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private LocationRequest locationRequest;
+    private ArrayList<Stub> locationList;
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -77,6 +87,7 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
+        loadLocations();
     }
 
     private void setUpActionBar() {
@@ -187,5 +198,26 @@ public class MapsActivity extends AppCompatActivity
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
+    }
+
+    public void loadMarkers(View view) {
+//        for (Stub loc: locationList) {
+//            mMap.addMarker(new MarkerOptions()
+//                .position(new LatLng(loc.LATITUDE, loc.LONGITUDE))
+//            );
+//            System.out.println(loc.getClass().toString());
+//        }
+        mMap.addMarker(new MarkerOptions().position(new LatLng(Lorrainepark.LATITUDE, Lorrainepark.LONGITUDE)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(Lorrainestrasse.LATITUDE, Lorrainestrasse.LONGITUDE)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(Spitalacker.LATITUDE, Spitalacker.LONGITUDE)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(Steckweg.LATITUDE, Steckweg.LONGITUDE)));
+    }
+
+    private void loadLocations() {
+        locationList = new ArrayList<Stub>();
+        locationList.add(new Lorrainepark());
+        locationList.add(new Steckweg());
+        locationList.add(new Spitalacker());
+        locationList.add(new Lorrainestrasse());
     }
 }
