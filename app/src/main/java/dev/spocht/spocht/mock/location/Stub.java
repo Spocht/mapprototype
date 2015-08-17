@@ -7,4 +7,5 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public interface Stub {
     LatLng getLatLng();
+    String getName();
 }

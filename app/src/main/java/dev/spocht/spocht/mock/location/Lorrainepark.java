@@ -9,6 +9,7 @@ public class Lorrainepark implements Stub {
     public final static double LATITUDE = 46.955664;
     public final static double LONGITUDE = 7.444901;
     public final static String DESCRIPTION = "Einzelner Tisch im belebten Lorrainepärkli";
+    public final static String NAME = "Lorrainepark";
 
     LatLng latLng;
 
@@ -19,5 +20,10 @@ public class Lorrainepark implements Stub {
     @Override
     public LatLng getLatLng() {
         return new LatLng(LATITUDE, LONGITUDE);
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 }

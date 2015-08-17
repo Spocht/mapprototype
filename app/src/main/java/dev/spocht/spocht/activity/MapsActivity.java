@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -37,7 +38,8 @@ public class MapsActivity extends AppCompatActivity
         implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        GoogleMap.OnMarkerClickListener {
 
     private static android.content.Context context;
 
@@ -166,8 +168,7 @@ public class MapsActivity extends AppCompatActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-
+        mMap.setOnMarkerClickListener(this);
     }
 
 
@@ -205,6 +206,7 @@ public class MapsActivity extends AppCompatActivity
         for (Stub loc: locationList) {
             mMap.addMarker(new MarkerOptions()
                 .position(loc.getLatLng())
+                .title(loc.getName())
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
                 .anchor(0, 1)
             );
@@ -222,5 +224,12 @@ public class MapsActivity extends AppCompatActivity
         locationList.add(new Steckweg());
         locationList.add(new Spitalacker());
         locationList.add(new Lorrainestrasse());
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        System.out.println(marker.getTitle());
+
+        return true;
     }
 }
