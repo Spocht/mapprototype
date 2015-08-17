@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -201,16 +202,18 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void loadMarkers(View view) {
-//        for (Stub loc: locationList) {
-//            mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(loc.LATITUDE, loc.LONGITUDE))
-//            );
-//            System.out.println(loc.getClass().toString());
-//        }
-        mMap.addMarker(new MarkerOptions().position(new LatLng(Lorrainepark.LATITUDE, Lorrainepark.LONGITUDE)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(Lorrainestrasse.LATITUDE, Lorrainestrasse.LONGITUDE)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(Spitalacker.LATITUDE, Spitalacker.LONGITUDE)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(Steckweg.LATITUDE, Steckweg.LONGITUDE)));
+        for (Stub loc: locationList) {
+            mMap.addMarker(new MarkerOptions()
+                .position(loc.getLatLng())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
+                .anchor(0, 1)
+            );
+            System.out.println(loc.getClass());
+        }
+//        mMap.addMarker(new MarkerOptions().position(new Lorrainepark().getLatLng()));
+//        mMap.addMarker(new MarkerOptions().position(new Lorrainestrasse().getLatLng()));
+//        mMap.addMarker(new MarkerOptions().position(new Spitalacker().getLatLng()));
+//        mMap.addMarker(new MarkerOptions().position(new Steckweg().getLatLng()));
     }
 
     private void loadLocations() {
