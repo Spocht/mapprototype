@@ -1,9 +1,15 @@
 package dev.spocht.spocht.data;
 
+import android.content.Context;
+
 import com.parse.Parse;
 import com.parse.ParseObject;
 
 import java.util.List;
+
+
+import bolts.Task;
+import dev.spocht.spocht.Application;
 
 import dev.spocht.spocht.MapsActivity;
 import dev.spocht.spocht.MyUser;
@@ -22,8 +28,12 @@ public class DataManager {
 
         ParseObject.registerSubclass(MyUser.class);
 
-        Parse.enableLocalDatastore(MapsActivity.getAppContext());
-        Parse.initialize(MapsActivity.getAppContext(), "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd", "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0");
+        //Context c = Application.getContext().getApplicationContext();
+        //Parse.enableLocalDatastore(c);
+        //Parse.initialize(Application.getContext().getApplicationContext(),
+        //        "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd",
+        //        "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0"
+        //);
 
     }
     public synchronized static DataManager getInstance(){

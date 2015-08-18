@@ -43,16 +43,20 @@ public class Application extends android.app.Application {
     public void onCreate(){
         System.out.println("OnCreateApplication");
         super.onCreate();
-        DataManager.getInstance();
-        registerSubclasses();
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "@string/parse_application_id", "@string/parse_client_key");
+        //DataManager.getInstance();
+        //registerSubclasses();
+        //Parse.enableLocalDatastore(this);
+        //Parse.initialize(this, "@string/parse_application_id", "@string/parse_client_key");
 
     }
 
     private void registerSubclasses(){
         //ParseObject.registerSubclass(MetaModel.class);
 
+    }
+
+    public static Context getContext() {
+        return getContext();
     }
 
 }

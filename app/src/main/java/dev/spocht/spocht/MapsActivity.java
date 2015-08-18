@@ -32,226 +32,167 @@ import java.util.Iterator;
 import java.util.List;
 
 import bolts.Task;
+import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.Game;
 import dev.spocht.spocht.data.InfoRetriever;
+import dev.spocht.spocht.listener.MyLocationListener;
 
 public class MapsActivity extends FragmentActivity
-    implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
-
-    private static android.content.Context context;
-
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
-    String pos_actual = "bla";
-
-    DataManager dataManager = DataManager.getInstance();
-
-    private GoogleApiClient googleApiClient;
-    private Location lastLocation;
-    private LocationRequest locationRequest;
-
-    double latitude = 46.954581;
-    double longitude =  7.447266;
+    {
 
 
-    Button button;
-
-
-    private TextView tv;
-
-    public static android.content.Context getAppContext() {
-        return MapsActivity.context;
-    }
-
-
-    protected synchronized void buildGoogleApiClient() {
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-
-
-    }
-
-    protected void createLocationRequest(){
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-    }
-
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
-    //this one is needed... unfortunately it is not mentioned in the tutorial
-    @Override
-    protected void onStart() {
-        super.onStart();
-        googleApiClient.connect();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        buildGoogleApiClient();
-        setContentView(R.layout.activity_maps);
-        MapsActivity.context = getApplicationContext();
-
-        tv = (TextView)findViewById(R.id.textView1);
-
-        button = (Button)findViewById(R.id.button);
-
-
-        button.setOnClickListener(new Button.OnClickListener() {
+        MyLocationListener myLocationListener;
+        LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
             @Override
-            public void onClick(View v) {
+            public Void operate(Location l) {
 
-
-                MyUser user = new MyUser();
-                user.store("Adolf", "Ceaucescu");
-                System.out.println("Clicked");
-                ParseQuery<ParseObject> pq = ParseQuery.getQuery("Sportsite");
-                ParseQuery<ParseObject> blutt = ParseQuery.getQuery("Sportsite");
-
-
-                blutt.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(final List<ParseObject> list, ParseException e) {
-                        DataManager.getInstance().request("name", Facility.class, new InfoRetriever<List<Game>>() {
-                            @Override
-                            public void operate(List<Game> games) {
-
-                            }
-                        });
-
-                    }
-                });
-
-                pq.whereWithinKilometers("location", new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude()), 1.0);
-                pq.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> list, ParseException e) {
-                        Iterator<ParseObject> it =list.iterator();
-
-                        while (it.hasNext()) {
-                            System.out.println(it.next().get("name")+"name");
-                        }
-                    }
-                });
-
+                LatLng latLng = new LatLng(
+                        myLocationListener.getLastLocation().getLatitude(),
+                        myLocationListener.getLastLocation().getLongitude());
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                return null;
             }
-        });
 
-        setUpMapIfNeeded();
-
+        };
 
 
+        private static android.content.Context context;
+
+        private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+
+        String pos_actual = "bla";
+
+        DataManager dataManager = DataManager.getInstance();
+
+        //private GoogleApiClient googleApiClient;
+        //private Location lastLocation;
+        //private LocationRequest locationRequest;
+
+        double latitude = 46.954581;
+        double longitude =  7.447266;
 
 
+        Button button;
 
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
+        private TextView tv;
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
+        public static android.content.Context getAppContext() {
+            return MapsActivity.context;
         }
-    }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
-    private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-
-    }
+    /*
+        protected synchronized void buildGoogleApiClient() {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
 
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        }
 
-        createLocationRequest();
+        protected void createLocationRequest(){
+            locationRequest = new LocationRequest();
+            locationRequest.setInterval(10000);
+            locationRequest.setFastestInterval(5000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        startLocationUpdates();
+        }
 
-        LatLng currentPosition = new LatLng(latitude, longitude);
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPosition));
+        protected void startLocationUpdates() {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+        }
 
-        //tv = (TextView)findViewById(R.id.textView1);
-        //tv.setText("bla");
+        //this one is needed... unfortunately it is not mentioned in the tutorial
 
-        if (lastLocation != null) {
-            tv.setText(String.valueOf(lastLocation.getLatitude()));
-            //latitude.setText(String.valueOf(lastLocation.getLatitude()));
-            //longitude.setText(String.valueOf(lastLocation.getLongitude()));
+        */
+
+        @Override
+        protected void onStart() {
+            super.onStart();
+            //googleApiClient.connect();
 
         }
 
 
 
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            //buildGoogleApiClient();
+
+            MapsActivity.context = getApplicationContext();
+            myLocationListener = new MyLocationListener(context, locationCallback);
+            setContentView(R.layout.activity_maps);
+
+
+            tv = (TextView)findViewById(R.id.textView1);
+
+            button = (Button)findViewById(R.id.button);
+
+
+
+
+            setUpMapIfNeeded();
+
+
+
+
+
+
+        }
+
+        @Override
+        protected void onResume() {
+            super.onResume();
+            setUpMapIfNeeded();
+        }
+
+        /**
+         * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
+         * installed) and the map has not already been instantiated.. This will ensure that we only ever
+         * call {@link #setUpMap()} once when {@link #mMap} is not null.
+         * <p/>
+         * If it isn't installed {@link SupportMapFragment} (and
+         * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
+         * install/update the Google Play services APK on their device.
+         * <p/>
+         * A user can return to this FragmentActivity after following the prompt and correctly
+         * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
+         * have been completely destroyed during this process (it is likely that it would only be
+         * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
+         * method in {@link #onResume()} to guarantee that it will be called.
+         */
+        private void setUpMapIfNeeded() {
+            // Do a null check to confirm that we have not already instantiated the map.
+            if (mMap == null) {
+                // Try to obtain the map from the SupportMapFragment.
+                mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                        .getMap();
+                // Check if we were successful in obtaining the map.
+                if (mMap != null) {
+                    setUpMap();
+                }
+            }
+        }
+
+        /**
+         * This is where we can add markers or lines, add listeners or move the camera. In this case, we
+         * just add a marker near Africa.
+         * <p/>
+         * This should only be called once and when we are sure that {@link #mMap} is not null.
+         */
+        private void setUpMap() {
+            mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+
+        }
+
+
 
 
 
     }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-        System.out.println("NotConnected");
-        System.out.println(connectionResult.getErrorCode());
-    }
-
-
-    @Override
-    public void onLocationChanged(Location location) {
-        lastLocation = location;
-        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        tv.setText(String.valueOf(lastLocation.getLatitude()));
-    }
-}
