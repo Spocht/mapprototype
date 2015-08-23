@@ -1,0 +1,14 @@
+{
+  "global": {
+    "parseVersion": "1.5.0"
+  },
+  "applications": {
+    "SpochT": {
+      "applicationId": "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd",
+      "masterKey": "RqxKldGuFTGVpOovDFEsGrGNtYDJG5yf544VAB0k"
+    },
+    "_default": {
+      "link": "SpochT"
+    }
+  }
+}
