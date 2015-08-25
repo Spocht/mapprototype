@@ -12,6 +12,8 @@ import com.parse.ParseQuery;
 @ParseClassName("Event")
 public class Event extends ParseData {
 
+
+
     @Override
     void retrieve(String id, final InfoRetriever callback) {
 
