@@ -44,19 +44,4 @@ public class Event extends ParseData {
         }
         return games;
     }
-    
-    @Override
-    void retrieve(String id, final InfoRetriever callback) {
-
-        ParseQuery<Event> queryEvent = ParseQuery.getQuery(Event.class);
-        queryEvent.getInBackground(id, new GetCallback<Event>() {
-            public void done(Event object, ParseException e) {
-                if (e == null) {
-                    callback.operate(object);
-                } else {
-                    // something went wrong
-                }
-            }
-        });
-    }
 }

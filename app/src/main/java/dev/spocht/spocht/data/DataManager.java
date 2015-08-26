@@ -2,9 +2,12 @@ package dev.spocht.spocht.data;
 
 import android.content.Context;
 
+import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseAnonymousUtils;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -62,13 +65,18 @@ public class DataManager {
         return !user.isFaulted();
     }
 
-    public void request(String id, Class<? extends ParseData> obj, final InfoRetriever callback) {
-        try {
-            obj.newInstance().retrieve(id,callback);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
+
+        ParseQuery<T> query = ParseQuery.getQuery(obj);
+        query.getInBackground(id, new GetCallback<T>() {
+            public void done(T object, ParseException e) {
+                if (e == null) {
+                    callback.operate(object);
+                } else {
+                    System.out.println("failed to load items:: "+e.getMessage());
+                    // something went wrong
+                }
+            }
+        });
     }
 }

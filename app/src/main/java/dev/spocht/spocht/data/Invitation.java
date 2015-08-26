@@ -12,18 +12,4 @@ import com.parse.ParseQuery;
 @ParseClassName("Invitation")
 public class Invitation extends ParseData {
 
-    @Override
-    void retrieve(String id, final InfoRetriever callback) {
-
-        ParseQuery<Invitation> queryEvent = ParseQuery.getQuery(Invitation.class);
-        queryEvent.getInBackground(id, new GetCallback<Invitation>() {
-            public void done(Invitation object, ParseException e) {
-                if (e == null) {
-                    callback.operate(object);
-                } else {
-                    // something went wrong
-                }
-            }
-        });
-    }
 }
