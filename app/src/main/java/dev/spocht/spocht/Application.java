@@ -47,7 +47,6 @@ public class Application extends android.app.Application {
         //registerSubclasses();
         //Parse.enableLocalDatastore(this);
         //Parse.initialize(this, "@string/parse_application_id", "@string/parse_client_key");
-
     }
 
     private void registerSubclasses(){
