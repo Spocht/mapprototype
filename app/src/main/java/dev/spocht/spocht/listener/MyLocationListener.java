@@ -23,33 +23,29 @@ public class MyLocationListener implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-
-    LocationCallback cb;
-
+    private LocationCallback cb;
     private Location lastLocation;
-
     private Context ctx;
+
     public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb) {
         this.ctx = ctx;
         this.cb = cb;
         buildGoogleApiClient();
     }
 
+    private static GoogleApiClient googleApiClient = null;
 
 
-
-    private GoogleApiClient googleApiClient;
-
-
-    protected synchronized GoogleApiClient buildGoogleApiClient() {
-        googleApiClient = new GoogleApiClient.Builder(ctx)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        googleApiClient.connect();
+    private synchronized GoogleApiClient buildGoogleApiClient() {
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(ctx)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            googleApiClient.connect();
+        }
         return googleApiClient;
-
     }
 
     private LocationRequest locationRequest;
@@ -69,11 +65,9 @@ public class MyLocationListener implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
         createLocationRequest();
-
         startLocationUpdates();
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
     }
 
@@ -89,7 +83,6 @@ public class MyLocationListener implements
     @Override
     public void onLocationChanged(Location location) {
             lastLocation = location;
-            System.out.println("Loca changed");
             cb.operate(location);
 
             //LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());

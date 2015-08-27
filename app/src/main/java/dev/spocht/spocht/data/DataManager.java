@@ -16,6 +16,7 @@ import bolts.Task;
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.MapsActivity;
 import dev.spocht.spocht.MyUser;
+import dev.spocht.spocht.monitor.EventMonitor;
 
 /**
  * Created by edm on 11.08.15.
@@ -26,19 +27,34 @@ public class DataManager {
 
     private List<Facility> facilities;
 
+    private static Context context;
+
 
     private DataManager(){
 
-        ParseObject.registerSubclass(MyUser.class);
 
-        Context c = Application.getContext().getApplicationContext();
-        Parse.enableLocalDatastore(c);
-        Parse.initialize(Application.getContext().getApplicationContext(),
+        if (context == null) {
+            throw new Error("Oops! Context not set. Please set it first by injectContext");
+        }
+
+
+
+        ParseObject.registerSubclass(MyUser.class);
+        ParseObject.registerSubclass(Event.class);
+        ParseObject.registerSubclass(Facility.class);
+
+        Parse.enableLocalDatastore(context);
+        Parse.initialize(context,
                 "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd",
                 "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0"
         );
 
+        registerMonitors();
+
     }
+
+    //get instance needs more protection than just synchronized.
+
     public synchronized static DataManager getInstance(){
         if (instance == null) {
             instance = new DataManager();
@@ -79,4 +95,19 @@ public class DataManager {
             }
         });
     }
+
+    public static void injectContext(Context ctx) {
+        System.out.println("Injecting Context: " + ctx);
+        context = ctx;
+    }
+
+    public Context getContext(){
+
+        return this.context;
+    }
+
+    private void registerMonitors(){
+        EventMonitor eventMonitor = new EventMonitor(context);
+    }
+
 }
