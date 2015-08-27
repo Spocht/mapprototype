@@ -25,3 +25,4 @@ proguard/
 /app/src/debug/res/values/api_keys.xml
 
 app/app.iml
+*.orig
