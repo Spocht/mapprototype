@@ -23,3 +23,5 @@ proguard/
 # do not provide api key publicly
 /app/src/*/res/values/google_maps_api.xml
 /app/src/debug/res/values/api_keys.xml
+
+app/app.iml
