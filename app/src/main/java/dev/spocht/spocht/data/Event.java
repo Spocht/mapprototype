@@ -5,6 +5,7 @@ import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 /**
  * Created by edm on 11.08.15.
@@ -12,7 +13,7 @@ import com.parse.ParseQuery;
 @ParseClassName("Event")
 public class Event extends ParseData {
 
-
+    //Facility facility = new Facility();
 
     @Override
     void retrieve(String id, final InfoRetriever callback) {

@@ -19,3 +19,11 @@ Parse.Cloud.define("spochtRokks", function(request, response) {
 	});
 	
 });
+
+
+//Log out a user from an ongoing event in case they get too far away.
+
+Parse.Cloud.define("logOutFromEventDueToBeingTooFarAway", function(request, response) {
+	var query = new Parse.Query("")
+
+});

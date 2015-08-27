@@ -56,6 +56,8 @@ public class MapsActivity extends AppCompatActivity
 
 
     protected synchronized void buildGoogleApiClient() {
+
+
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -83,6 +85,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("activity/MapsActivityOnCreate");
         super.onCreate(savedInstanceState);
         buildGoogleApiClient();
         setContentView(R.layout.activity_maps);

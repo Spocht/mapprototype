@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity
 
     String pos_actual = "bla";
 
-    DataManager dataManager = DataManager.getInstance();
+    //DataManager dataManager = DataManager.getInstance();
 
     //private GoogleApiClient googleApiClient;
     //private Location lastLocation;
@@ -122,6 +122,10 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
+        System.out.println("spocht/MapsActivityOnCreate");
         super.onCreate(savedInstanceState);
         //buildGoogleApiClient();
 
