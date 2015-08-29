@@ -39,7 +39,13 @@ public class DataManager {
         }
 
         ParseObject.registerSubclass(SpochtUser.class);
+        ParseObject.registerSubclass(Sport.class);
+        ParseObject.registerSubclass(Invitation.class);
+        ParseObject.registerSubclass(Experience.class);
+        ParseObject.registerSubclass(Image.class);
+        ParseObject.registerSubclass(Participation.class);
         ParseObject.registerSubclass(Event.class);
+
         ParseObject.registerSubclass(Facility.class);
 
         Parse.enableLocalDatastore(context);
