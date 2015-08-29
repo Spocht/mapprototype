@@ -7,4 +7,7 @@ import com.parse.ParseObject;
  */
 public abstract class ParseData extends ParseObject {
 
+    public void persist() {
+        this.saveEventually();
+    }
 }

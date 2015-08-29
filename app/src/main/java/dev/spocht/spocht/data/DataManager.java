@@ -16,6 +16,7 @@ import bolts.Task;
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.MapsActivity;
 import dev.spocht.spocht.MyUser;
+import dev.spocht.spocht.R;
 import dev.spocht.spocht.monitor.EventMonitor;
 
 /**
@@ -37,16 +38,14 @@ public class DataManager {
             throw new Error("Oops! Context not set. Please set it first by injectContext");
         }
 
-
-
-        ParseObject.registerSubclass(MyUser.class);
+        ParseObject.registerSubclass(SpochtUser.class);
         ParseObject.registerSubclass(Event.class);
         ParseObject.registerSubclass(Facility.class);
 
         Parse.enableLocalDatastore(context);
         Parse.initialize(context,
-                "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd",
-                "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0"
+                getContext().getString(R.string.parse_application_id),
+                getContext().getString(R.string.parse_client_key)
         );
 
         registerMonitors();
