@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
@@ -90,6 +91,8 @@ public class MapsActivity extends AppCompatActivity
         buildGoogleApiClient();
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
+
+        DatenSchleuder.getInstance().setup();
 
         setUpMapIfNeeded();
         setUpActionBar();

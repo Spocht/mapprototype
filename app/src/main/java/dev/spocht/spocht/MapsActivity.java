@@ -35,7 +35,6 @@ import bolts.Task;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.data.Game;
 import dev.spocht.spocht.data.InfoRetriever;
 import dev.spocht.spocht.listener.MyLocationListener;
 
