@@ -90,6 +90,7 @@ public class DataManager {
     {
         SpochtUser user = new SpochtUser(mail,password);
         user.setEmail(mail);
+        user.seen();
 
         Task<Void> task = user.signUpInBackground();
 

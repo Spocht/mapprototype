@@ -93,7 +93,7 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
 
-//        DatenSchleuder.getInstance().setup();
+// todo: this killes the APP::       DatenSchleuder.getInstance().setup();
 
         setUpMapIfNeeded();
         setUpActionBar();

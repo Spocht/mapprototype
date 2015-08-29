@@ -5,8 +5,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Picture;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
+
+import java.io.ByteArrayOutputStream;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
@@ -35,17 +40,35 @@ public class Image extends ParseData {
         String name = getString("name");
         if(null == name)
         {
-            name = "unknown";
+            name = new String("unknown");
         }
         return (name);
     }
     public void setPicture(final Bitmap pic)
     {
-        put("picture",pic);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        pic.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] data = stream.toByteArray();
+        ParseFile imgFile = new ParseFile (this.name(), data);
+        try {
+            imgFile.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        put("picture",imgFile);
     }
     public Bitmap picture()
     {
-        Bitmap pic = (Bitmap)get("picture");
+        ParseFile imgFile = (ParseFile)get("picture");
+        Bitmap pic=null;
+        try {
+            byte[] data = imgFile.getData();
+            pic = BitmapFactory.decodeByteArray(data, 0, data.length);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         if(null == pic)
         {
             pic = BitmapFactory.decodeResource(DataManager.getInstance().getContext().getResources(), R.drawable.spochtlogo2);

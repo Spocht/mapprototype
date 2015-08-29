@@ -99,16 +99,7 @@ public class DatenSchleuder {
         }
         for(ItemUser u:users)
         {
-            SpochtUser user = new SpochtUser(u.name,u.password);
-            user.setEmail(u.name);
-            user.seen();
-            user.setExperience(new Experience(sport));
-            try {
-                user.save();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            lstUser.add(user);
+            lstUser.add(DataManager.getInstance().signup(u.name,u.password));
         }
         for(int cnt =5;cnt>0;cnt--) {
             System.out.println("__ Let things settle... ["+cnt+"]");
