@@ -220,13 +220,20 @@ public class Facility extends ParseData {
         }
         return(events);
     }
-    public void addEvent()
+    public Event addEvent()
     {
-        addEvent("Kesselrun"); //todo: change default event name
+        return addEvent("Kesselrun"); //todo: change default event name
     }
-    public void addEvent(final String name)
+    public Event addEvent(final String name)
     {
-        setEvent(new Event(name));
+        Event event = new Event(name);
+        setEvent(event);
+        if((null == event.facility().getObjectId())||
+           (!event.facility().getObjectId().equals(this.getObjectId())))
+        {
+            event.setFacility(this);
+        }
+        return event;
     }
 
 }

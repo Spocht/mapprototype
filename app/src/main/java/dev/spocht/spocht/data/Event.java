@@ -167,14 +167,50 @@ public class Event extends ParseData {
         return(facility);
     }
 
+    public Boolean isUserCheckedIn(final SpochtUser user)
+    {
+        List<Participation> participations = participants();
+        for(Participation p: participations)
+        {
+            if(p.user().getObjectId().equals(user.getObjectId()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     ///events to handle
     public void checkIn(final SpochtUser user)
     {
-        //todo if successful API call, update local Event
+        if(!isUserCheckedIn(user)) {
+            Participation participation = new Participation(user, Outcome.GAVEUP);
+            participation.persist();
+            //todo if successful API call, update local Event
+            if(true) {
+                setParticipation(participation);
+            }
+            else
+            {
+                participation.destroy();
+            }
+        }
     }
     public void checkOut(final SpochtUser user)
     {
-
+        //todo: call API
+        if(!getState().equals("grey")) {
+            //game has not been ended by end()
+            List<Participation> participations = participants();
+            for (Participation p : participations) {
+                if (p.user().getObjectId().equals(user.getObjectId())) {
+                    removeParticipation(p);
+                    p.setOutcome(Outcome.GAVEUP);
+                    p.destroy(); //todo: discuss with team
+                    return;
+                }
+            }
+        }
     }
     public void start()
     {

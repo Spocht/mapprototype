@@ -15,4 +15,14 @@ public abstract class ParseData extends ParseObject {
             e.printStackTrace();
         }
     }
+    public void destroy()
+    {
+        try
+        {
+            this.delete();
+        }catch(ParseException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

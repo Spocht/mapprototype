@@ -3,9 +3,12 @@ package dev.spocht.spocht.data;
 import android.graphics.BitmapFactory;
 
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.mock.location.Lorrainepark;
@@ -75,6 +78,45 @@ public class DatenSchleuder {
             }
             lstUser.add(user);
         }
+        for(int cnt =5;cnt>0;cnt--) {
+            System.out.println("__ Let things settle... ["+cnt+"]");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        for(Facility f:lstFacility)
+        {
+            f.saveEventually(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (null != e) {
+                        System.out.println("Error while saving facility object");
+                    }
+                }
+            });
+        }
+        for(SpochtUser u:lstUser)
+        {
+            u.saveEventually(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (null != e) {
+                        System.out.println("Error while saving user object");
+                    }
+                }
+            });
+        }
+    }
+    public void createHistorie(final String nameEvent, final Facility facility, final SpochtUser user, final Date date, final Outcome outcome)
+    {
+        Event event = facility.addEvent(nameEvent);
+        event.setStartTime(date);
+        Participation participation = new Participation(user, outcome);
+        participation.persist();
+        event.setParticipation(participation);
+    }
+    public void throwHistorie()
+    {
 
     }
 }
