@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
+import dev.spocht.spocht.listener.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
@@ -42,6 +44,22 @@ public class MapsActivity extends AppCompatActivity
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         GoogleMap.OnMarkerClickListener {
+
+
+    MyLocationListener myLocationListener;
+    LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+        @Override
+        public Void operate(Location l) {
+
+            LatLng latLng = new LatLng(
+                    myLocationListener.getLastLocation().getLatitude(),
+                    myLocationListener.getLastLocation().getLongitude());
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            return null;
+        }
+
+    };
 
     private static android.content.Context context;
 
@@ -92,6 +110,7 @@ public class MapsActivity extends AppCompatActivity
         buildGoogleApiClient();
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
+        myLocationListener = new MyLocationListener(context, locationCallback);
 
 // todo: this killes the APP::       DatenSchleuder.getInstance().setup();
 
