@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * Created by edm on 11.08.15.
  */
-@ParseClassName("Event")
 public class Event extends ParseData {
 
 //    private enum EventState

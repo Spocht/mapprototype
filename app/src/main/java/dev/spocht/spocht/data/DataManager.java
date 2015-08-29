@@ -44,7 +44,9 @@ public class DataManager {
         ParseObject.registerSubclass(Experience.class);
         ParseObject.registerSubclass(Image.class);
         ParseObject.registerSubclass(Participation.class);
-        ParseObject.registerSubclass(Event.class);
+        ParseObject.registerSubclass(EventSingle.class);
+        ParseObject.registerSubclass(EventTournament.class);
+        ParseObject.registerSubclass(EventToDeath.class);
 
         ParseObject.registerSubclass(Facility.class);
 
