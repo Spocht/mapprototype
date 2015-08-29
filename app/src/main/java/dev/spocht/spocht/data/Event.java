@@ -60,7 +60,7 @@ public class Event extends ParseData {
         String name = getString("name");
         if(null == name)
         {
-            name = "unknown";
+            name = new String("unknown");
         }
         return (name);
     }

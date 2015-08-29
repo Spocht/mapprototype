@@ -32,7 +32,7 @@ public class EventMonitor {
 
 
     public EventMonitor(Context ctx) {
-        facility.generateTestData();
+//        facility.generateTestData();
         myLocationListener = new MyLocationListener(
                 ctx,
                 new LocationCallback<Void, Location>() {

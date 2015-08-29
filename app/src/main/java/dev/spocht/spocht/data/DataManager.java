@@ -37,6 +37,7 @@ public class DataManager {
             throw new Error("Oops! Context not set. Please set it first by injectContext");
         }
 
+        ParseObject.registerSubclass(ParseData.class);
         ParseObject.registerSubclass(SpochtUser.class);
         ParseObject.registerSubclass(Sport.class);
         ParseObject.registerSubclass(Invitation.class);

@@ -1,7 +1,10 @@
 package dev.spocht.spocht.data;
 
 import android.graphics.BitmapFactory;
+import android.location.Location;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -10,7 +13,10 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.Date;
 
+import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.listener.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
@@ -33,9 +39,35 @@ public class DatenSchleuder {
         }
     }
 
+    static private DatenSchleuder instance = new DatenSchleuder();
     private ArrayList<Facility> lstFacility = new ArrayList<Facility>(10);
     private Sport               sport       = new Sport("tabletennis",2);
     private ArrayList<SpochtUser> lstUser   = new ArrayList<SpochtUser>(10);
+    private MyLocationListener myLocationListener;
+
+    private DatenSchleuder()
+    {
+        ;
+    }
+    public static DatenSchleuder getInstance()
+    {
+        return instance;
+    }
+
+    public void setup()
+    {
+        LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+            @Override
+            public Void operate(Location l) {
+                if((l.getLatitude() == 10)&&(l.getLongitude() == 10))
+                {
+                    throwInitialData();
+                }
+                return null;
+            }
+        };
+        myLocationListener = new MyLocationListener(Application.getContext(),locationCallback);
+    }
 
 
     public void throwInitialData()

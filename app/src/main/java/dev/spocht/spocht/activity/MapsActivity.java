@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
@@ -92,7 +93,7 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
 
-        DatenSchleuder.getInstance().setup();
+//        DatenSchleuder.getInstance().setup();
 
         setUpMapIfNeeded();
         setUpActionBar();
@@ -122,11 +123,14 @@ public class MapsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_stats:
+                DatenSchleuder.getInstance().throwInitialData();
                 return false;
             case R.id.menu_settings:
                 return false;
             case R.id.menu_logout:
+                DataManager.getInstance().logout();
                 startActivity(new Intent(this, LoginActivity.class));
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
