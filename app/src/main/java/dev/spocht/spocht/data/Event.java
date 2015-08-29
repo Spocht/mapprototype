@@ -46,6 +46,11 @@ public class Event extends ParseData {
     {//default constructor for Parse.com
         ;
     }
+    public Event(final String name)
+    {
+        setName(name);
+        setState("grey");
+    }
     public void setName(final String name)
     {
         put("name", name);
@@ -126,6 +131,40 @@ public class Event extends ParseData {
         if(null != participation) {
             removeAll("participants", Arrays.asList(participation.getObjectId()));
         }
+    }
+    public void setFacility(final Facility facility)
+    {
+        if(null == facility.getObjectId())
+        {
+            facility.saveEventually(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (e == null) {
+                        put("facility", ParseObject.createWithoutData(Facility.class, facility.getObjectId()));
+                    } else {
+                        System.out.println("Error while saving facility object");
+                    }
+                }
+            });
+        }
+        else {
+            put("facility", ParseObject.createWithoutData(Facility.class, facility.getObjectId()));
+        }
+    }
+    public Facility facility()
+    {
+        Facility facility = (Facility)get("facility");
+        if(null == facility)
+        {
+            try {
+                facility = this.getParseObject("facility").fetchIfNeeded();
+            }
+            catch (com.parse.ParseException e)
+            {
+                //todo log?!
+                facility = new Facility("unknown");
+            }
+        }
+        return(facility);
     }
 
     ///events to handle
