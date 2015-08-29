@@ -9,14 +9,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
-
-import java.util.List;
 
 import bolts.Task;
-import dev.spocht.spocht.Application;
-import dev.spocht.spocht.MapsActivity;
-import dev.spocht.spocht.MyUser;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.monitor.EventMonitor;
 
@@ -28,7 +22,6 @@ public class DataManager {
     private static DataManager instance = null;
 
     private static Context context;
-
 
     private DataManager(){
 
@@ -91,7 +84,6 @@ public class DataManager {
         SpochtUser user = new SpochtUser(mail,password);
         user.setEmail(mail);
         user.seen();
-
         Task<Void> task = user.signUpInBackground();
 
         try {

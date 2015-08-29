@@ -52,7 +52,7 @@ public class SpochtUser extends ParseUser {
                     if (e == null) {
                         addUnique("experience", ParseObject.createWithoutData(Experience.class, xp.getObjectId()));
                     } else {
-                        System.out.println("Error while saving experience object");
+                        System.out.println("Error while saving experience object for ["+getUsername()+"]");
                     }
                 }
             });

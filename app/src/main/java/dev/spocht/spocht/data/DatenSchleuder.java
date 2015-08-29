@@ -5,8 +5,10 @@ import android.location.Location;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -99,7 +101,20 @@ public class DatenSchleuder {
         }
         for(ItemUser u:users)
         {
-            lstUser.add(DataManager.getInstance().signup(u.name,u.password));
+            SpochtUser user = new SpochtUser(u.name, u.password);
+            user.setEmail(u.name);
+            Experience xp = new Experience(sport);
+            xp.persist();
+            user.setExperience(xp);
+            user.seen();
+
+            try {
+                user.signUp();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            lstUser.add(user);
         }
         for(int cnt =5;cnt>0;cnt--) {
             System.out.println("__ Let things settle... ["+cnt+"]");
@@ -115,16 +130,6 @@ public class DatenSchleuder {
                 public void done(ParseException e) {
                     if (null != e) {
                         System.out.println("Error while saving facility object");
-                    }
-                }
-            });
-        }
-        for(SpochtUser u:lstUser)
-        {
-            u.saveEventually(new SaveCallback() {
-                public void done(ParseException e) {
-                    if (null != e) {
-                        System.out.println("Error while saving user object");
                     }
                 }
             });
