@@ -5,8 +5,10 @@ import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -85,13 +87,51 @@ public class Event extends ParseData {
         return(st);
     }
 
-
-
+    protected void setParticipation(final Participation participation)
+    {
+        if(null == participation.getObjectId())
+        {
+            participation.saveEventually(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (e == null) {
+                        addUnique("participants", ParseObject.createWithoutData(Participation.class, participation.getObjectId()));
+                    } else {
+                        System.out.println("Error while saving participation object");
+                    }
+                }
+            });
+        }
+        else {
+            addUnique("participants", ParseObject.createWithoutData(Participation.class, participation.getObjectId()));
+        }
+    }
+    public List<Participation> participants()
+    {
+        List<Participation> participations = getList("participants");
+        if(null == participations)
+        {
+            try {
+                participations = this.getParseObject("participants").fetchIfNeeded();
+            }
+            catch (com.parse.ParseException e)
+            {
+                //todo log?!
+                participations= new ArrayList<Participation>();
+            }
+        }
+        return(participations);
+    }
+    protected void removeParticipation(final Participation participation)
+    {
+        if(null != participation) {
+            removeAll("participants", Arrays.asList(participation.getObjectId()));
+        }
+    }
 
     ///events to handle
     public void checkIn(final SpochtUser user)
     {
-
+        //todo if successful API call, update local Event
     }
     public void checkOut(final SpochtUser user)
     {

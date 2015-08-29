@@ -47,7 +47,6 @@ public class DataManager {
         ParseObject.registerSubclass(EventSingle.class);
         ParseObject.registerSubclass(EventTournament.class);
         ParseObject.registerSubclass(EventToDeath.class);
-
         ParseObject.registerSubclass(Facility.class);
 
         Parse.enableLocalDatastore(context);
