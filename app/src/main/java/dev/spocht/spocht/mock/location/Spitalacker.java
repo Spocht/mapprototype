@@ -26,4 +26,9 @@ public final class Spitalacker  implements Stub {
     public String getName() {
         return NAME;
     }
+
+    @Override
+    public String getDesc() {
+        return DESCRIPTION;
+    }
 }

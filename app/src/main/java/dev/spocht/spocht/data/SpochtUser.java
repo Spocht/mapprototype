@@ -20,6 +20,15 @@ import java.util.ListIterator;
  */
 @ParseClassName("SpochtUser")
 public class SpochtUser extends ParseUser {
+    public SpochtUser()
+    {
+        ;
+    }
+    public SpochtUser(final String name, final String password)
+    {
+        setUsername(name);
+        setPassword(password);
+    }
     public Date lastSeen()
     {
         Date date= (Date)get("lastSeen");

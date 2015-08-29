@@ -28,4 +28,9 @@ public final class Steckweg implements Stub {
     public String getName() {
         return NAME;
     }
+
+    @Override
+    public String getDesc() {
+        return DESCRIPTION;
+    }
 }

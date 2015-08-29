@@ -1,5 +1,6 @@
 package dev.spocht.spocht.data;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
 
 /**
@@ -8,6 +9,10 @@ import com.parse.ParseObject;
 public abstract class ParseData extends ParseObject {
 
     public void persist() {
-        this.saveEventually();
+        try {
+            this.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

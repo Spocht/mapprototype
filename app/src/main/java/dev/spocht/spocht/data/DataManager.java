@@ -9,6 +9,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 import java.util.List;
 
@@ -83,6 +84,38 @@ public class DataManager {
             return false;
         }
         return !user.isFaulted();
+    }
+    public SpochtUser signup(String mail, String password)
+    {
+        SpochtUser user = new SpochtUser(mail,password);
+        user.setEmail(mail);
+
+        Task<Void> task = user.signUpInBackground();
+
+        try {
+            task.waitForCompletion();
+        } catch (InterruptedException e) {
+            return new SpochtUser();
+        }
+        if(!task.isFaulted())
+        {
+            return user;
+        }
+        else {
+            return new SpochtUser();
+        }
+    }
+    public void logout()
+    {
+        Task<Void> task = ParseUser.logOutInBackground();
+        try
+        {
+            task.waitForCompletion();
+        }
+        catch(InterruptedException e)
+        {
+            //todo: crash report?
+        }
     }
 
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
