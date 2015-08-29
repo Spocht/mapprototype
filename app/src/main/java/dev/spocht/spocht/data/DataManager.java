@@ -26,8 +26,6 @@ public class DataManager {
 
     private static DataManager instance = null;
 
-    private List<Facility> facilities;
-
     private static Context context;
 
 

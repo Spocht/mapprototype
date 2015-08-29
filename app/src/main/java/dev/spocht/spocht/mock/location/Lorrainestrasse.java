@@ -13,7 +13,7 @@ public final class Lorrainestrasse implements Stub {
 
     LatLng latLng;
 
-    public void Steckweg() {
+    public Lorrainestrasse() {
         latLng = new LatLng(LATITUDE, LONGITUDE);
     }
 

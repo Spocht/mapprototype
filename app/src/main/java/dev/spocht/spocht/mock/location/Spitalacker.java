@@ -13,7 +13,7 @@ public final class Spitalacker  implements Stub {
 
     LatLng latLng;
 
-    public void Steckweg() {
+    public Spitalacker() {
         latLng = new LatLng(LATITUDE, LONGITUDE);
     }
 

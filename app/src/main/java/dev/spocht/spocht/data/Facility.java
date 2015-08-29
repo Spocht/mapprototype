@@ -228,5 +228,5 @@ public class Facility extends ParseData {
     {
         setEvent(new Event(name));
     }
-    
+
 }
