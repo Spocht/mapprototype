@@ -42,6 +42,7 @@ public class SpochtUser extends ParseUser {
     {
         Date date = new Date();
         put("lastSeen",date);
+        setUpdated();
     }
     public void setExperience(final Experience xp)
     {
@@ -51,6 +52,11 @@ public class SpochtUser extends ParseUser {
                 public void done(ParseException e) {
                     if (e == null) {
                         addUnique("experience", ParseObject.createWithoutData(Experience.class, xp.getObjectId()));
+                        if(xp.clearUpdated())
+                        {
+                            xp.persist();
+                        }
+                        setUpdated();
                     } else {
                         System.out.println("Error while saving experience object for ["+getUsername()+"]");
                     }
@@ -59,6 +65,7 @@ public class SpochtUser extends ParseUser {
         }
         else {
             addUnique("experience", ParseObject.createWithoutData(Experience.class, xp.getObjectId()));
+            setUpdated();
         }
     }
     public List<Experience> experiences()
@@ -76,5 +83,34 @@ public class SpochtUser extends ParseUser {
             }
         }
         return(xps);
+    }
+
+    //implement stuff of the ParseData Class
+
+    private Boolean updated;
+    protected synchronized void setUpdated(){
+        updated = true;
+    }
+    protected synchronized Boolean clearUpdated(){
+        Boolean tmp = updated;
+        updated = false;
+        return tmp;
+    }
+    public void persist() {
+        try {
+            this.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+    public void destroy()
+    {
+        try
+        {
+            this.delete();
+        }catch(ParseException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

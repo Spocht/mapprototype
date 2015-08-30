@@ -39,6 +39,7 @@ public class Facility extends ParseData {
     public void setName(final String name)
     {
         put("name", name);
+        setUpdated();
     }
     public String name()
     {
@@ -52,6 +53,7 @@ public class Facility extends ParseData {
     public void setLocation(final GeoPoint location)
     {
         put("location",location);
+        setUpdated();
     }
     public GeoPoint location()
     {
@@ -81,6 +83,7 @@ public class Facility extends ParseData {
     public void setNumberOfFields(final int num)
     {
         put("numberOfFields",num);
+        setUpdated();
     }
     public int numberOfFields()
     {
@@ -94,6 +97,7 @@ public class Facility extends ParseData {
     public void setComment(final String comment)
     {//todo: maybe an "add" would be better, so multiple comments would be available
         put("comment",comment);
+        setUpdated();
     }
     public String comment()
     {
@@ -108,6 +112,7 @@ public class Facility extends ParseData {
     {
         double old = rating();
         put("rating",(old+rating)/2); //todo: review rating stuff
+        setUpdated();
     }
     public double rating()
     {
@@ -126,6 +131,11 @@ public class Facility extends ParseData {
                 public void done(ParseException e) {
                     if (e == null) {
                         put("image", ParseObject.createWithoutData(Image.class, pic.getObjectId()));
+                        setUpdated();
+                        if(pic.clearUpdated())
+                        {
+                            pic.persist();
+                        }
                     } else {
                         System.out.println("Error while saving image object");
                     }
@@ -134,6 +144,7 @@ public class Facility extends ParseData {
         }
         else {
             put("image", ParseObject.createWithoutData(Image.class, pic.getObjectId()));
+            setUpdated();
         }
     }
     public Image image()
@@ -164,6 +175,11 @@ public class Facility extends ParseData {
                 public void done(ParseException e) {
                     if (e == null) {
                         put("sport", ParseObject.createWithoutData(Sport.class, sport.getObjectId()));
+                        setUpdated();
+                        if(sport.clearUpdated())
+                        {
+                            sport.persist();
+                        }
                     } else {
                         System.out.println("Error while saving sport object");
                     }
@@ -172,6 +188,7 @@ public class Facility extends ParseData {
         }
         else {
             put("sport", ParseObject.createWithoutData(Sport.class, sport.getObjectId()));
+            setUpdated();
         }
     }
     public Sport sport()
@@ -202,6 +219,11 @@ public class Facility extends ParseData {
                     public void done(ParseException e) {
                         if (e == null) {
                             addUnique("events", ParseObject.createWithoutData(Event.class, event.getObjectId()));
+                            setUpdated();
+                            if(event.clearUpdated())
+                            {
+                                event.persist();
+                            }
                         } else {
                             System.out.println("Error while saving event object");
                         }
@@ -209,6 +231,7 @@ public class Facility extends ParseData {
                 });
             } else {
                 addUnique("events", ParseObject.createWithoutData(Event.class, event.getObjectId()));
+                setUpdated();
             }
         }
     }

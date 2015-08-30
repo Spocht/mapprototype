@@ -143,7 +143,6 @@ public class DatenSchleuder {
         Participation participation = new Participation(user, outcome);
         participation.persist();
         event.setParticipation(participation);
-        event.persist();
     }
     private class ItemHistory{
         public String name;

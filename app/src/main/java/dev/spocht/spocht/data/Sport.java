@@ -23,6 +23,7 @@ public class Sport extends ParseData {
     public void setName(final String name)
     {
         put("name", name);
+        setUpdated();
     }
     public String name()
     {
@@ -36,6 +37,7 @@ public class Sport extends ParseData {
     public void setMinPlayers(final int minPlayers)
     {
         put("minPlayers", minPlayers);
+        setUpdated();
     }
     public int minPlayers()
     {

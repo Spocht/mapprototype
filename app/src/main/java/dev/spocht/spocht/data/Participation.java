@@ -22,6 +22,7 @@ public class Participation extends ParseData {
     public void setOutcome(final Outcome result)
     {
         put("outcome", result.toString());
+        setUpdated();
     }
     public Outcome outcome()
     {
@@ -36,6 +37,11 @@ public class Participation extends ParseData {
                 public void done(ParseException e) {
                     if (e == null) {
                         put("user", ParseObject.createWithoutData(SpochtUser.class, user.getObjectId()));
+                        setUpdated();
+                        if(user.clearUpdated())
+                        {
+                            user.persist();
+                        }
                     } else {
                         System.out.println("Error while saving sport object");
                     }
@@ -44,6 +50,7 @@ public class Participation extends ParseData {
         }
         else {
             put("user", ParseObject.createWithoutData(SpochtUser.class, user.getObjectId()));
+            setUpdated();
         }
     }
     public SpochtUser user()

@@ -27,6 +27,7 @@ public class Experience extends ParseData {
     protected void setXP(final int val)
     {
         put("xp",val);
+        setUpdated();
     }
     public int xp()
     {
@@ -40,6 +41,7 @@ public class Experience extends ParseData {
     protected void setLevel(final int lvl)
     {
         put("level",lvl);
+        setUpdated();
     }
     public int level()
     {
@@ -66,8 +68,7 @@ public class Experience extends ParseData {
             xpNew += xp();
         }
         setXP(xpNew);
-        if(xpNew > xpForNextLevel())
-        {
+        if(xpNew > xpForNextLevel()) {
             setLevel(level() + 1);
         }
     }
@@ -79,14 +80,19 @@ public class Experience extends ParseData {
                 public void done(ParseException e) {
                     if (e == null) {
                         put("sport", ParseObject.createWithoutData(Sport.class, sport.getObjectId()));
+                        setUpdated();
+                        if(sport.clearUpdated())
+                        {
+                            sport.persist();
+                        }
                     } else {
                         System.out.println("Error while saving sport object");
                     }
                 }
             });
-        }
-        else {
+        } else {
             put("sport", ParseObject.createWithoutData(Sport.class, sport.getObjectId()));
+            setUpdated();
         }
     }
     public Sport sport()

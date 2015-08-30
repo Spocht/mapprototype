@@ -9,6 +9,15 @@ import com.parse.ParseObject;
  */
 @ParseClassName("ParseData")
 public abstract class ParseData extends ParseObject {
+    private Boolean updated;
+    protected synchronized void setUpdated(){
+        updated = true;
+    }
+    protected synchronized Boolean clearUpdated(){
+        Boolean tmp = updated;
+        updated = false;
+        return tmp;
+    }
     public void persist() {
         try {
             this.save();

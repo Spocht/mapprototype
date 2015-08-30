@@ -34,6 +34,7 @@ public class Image extends ParseData {
     public void setName(final String name)
     {
         put("name", name);
+        setUpdated();
     }
     public String name()
     {
@@ -57,6 +58,7 @@ public class Image extends ParseData {
         }
 
         put("picture",imgFile);
+        setUpdated();
     }
     public Bitmap picture()
     {

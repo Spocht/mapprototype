@@ -55,6 +55,7 @@ public class Event extends ParseData {
     public void setName(final String name)
     {
         put("name", name);
+        setUpdated();
     }
     public String name()
     {
@@ -68,7 +69,7 @@ public class Event extends ParseData {
     protected void setStartTime(final Date start)
     {//todo only used, when a location is linked in
         put("startTime",start);
-
+        setUpdated();
     }
     public Date startTime()
     {
@@ -82,6 +83,7 @@ public class Event extends ParseData {
     protected void setState(final String state)
     {
         put("state",state);
+        setUpdated();
     }
     public String getState()
     {
@@ -101,6 +103,11 @@ public class Event extends ParseData {
                 public void done(ParseException e) {
                     if (e == null) {
                         addUnique("participants", ParseObject.createWithoutData(Participation.class, participation.getObjectId()));
+                        setUpdated();
+                        if(participation.clearUpdated())
+                        {
+                            participation.persist();
+                        }
                     } else {
                         System.out.println("Error while saving participation object");
                     }
@@ -109,6 +116,7 @@ public class Event extends ParseData {
         }
         else {
             addUnique("participants", ParseObject.createWithoutData(Participation.class, participation.getObjectId()));
+            setUpdated();
         }
     }
     public List<Participation> participants()
@@ -145,14 +153,19 @@ public class Event extends ParseData {
                 public void done(ParseException e) {
                     if (e == null) {
                         put("facility", ParseObject.createWithoutData(Facility.class, facility.getObjectId()));
+                        setUpdated();
+                        if(facility.clearUpdated())
+                        {
+                            facility.persist();
+                        }
                     } else {
                         System.out.println("Error while saving facility object");
                     }
                 }
             });
-        }
-        else {
+        } else {
             put("facility", ParseObject.createWithoutData(Facility.class, facility.getObjectId()));
+            setUpdated();
         }
     }
     public Facility facility()
