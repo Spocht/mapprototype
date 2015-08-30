@@ -1,7 +1,11 @@
 package dev.spocht.spocht.activity;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -10,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -25,9 +30,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.fragment.DetailFragment;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
@@ -39,7 +44,8 @@ public class MapsActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener,
+        DetailFragment.OnFragmentInteractionListener {
 
     private static android.content.Context context;
 
@@ -54,10 +60,7 @@ public class MapsActivity extends AppCompatActivity
         return MapsActivity.context;
     }
 
-
     protected synchronized void buildGoogleApiClient() {
-
-
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -176,13 +179,11 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(this);
     }
 
-
     @Override
     public void onConnected(Bundle bundle) {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
         createLocationRequest();
-
         startLocationUpdates();
     }
 
@@ -197,7 +198,6 @@ public class MapsActivity extends AppCompatActivity
         System.out.println("NotConnected");
         System.out.println(connectionResult.getErrorCode());
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -217,10 +217,6 @@ public class MapsActivity extends AppCompatActivity
             );
             System.out.println(loc.getClass());
         }
-//        mMap.addMarker(new MarkerOptions().position(new Lorrainepark().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Lorrainestrasse().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Spitalacker().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Steckweg().getLatLng()));
     }
 
     private void loadLocations() {
@@ -235,6 +231,21 @@ public class MapsActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
 
+        Fragment df = new DetailFragment();
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        TextView tv = (TextView) findViewById(R.id.details_fragment_title);
+        tv.setText(marker.getTitle());
+
+        ft.replace(R.id.details_fragment, df);
+        ft.commit();
+
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

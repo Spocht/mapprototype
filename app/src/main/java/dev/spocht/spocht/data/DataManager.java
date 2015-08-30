@@ -13,8 +13,6 @@ import com.parse.ParseUser;
 import java.util.List;
 
 import bolts.Task;
-import dev.spocht.spocht.Application;
-import dev.spocht.spocht.MapsActivity;
 import dev.spocht.spocht.MyUser;
 import dev.spocht.spocht.monitor.EventMonitor;
 
