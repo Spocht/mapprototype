@@ -10,12 +10,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.List;
-
 import bolts.Task;
-import dev.spocht.spocht.Application;
-import dev.spocht.spocht.MapsActivity;
-import dev.spocht.spocht.MyUser;
+import dev.spocht.spocht.R;
 import dev.spocht.spocht.monitor.EventMonitor;
 
 /**
@@ -23,30 +19,37 @@ import dev.spocht.spocht.monitor.EventMonitor;
  */
 public class DataManager {
 
-    private static DataManager instance = null;
-
-    private List<Facility> facilities;
+    private static volatile DataManager instance = null;
+    private final static DataManagerLock lock = new DataManagerLock();
+    private static volatile boolean initializing = false;
 
     private static Context context;
 
 
-    private DataManager(){
+
+    private DataManager() {
 
 
         if (context == null) {
             throw new Error("Oops! Context not set. Please set it first by injectContext");
         }
 
-
-
-        ParseObject.registerSubclass(MyUser.class);
-        ParseObject.registerSubclass(Event.class);
+        ParseObject.registerSubclass(ParseData.class);
+        ParseObject.registerSubclass(SpochtUser.class);
+        ParseObject.registerSubclass(Sport.class);
+        ParseObject.registerSubclass(Invitation.class);
+        ParseObject.registerSubclass(Experience.class);
+        ParseObject.registerSubclass(Image.class);
+        ParseObject.registerSubclass(Participation.class);
+        ParseObject.registerSubclass(EventSingle.class);
+        ParseObject.registerSubclass(EventTournament.class);
+        ParseObject.registerSubclass(EventToDeath.class);
         ParseObject.registerSubclass(Facility.class);
 
         Parse.enableLocalDatastore(context);
         Parse.initialize(context,
-                "IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd",
-                "I7uNfjct4uL5GMwC8kUiubofsWDVAmzG1CAf0VE0"
+                getContext().getString(R.string.parse_application_id),
+                getContext().getString(R.string.parse_client_key)
         );
 
         registerMonitors();
@@ -54,10 +57,20 @@ public class DataManager {
     }
 
     //get instance needs more protection than just synchronized.
+    //https://en.wikipedia.org/wiki/Singleton_pattern
 
     public synchronized static DataManager getInstance(){
+
+
+        //double checked locking... still leads to
+        //Parse.enbleLocalDatastore-called-twice-Exceptions
+        //when DataManager.geInstance is called in CTOR of DataManager,
         if (instance == null) {
-            instance = new DataManager();
+            synchronized (DataManager.class) {
+                if (instance == null) {
+                    instance = new DataManager();
+                }
+            }
         }
         return instance;
     }
@@ -79,6 +92,38 @@ public class DataManager {
             return false;
         }
         return !user.isFaulted();
+    }
+    public SpochtUser signup(String mail, String password)
+    {
+        SpochtUser user = new SpochtUser(mail,password);
+        user.setEmail(mail);
+        user.seen();
+        Task<Void> task = user.signUpInBackground();
+
+        try {
+            task.waitForCompletion();
+        } catch (InterruptedException e) {
+            return new SpochtUser();
+        }
+        if(!task.isFaulted())
+        {
+            return user;
+        }
+        else {
+            return new SpochtUser();
+        }
+    }
+    public void logout()
+    {
+        Task<Void> task = ParseUser.logOutInBackground();
+        try
+        {
+            task.waitForCompletion();
+        }
+        catch(InterruptedException e)
+        {
+            //todo: crash report?
+        }
     }
 
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
@@ -110,4 +155,15 @@ public class DataManager {
         EventMonitor eventMonitor = new EventMonitor(context);
     }
 
+    private static class DataManagerLock{
+
+        boolean locked = false;
+
+        public boolean isLocked(){
+            return locked == true;
+        }
+        public void lock(){
+            locked = true;
+        }
+    }
 }

@@ -23,8 +23,11 @@ public class MainActivity extends FragmentActivity {
         }
 
         setContext();
+        //"Let there be light", spoke god... but he meant
+        //"Let there be a DataManager".
         DataManager.getInstance();
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void setContext () {
