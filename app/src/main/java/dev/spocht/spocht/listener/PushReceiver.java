@@ -2,6 +2,7 @@ package dev.spocht.spocht.listener;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.parse.ParseBroadcastReceiver;
 
@@ -15,7 +16,7 @@ public class PushReceiver extends ParseBroadcastReceiver {
     private static final String TAG = "PushReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println("I received some stuff... " + intent.getDataString() + "..." + intent.toString());
+        Log.d("spocht.push","I received some stuff... " + intent.toString());
         if(intent.hasExtra("com.parse.Data")) {
             try {
                 JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
@@ -25,7 +26,7 @@ public class PushReceiver extends ParseBroadcastReceiver {
                 }
 
             } catch (JSONException e) {
-                System.out.println("JSONException: " + e.getMessage());
+                Log.e("spocht.push","JSONException",e);
             }
         }
     }

@@ -24,18 +24,10 @@ import dev.spocht.spocht.monitor.EventMonitor;
  * Created by edm on 11.08.15.
  */
 public class DataManager {
-
     private static volatile DataManager instance = null;
-    private final static DataManagerLock lock = new DataManagerLock();
-    private static volatile boolean initializing = false;
-
     private static Context context;
 
-
-
     private DataManager() {
-
-
         if (context == null) {
             throw new Error("Oops! Context not set. Please set it first by injectContext");
         }
@@ -80,8 +72,6 @@ public class DataManager {
     //https://en.wikipedia.org/wiki/Singleton_pattern
 
     public synchronized static DataManager getInstance(){
-
-
         //double checked locking... still leads to
         //Parse.enbleLocalDatastore-called-twice-Exceptions
         //when DataManager.geInstance is called in CTOR of DataManager,
@@ -154,8 +144,7 @@ public class DataManager {
                 if (e == null) {
                     callback.operate(object);
                 } else {
-                    System.out.println("failed to load items:: " + e.getMessage());
-                    // something went wrong
+                    Log.e("spocht.dataManager","Failed to load items:",e);
                 }
             }
         });
@@ -178,15 +167,14 @@ public class DataManager {
                 }
                 else
                 {
-                    System.out.println("failed to load items:: "+e.getMessage());
-                    // something went wrong
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
                 }
             }
         });
     }
 
     public static void injectContext(Context ctx) {
-        System.out.println("Injecting Context: " + ctx);
+        Log.d("spocht.datamanager","Injecting Context: " + ctx);
         context = ctx;
     }
 
@@ -197,17 +185,5 @@ public class DataManager {
 
     private void registerMonitors(){
         EventMonitor eventMonitor = new EventMonitor(context);
-    }
-
-    private static class DataManagerLock{
-
-        boolean locked = false;
-
-        public boolean isLocked(){
-            return locked == true;
-        }
-        public void lock(){
-            locked = true;
-        }
     }
 }
