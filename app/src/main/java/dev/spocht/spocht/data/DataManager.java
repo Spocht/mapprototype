@@ -154,6 +154,8 @@ public class DataManager {
         query.whereWithinKilometers("location",location,distance);
         query.orderByAscending("location");
         query.setLimit(10); //todo: magic number
+        query.include("sport");
+        query.include("events");
         query.findInBackground(new FindCallback<Facility>() {
             @Override
             public void done(List<Facility> list, ParseException e) {
