@@ -1,5 +1,6 @@
 package dev.spocht.spocht.listener;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,25 +15,30 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import dev.spocht.spocht.callbacks.LocationCallback;
 
 /**
  * Created by edm on 17.08.15.
  */
-public class MyLocationListener implements
+public class MyLocationListener extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private static List<LocationCallback> locationCallbacks = new ArrayList<>();
+    private static List<CallbacksAndTheirUiBehaviour> locationCallbacks = new ArrayList<>();
     private Location lastLocation;
     private Context ctx;
 
-    public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb) {
+
+    public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb, boolean um) {
         this.ctx = ctx;
-        locationCallbacks.add(cb);
+        CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);
+        locationCallbacks.add(callback);
         buildGoogleApiClient();
     }
 
@@ -86,14 +92,51 @@ public class MyLocationListener implements
     @Override
     public void onLocationChanged(Location location) {
         lastLocation = location;
-        for (LocationCallback lc: locationCallbacks) {
-            lc.operate(location);
+
+        final Location loc = location;
+
+        for (final CallbacksAndTheirUiBehaviour cbb: locationCallbacks) {
+            if (!cbb.uiManipulating) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Not ui manipulating");
+                        cbb.lc.operate(loc);
+                    }
+                }).start();
+
+            } else {
+                Timer t = new Timer();
+
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("Running manipulation");
+                                cbb.lc.operate(loc);
+                            }
+                        });
+                    }
+                }, new Date());
+            }
+
         }
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    private static class CallbacksAndTheirUiBehaviour{
+        LocationCallback lc;
+        boolean uiManipulating;
+        public CallbacksAndTheirUiBehaviour(LocationCallback lc, boolean um){
+            this.lc = lc;
+            this.uiManipulating = um;
+        }
     }
 
 

@@ -129,7 +129,7 @@ public class MapsActivity extends FragmentActivity
         //buildGoogleApiClient();
 
         MapsActivity.context = getApplicationContext();
-        myLocationListener = new MyLocationListener(context, locationCallback);
+        myLocationListener = new MyLocationListener(context, locationCallback, true);
         setContentView(R.layout.activity_maps);
 
 

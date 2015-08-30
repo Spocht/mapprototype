@@ -113,7 +113,7 @@ public class MapsActivity extends AppCompatActivity
         buildGoogleApiClient();
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
-        myLocationListener = new MyLocationListener(context, locationCallback);
+        myLocationListener = new MyLocationListener(context, locationCallback, true);
 
         //SPOCHT-13:
         //setup() had a method to DataManager.getInstance that

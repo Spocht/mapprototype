@@ -70,7 +70,7 @@ public class DatenSchleuder {
                 return null;
             }
         };
-        myLocationListener = new MyLocationListener(ctx,locationCallback);
+        myLocationListener = new MyLocationListener(ctx,locationCallback, false);
     }
 
 
