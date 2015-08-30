@@ -67,6 +67,10 @@ public class DatenSchleuder {
                 {
                     throwInitialData();
                 }
+                else if((l.getLatitude() == 20)&&(l.getLongitude() == 20))
+                {
+                    throwHistorie();
+                }
                 return null;
             }
         };
@@ -143,6 +147,7 @@ public class DatenSchleuder {
         Participation participation = new Participation(user, outcome);
         participation.persist();
         event.setParticipation(participation);
+        event.setState("orange");
     }
     private class ItemHistory{
         public String name;
