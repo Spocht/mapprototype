@@ -104,10 +104,8 @@ public class MyLocationListener extends Activity implements
                         cbb.lc.operate(loc);
                     }
                 }).start();
-
             } else {
                 Timer t = new Timer();
-
                 t.schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -121,7 +119,6 @@ public class MyLocationListener extends Activity implements
                     }
                 }, new Date());
             }
-
         }
     }
 
