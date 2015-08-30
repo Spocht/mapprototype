@@ -178,12 +178,12 @@ public class Event extends ParseData {
                     facility = this.getParseObject("facility").fetchIfNeeded();
                 } catch (com.parse.ParseException e) {
                     //todo log?!
-                    facility = new Facility("unknown");
+                    facility = new Facility();
                 }
             }
             else
             {
-                facility = new Facility("unknown");
+                facility = new Facility();
             }
         }
         return(facility);
