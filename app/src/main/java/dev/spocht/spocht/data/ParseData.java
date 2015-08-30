@@ -9,7 +9,6 @@ import com.parse.ParseObject;
  */
 @ParseClassName("ParseData")
 public abstract class ParseData extends ParseObject {
-
     public void persist() {
         try {
             this.save();

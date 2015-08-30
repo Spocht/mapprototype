@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Created by edm on 11.08.15.
  */
+@ParseClassName("Event")
 public class Event extends ParseData {
 
 //    private enum EventState
@@ -115,13 +116,17 @@ public class Event extends ParseData {
         List<Participation> participations = getList("participants");
         if(null == participations)
         {
-            try {
-                participations = this.getParseObject("participants").fetchIfNeeded();
+            if(this.has("participants")) {
+                try {
+                    participations = this.getParseObject("participation").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    participations = new ArrayList<Participation>();
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
-                participations= new ArrayList<Participation>();
+                participations = new ArrayList<Participation>();
             }
         }
         return(participations);
@@ -155,12 +160,16 @@ public class Event extends ParseData {
         Facility facility = (Facility)get("facility");
         if(null == facility)
         {
-            try {
-                facility = this.getParseObject("facility").fetchIfNeeded();
+            if(this.has("facility")) {
+                try {
+                    facility = this.getParseObject("facility").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    facility = new Facility("unknown");
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
                 facility = new Facility("unknown");
             }
         }
@@ -220,7 +229,6 @@ public class Event extends ParseData {
     {
 
     }
-
 
 
 //    public void setGame(Game game)

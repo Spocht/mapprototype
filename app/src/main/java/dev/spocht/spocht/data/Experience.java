@@ -68,7 +68,7 @@ public class Experience extends ParseData {
         setXP(xpNew);
         if(xpNew > xpForNextLevel())
         {
-            setLevel(level()+1);
+            setLevel(level() + 1);
         }
     }
     public void setSport(final Sport sport)
@@ -94,15 +94,20 @@ public class Experience extends ParseData {
         Sport sport = (Sport)get("sport");
         if(null == sport)
         {
-            try {
-                sport = this.getParseObject("sport").fetchIfNeeded();
+            if(this.has("sport")) {
+                try {
+                    sport = this.getParseObject("sport").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    sport = new Sport("unknown", 0);
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
-                sport = new Sport("unknown",0);
+                sport = new Sport("unknown", 0);
             }
         }
         return(sport);
     }
+
 }

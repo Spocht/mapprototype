@@ -150,7 +150,7 @@ public class MapsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_stats:
-                DatenSchleuder.getInstance().throwInitialData();
+                DatenSchleuder.getInstance().throwHistorie();
                 return false;
             case R.id.menu_settings:
                 return false;

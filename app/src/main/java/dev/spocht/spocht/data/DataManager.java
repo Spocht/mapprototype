@@ -1,6 +1,7 @@
 package dev.spocht.spocht.data;
 
 import android.content.Context;
+import android.provider.Telephony;
 
 import com.parse.GetCallback;
 import com.parse.Parse;
@@ -41,6 +42,7 @@ public class DataManager {
         ParseObject.registerSubclass(Experience.class);
         ParseObject.registerSubclass(Image.class);
         ParseObject.registerSubclass(Participation.class);
+        ParseObject.registerSubclass(Event.class);
         ParseObject.registerSubclass(EventSingle.class);
         ParseObject.registerSubclass(EventTournament.class);
         ParseObject.registerSubclass(EventToDeath.class);
@@ -51,6 +53,9 @@ public class DataManager {
                 getContext().getString(R.string.parse_application_id),
                 getContext().getString(R.string.parse_client_key)
         );
+
+
+
 
         registerMonitors();
 

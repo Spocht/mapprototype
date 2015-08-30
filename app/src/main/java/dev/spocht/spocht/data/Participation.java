@@ -21,11 +21,11 @@ public class Participation extends ParseData {
     }
     public void setOutcome(final Outcome result)
     {
-        put("outcome", result);
+        put("outcome", result.toString());
     }
     public Outcome outcome()
     {
-        return ((Outcome)get("outcome"));
+        return (Outcome.valueOf(getString("outcome")));
     }
 
     public void setUser(final SpochtUser user)
@@ -51,12 +51,16 @@ public class Participation extends ParseData {
         SpochtUser user = (SpochtUser)get("user");
         if(null == user)
         {
-            try {
-                user = this.getParseObject("user").fetchIfNeeded();
+            if(this.has("user")) {
+                try {
+                    user = this.getParseObject("user").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    user = new SpochtUser();
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
                 user = new SpochtUser();
             }
         }

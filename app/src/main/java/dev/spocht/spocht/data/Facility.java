@@ -23,11 +23,11 @@ public class Facility extends ParseData {
     }
     public Facility(final String name)
     {
-        this(name,defaultPoint,0);
+        this(name, defaultPoint, 0);
     }
     public Facility(final String name, final GeoPoint location, final int numberOfFields)
     {
-        this(name,location,numberOfFields,new Sport("unknown",0));
+        this(name, location, numberOfFields, new Sport("unknown", 0));
     }
     public Facility(final String name, final GeoPoint location, final int numberOfFields, final Sport sport)
     {
@@ -141,12 +141,16 @@ public class Facility extends ParseData {
         Image pic = (Image)get("image");
         if(null == pic)
         {
-            try {
-                pic = this.getParseObject("image").fetchIfNeeded();
+            if(this.has("image")) {
+                try {
+                    pic = this.getParseObject("image").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    pic = new Image();
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
                 pic = new Image();
             }
         }
@@ -175,13 +179,17 @@ public class Facility extends ParseData {
         Sport sport = (Sport)get("sport");
         if(null == sport)
         {
-            try {
-                sport = this.getParseObject("sport").fetchIfNeeded();
+            if(this.has("sport")) {
+                try {
+                    sport = this.getParseObject("sport").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    sport = new Sport("unknown", 0);
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
-                sport = new Sport("unknown",0);
+                sport = new Sport("unknown", 0);
             }
         }
         return(sport);
@@ -209,13 +217,17 @@ public class Facility extends ParseData {
         List<Event> events = getList("events");
         if(null == events)
         {
-            try {
-                events = this.getParseObject("events").fetchIfNeeded();
+            if(this.has("events")) {
+                try {
+                    events = this.getParseObject("event").fetchIfNeeded();
+                } catch (com.parse.ParseException e) {
+                    //todo log?!
+                    events = new ArrayList<Event>();
+                }
             }
-            catch (com.parse.ParseException e)
+            else
             {
-                //todo log?!
-                events= new ArrayList<Event>();
+                events = new ArrayList<Event>();
             }
         }
         return(events);

@@ -62,11 +62,13 @@ public class Image extends ParseData {
     {
         ParseFile imgFile = (ParseFile)get("picture");
         Bitmap pic=null;
-        try {
-            byte[] data = imgFile.getData();
-            pic = BitmapFactory.decodeByteArray(data, 0, data.length);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if(null != imgFile) {
+            try {
+                byte[] data = imgFile.getData();
+                pic = BitmapFactory.decodeByteArray(data, 0, data.length);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if(null == pic)

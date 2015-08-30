@@ -143,9 +143,31 @@ public class DatenSchleuder {
         Participation participation = new Participation(user, outcome);
         participation.persist();
         event.setParticipation(participation);
+        event.persist();
+    }
+    private class ItemHistory{
+        public String name;
+        public Facility facility;
+        public SpochtUser user;
+        public Date date;
+        public ItemHistory(final String name, final Facility facility, final SpochtUser user, final Date date)
+        {
+            this.name=name;
+            this.facility = facility;
+            this.user = user;
+            this.date = date;
+        }
     }
     public void throwHistorie()
     {
-
+        ArrayList<ItemHistory> lstHist=new ArrayList<>(5);
+        lstHist.add(new ItemHistory("Crack the Table (1)",lstFacility.get(0),lstUser.get(0),new Date()));
+        lstHist.add(new ItemHistory("Crack the Table (2)",lstFacility.get(1),lstUser.get(1),new Date()));
+        lstHist.add(new ItemHistory("Crack the Table (3)",lstFacility.get(2),lstUser.get(2),new Date()));
+        lstHist.add(new ItemHistory("Crack the Table (4)",lstFacility.get(3),lstUser.get(3),new Date()));
+        for(ItemHistory i:lstHist)
+        {
+            createHistorie(i.name,i.facility,i.user,i.date,Outcome.GAVEUP);
+        }
     }
 }
