@@ -1,6 +1,7 @@
 package dev.spocht.spocht.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -8,8 +9,10 @@ import com.parse.Parse;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
@@ -56,6 +59,16 @@ public class DataManager {
                 getContext().getString(R.string.parse_client_key)
         );
 
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
 
 
 
@@ -151,7 +164,7 @@ public class DataManager {
     public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
-        query.whereWithinKilometers("location",location,distance);
+        query.whereWithinKilometers("location", location, distance);
         query.orderByAscending("location");
         query.setLimit(10); //todo: magic number
         query.include("sport");
