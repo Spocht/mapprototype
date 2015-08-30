@@ -1,8 +1,8 @@
 package dev.spocht.spocht.data;
 
 import android.content.Context;
-import android.provider.Telephony;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseAnonymousUtils;
@@ -10,6 +10,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.List;
 
 import bolts.Task;
 import dev.spocht.spocht.R;
@@ -89,7 +91,7 @@ public class DataManager {
     }
     public Boolean login(String mail, String password)
     {
-        Task<ParseUser> user=ParseUser.logInInBackground(mail,password);
+        Task<ParseUser> user=ParseUser.logInInBackground(mail, password);
 
         try {
             user.waitForCompletion();
@@ -139,6 +141,28 @@ public class DataManager {
                 if (e == null) {
                     callback.operate(object);
                 } else {
+                    System.out.println("failed to load items:: " + e.getMessage());
+                    // something went wrong
+                }
+            }
+        });
+    }
+
+    public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    {
+        ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+        query.whereWithinKilometers("location",location,distance);
+        query.orderByAscending("location");
+        query.setLimit(10); //todo: magic number
+        query.findInBackground(new FindCallback<Facility>() {
+            @Override
+            public void done(List<Facility> list, ParseException e) {
+                if(e == null)
+                {
+                    callback.operate(list);
+                }
+                else
+                {
                     System.out.println("failed to load items:: "+e.getMessage());
                     // something went wrong
                 }
