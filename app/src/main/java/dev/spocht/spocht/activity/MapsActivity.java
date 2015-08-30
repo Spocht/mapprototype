@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -290,6 +291,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
+        Toast.makeText(getAppContext(),mapFacility.get(marker).comment(),Toast.LENGTH_SHORT);
 
         return true;
     }
