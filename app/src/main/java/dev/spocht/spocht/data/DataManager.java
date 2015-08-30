@@ -19,11 +19,15 @@ import dev.spocht.spocht.monitor.EventMonitor;
  */
 public class DataManager {
 
-    private static DataManager instance = null;
+    private static volatile DataManager instance = null;
+    private final static DataManagerLock lock = new DataManagerLock();
+    private static volatile boolean initializing = false;
 
     private static Context context;
 
-    private DataManager(){
+
+
+    private DataManager() {
 
 
         if (context == null) {
@@ -53,10 +57,20 @@ public class DataManager {
     }
 
     //get instance needs more protection than just synchronized.
+    //https://en.wikipedia.org/wiki/Singleton_pattern
 
     public synchronized static DataManager getInstance(){
+
+
+        //double checked locking... still leads to
+        //Parse.enbleLocalDatastore-called-twice-Exceptions
+        //when DataManager.geInstance is called in CTOR of DataManager,
         if (instance == null) {
-            instance = new DataManager();
+            synchronized (DataManager.class) {
+                if (instance == null) {
+                    instance = new DataManager();
+                }
+            }
         }
         return instance;
     }
@@ -141,4 +155,15 @@ public class DataManager {
         EventMonitor eventMonitor = new EventMonitor(context);
     }
 
+    private static class DataManagerLock{
+
+        boolean locked = false;
+
+        public boolean isLocked(){
+            return locked == true;
+        }
+        public void lock(){
+            locked = true;
+        }
+    }
 }

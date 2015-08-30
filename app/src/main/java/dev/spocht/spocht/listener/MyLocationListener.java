@@ -13,6 +13,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.spocht.spocht.callbacks.LocationCallback;
 
 /**
@@ -23,13 +26,13 @@ public class MyLocationListener implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private LocationCallback cb;
+    private static List<LocationCallback> locationCallbacks = new ArrayList<>();
     private Location lastLocation;
     private Context ctx;
 
     public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb) {
         this.ctx = ctx;
-        this.cb = cb;
+        locationCallbacks.add(cb);
         buildGoogleApiClient();
     }
 
@@ -82,20 +85,19 @@ public class MyLocationListener implements
 
     @Override
     public void onLocationChanged(Location location) {
-            lastLocation = location;
-            cb.operate(location);
-
-            //LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            //tv.setText(String.valueOf(lastLocation.getLatitude()));
-
+        lastLocation = location;
+        for (LocationCallback lc: locationCallbacks) {
+            lc.operate(location);
+        }
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
+
+
+
 
 
 }

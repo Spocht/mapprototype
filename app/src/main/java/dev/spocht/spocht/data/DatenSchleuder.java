@@ -1,5 +1,6 @@
 package dev.spocht.spocht.data;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 
@@ -56,7 +57,8 @@ public class DatenSchleuder {
         return instance;
     }
 
-    public void setup()
+    //SPOCHT-13
+    public void setup(Context ctx)
     {
         LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
             @Override
@@ -68,7 +70,7 @@ public class DatenSchleuder {
                 return null;
             }
         };
-        myLocationListener = new MyLocationListener(Application.getContext(),locationCallback);
+        myLocationListener = new MyLocationListener(ctx,locationCallback);
     }
 
 
@@ -79,7 +81,6 @@ public class DatenSchleuder {
         locations.add(new Lorrainestrasse());
         locations.add(new Steckweg());
         locations.add(new Spitalacker());
-
         ArrayList<ItemUser> users = new ArrayList<>(10);
         users.add(new ItemUser("lugi@lolwut.org","honigimkopf"));
         users.add(new ItemUser("edm@streetparade.ch","atemlos"));

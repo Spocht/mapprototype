@@ -52,8 +52,8 @@ public class MapsActivity extends AppCompatActivity
         public Void operate(Location l) {
 
             LatLng latLng = new LatLng(
-                    myLocationListener.getLastLocation().getLatitude(),
-                    myLocationListener.getLastLocation().getLongitude());
+                    l.getLatitude(),
+                    l.getLongitude());
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             return null;
@@ -101,6 +101,9 @@ public class MapsActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         googleApiClient.connect();
+        googleApiClient.connect();
+        googleApiClient.connect();
+
     }
 
     @Override
@@ -112,7 +115,12 @@ public class MapsActivity extends AppCompatActivity
         MapsActivity.context = getApplicationContext();
         myLocationListener = new MyLocationListener(context, locationCallback);
 
-// todo: this killes the APP::       DatenSchleuder.getInstance().setup();
+        //SPOCHT-13:
+        //setup() had a method to DataManager.getInstance that
+        //was called there. that leaded to unfortunate
+        //Parse.enableLocalDatastore-called-twice-Exceptions.
+        //now the context is given as a param.
+        DatenSchleuder.getInstance().setup(DataManager.getInstance().getContext());
 
         setUpMapIfNeeded();
         setUpActionBar();
