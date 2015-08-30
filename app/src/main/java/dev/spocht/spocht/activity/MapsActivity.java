@@ -1,6 +1,7 @@
 package dev.spocht.spocht.activity;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,12 +26,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
+import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.GeoPoint;
+import dev.spocht.spocht.data.InfoRetriever;
 import dev.spocht.spocht.listener.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
@@ -49,17 +54,23 @@ public class MapsActivity extends AppCompatActivity
     MyLocationListener myLocationListener;
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
-        public Void operate(Location l) {
+        public Void operate(Location location) {
 
             LatLng latLng = new LatLng(
-                    l.getLatitude(),
-                    l.getLongitude());
+                    location.getLatitude(),
+                    location.getLongitude());
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+            updateMarkers(new GeoPoint(location));
+
             return null;
         }
 
     };
+
+    private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
+    private HashMap<Facility,Marker> mapFacilityRev=new HashMap<>(20);
 
     private static android.content.Context context;
 
@@ -69,6 +80,7 @@ public class MapsActivity extends AppCompatActivity
     private Location lastLocation;
     private LocationRequest locationRequest;
     private ArrayList<Stub> locationList;
+
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -241,19 +253,30 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void loadMarkers(View view) {
-        for (Stub loc: locationList) {
-            mMap.addMarker(new MarkerOptions()
-                            .position(loc.getLatLng())
-                            .title(loc.getName())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
-                            .anchor(0, 1)
-            );
-            System.out.println(loc.getClass());
-        }
-//        mMap.addMarker(new MarkerOptions().position(new Lorrainepark().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Lorrainestrasse().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Spitalacker().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Steckweg().getLatLng()));
+        updateMarkers(myLocationListener.getLastLocationGP());
+    }
+
+    private void updateMarkers(final GeoPoint location)
+    {
+        DataManager.getInstance().findFacilities(location, 0.2, new InfoRetriever<List<Facility>>() {
+            @Override
+            public void operate(List<Facility> facilities) {
+                for(Facility f:facilities)
+                {
+                    if(!mapFacilityRev.containsKey(f)) {
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                        .position(f.location().toLatLng())
+                                        .title(f.name())
+                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
+                                        .anchor(0, 1)
+                        );
+                        mapFacility.put(marker, f);
+                        mapFacilityRev.put(f, marker);
+                    }
+
+                }
+            }
+        });
     }
 
     private void loadLocations() {
