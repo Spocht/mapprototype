@@ -1,6 +1,7 @@
 package dev.spocht.spocht.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -8,8 +9,10 @@ import com.parse.Parse;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
@@ -21,18 +24,10 @@ import dev.spocht.spocht.monitor.EventMonitor;
  * Created by edm on 11.08.15.
  */
 public class DataManager {
-
     private static volatile DataManager instance = null;
-    private final static DataManagerLock lock = new DataManagerLock();
-    private static volatile boolean initializing = false;
-
     private static Context context;
 
-
-
     private DataManager() {
-
-
         if (context == null) {
             throw new Error("Oops! Context not set. Please set it first by injectContext");
         }
@@ -56,6 +51,16 @@ public class DataManager {
                 getContext().getString(R.string.parse_client_key)
         );
 
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
 
 
 
@@ -67,8 +72,6 @@ public class DataManager {
     //https://en.wikipedia.org/wiki/Singleton_pattern
 
     public synchronized static DataManager getInstance(){
-
-
         //double checked locking... still leads to
         //Parse.enbleLocalDatastore-called-twice-Exceptions
         //when DataManager.geInstance is called in CTOR of DataManager,
@@ -141,8 +144,7 @@ public class DataManager {
                 if (e == null) {
                     callback.operate(object);
                 } else {
-                    System.out.println("failed to load items:: " + e.getMessage());
-                    // something went wrong
+                    Log.e("spocht.dataManager","Failed to load items:",e);
                 }
             }
         });
@@ -151,9 +153,11 @@ public class DataManager {
     public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
-        query.whereWithinKilometers("location",location,distance);
+        query.whereWithinKilometers("location", location, distance);
         query.orderByAscending("location");
         query.setLimit(10); //todo: magic number
+        query.include("sport");
+        query.include("events");
         query.findInBackground(new FindCallback<Facility>() {
             @Override
             public void done(List<Facility> list, ParseException e) {
@@ -163,15 +167,14 @@ public class DataManager {
                 }
                 else
                 {
-                    System.out.println("failed to load items:: "+e.getMessage());
-                    // something went wrong
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
                 }
             }
         });
     }
 
     public static void injectContext(Context ctx) {
-        System.out.println("Injecting Context: " + ctx);
+        Log.d("spocht.datamanager","Injecting Context: " + ctx);
         context = ctx;
     }
 
@@ -182,17 +185,5 @@ public class DataManager {
 
     private void registerMonitors(){
         EventMonitor eventMonitor = new EventMonitor(context);
-    }
-
-    private static class DataManagerLock{
-
-        boolean locked = false;
-
-        public boolean isLocked(){
-            return locked == true;
-        }
-        public void lock(){
-            locked = true;
-        }
     }
 }
