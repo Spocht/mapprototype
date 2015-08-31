@@ -9,8 +9,8 @@ Parse.Cloud.define("hello", function(request, response) {
 var state = require("cloud/state.js");
 var stateInstance = new state;
 
-var stateOpenOrange = require("cloud/stateOpenOrange.js");
-var stateOpenOrangeInstance = new stateOpenOrange;
+//var stateOpenOrange = require("cloud/stateOpenOrange.js");
+//var stateOpenOrangeInstance = new stateOpenOrange;
 
 
 
@@ -30,38 +30,76 @@ Parse.Cloud.define("spochtRokks", function(request, response) {
 });
 
 
-//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}}'  https://api.parse.com/1/functions/checkin
+
+
+
+//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkin
 
 Parse.Cloud.define("checkin", function(request, response) {
-	var query = new Parse.Query("Event");
-	//response.success(request.params.event.id);
-	query.get(request.params.event.id, {
+	var eventQuery = new Parse.Query("Event");
+	eventQuery.equalTo("objectId", request.params.event.id).include("associatedFacility.sport");
+
+
+	eventQuery.first({
 		success : function(event) {
-			response.success(event);
+			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
+			//http://iswwwup.com/t/4e7c1e42b8b3/javascript-parse-com-js-update-row-with-pointer-column.html
+			var facility = new Parse.Object("Facility");
+			facility.id = event.get('associatedFacility').id;
+
+			var eventState = stateInstance.getStateOfEvent(thatEventAndRequest);
+			stateInstance.setState(eventState);
+
+
+//			facility.save(null, {
+//				success: function(fac) {
+//					response.success("saved");
+//				},
+//				error: function(fac, error) {
+//					response.error("not saved");
+//
+//				}
+//			});
+			//response.success(facility.get('sport').get('minPlayers'));
+			//response.success(event.get('associatedFacility').id);
+			//response.success(request.params.event.id);
+			//response.success(event.get("associatedFacility").get("name"));
+			response.success(stateInstance.checkin(thatEventAndRequest));
 		},
 		error : function(error) {
 			response.error(error);
 		}
 	});
-
 });
 
 //Log out a user from an ongoing event in case they get too far away.
 //Test curl:
-//curl -X POST  -H "X-Parse-Application-Id: $XPARSEAPPLICATIONID"  -H "X-Parse-REST-API-Key: $RESTAPIKEY"  -H "Content-Type: application/json"  -d '{"firstname":"Strumpen"}'  https://api.parse.com/1/functions/checkout
+//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkout
 
 Parse.Cloud.define("checkout", function(request, response) {
-	var query = new Parse.Query("");
+	var eventQuery = new Parse.Query("Event");
+	eventQuery.equalTo("objectId", request.params.event.id).include("associatedFacility.sport");
+	eventQuery.first({
+		success: function(event) {
+			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
+        	var eventState = stateInstance.getStateOfEvent(thatEventAndRequest);
+        	stateInstance.setState(eventState);
+        	//if participants is empty, then this call hangs.
+        	response.success(stateInstance.checkout(thatEventAndRequest));
+		}, error: function(error) {
+			response.error(error);
+		}
+	});
 
-	var retVal = stateInstance.checkout(this);
+
+
+
+
+	//how to manuall overwrite a prototype-function
 	stateInstance.checkout = function(context){
 		return "yeah";
 	}
-	//state.checkin(this);
-	retVal += stateInstance.checkout(this);
-	stateInstance.checkin = stateInstance.getOpeningState();
-	stateInstance.setState(stateOpenOrangeInstance);
-	retVal = retVal+stateInstance.checkout(this);
-	response.success(retVal);
+
+
 
 });
