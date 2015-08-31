@@ -91,10 +91,10 @@
                 <!--
                   IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name.
                 -->
-                <category android:name="com.parse.napfkuchen.napfkuchen_login" />
+                <category android:name="dev.spocht.spocht" />
             </intent-filter>
         </receiver>
-        <receiver android:name="listener.PushReceiver" android:exported="false">
+        <receiver android:name="dev.spocht.spocht.listener.PushReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
                 <action android:name="com.parse.push.intent.DELETE" />
