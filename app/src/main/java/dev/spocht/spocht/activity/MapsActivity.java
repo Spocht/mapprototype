@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -264,6 +265,7 @@ public class MapsActivity extends AppCompatActivity
             public void operate(List<Facility> facilities) {
                 for(Facility f:facilities)
                 {
+                    Log.d("spocht.maps","Got facility: "+f.name());
                     if(!mapFacilityRev.containsKey(f)) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
@@ -273,8 +275,8 @@ public class MapsActivity extends AppCompatActivity
                         );
                         mapFacility.put(marker, f);
                         mapFacilityRev.put(f, marker);
+                        Log.d("spocht.maps","stored facility: "+f.name());
                     }
-
                 }
             }
         });
