@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -231,15 +232,8 @@ public class MapsActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
 
-        Fragment df = new DetailFragment();
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-
-        TextView tv = (TextView) findViewById(R.id.details_fragment_title);
+        TextView tv = (TextView) findViewById(R.id.fragment_detail_title);
         tv.setText(marker.getTitle());
-
-        ft.replace(R.id.details_fragment, df);
-        ft.commit();
 
         return true;
     }

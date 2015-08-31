@@ -1,9 +1,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="dev.spocht.spocht.fragment.DetailFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    tools:context="dev.spocht.spocht.fragment.DetailFragment">
 
     <TextView
-        android:id="@+id/details_fragment_title"
+        android:id="@+id/fragment_detail_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

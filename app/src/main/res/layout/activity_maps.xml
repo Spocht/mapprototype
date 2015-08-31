@@ -21,7 +21,8 @@
         android:id="@+id/details_fragment"
         android:layout_toStartOf="@+id/refreshButton"
         android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/refreshButton" />
+        android:layout_alignTop="@+id/refreshButton"
+        android:layout_alignParentBottom="false" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="56dp"
@@ -35,4 +36,11 @@
         android:onClick="loadMarkers" />
 
 
+</RelativeLayout>
+
+<RelativeLayout
+android:id="@+id/hidden_panel"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_below="@id/main_screen">
 </RelativeLayout>
