@@ -1,11 +1,8 @@
 package dev.spocht.spocht.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -14,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,6 +51,8 @@ public class MapsActivity extends AppCompatActivity
     private LocationRequest locationRequest;
     private ArrayList<Stub> locationList;
 
+    DetailFragment detailFragment;
+
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
     }
@@ -88,7 +86,11 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("activity/MapsActivityOnCreate");
+
+        detailFragment = new DetailFragment();
+
         super.onCreate(savedInstanceState);
+
         buildGoogleApiClient();
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
@@ -230,19 +232,16 @@ public class MapsActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
 
-        Fragment frag = new DetailFragment();
-
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_in_bottom, R.animator.slide_out_bottom);
-
-        ft.replace(R.id.details_fragment, frag);
-        ft.commit();
-
-
-//        TextView tv = (TextView) findViewById(R.id.fragment_detail_title);
-//        tv.setText(marker.getTitle());
+        animateFragment();
 
         return true;
+    }
+
+    private void animateFragment() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.animator.slide_fragment_in, R.animator.slide_fragment_out);
+        ft.add(R.id.move_to_back_container, detailFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }

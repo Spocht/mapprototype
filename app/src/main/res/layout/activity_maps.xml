@@ -25,17 +25,4 @@
         android:layout_marginBottom="16dp"
         android:onClick="loadMarkers"
         android:layout_marginRight="16dp" />
-
-
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:name="dev.spocht.spocht.fragment.DetailFragment"
-        android:id="@+id/details_fragment"
-        android:layout_toStartOf="@+id/refreshButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/refreshButton"
-        android:layout_alignParentBottom="false" />
-
-
 </RelativeLayout>
