@@ -1,14 +1,8 @@
 
-// Use Parse.Cloud.define to define as many cloud functions as you want.
-// For example:
-Parse.Cloud.define("hello", function(request, response) {
-  response.success("Hello world!");
-});
-
 
 var state = require("cloud/state.js");
 var stateInstance = new state;
-
+//---REF
 //var stateOpenOrange = require("cloud/stateOpenOrange.js");
 //var stateOpenOrangeInstance = new stateOpenOrange;
 
@@ -32,25 +26,24 @@ Parse.Cloud.define("spochtRokks", function(request, response) {
 
 
 
-
+//Test curl:
 //curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkin
 
 Parse.Cloud.define("checkin", function(request, response) {
 	var eventQuery = new Parse.Query("Event");
 	eventQuery.equalTo("objectId", request.params.event.id).include("associatedFacility.sport");
-
-
 	eventQuery.first({
 		success : function(event) {
 			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
-			//http://iswwwup.com/t/4e7c1e42b8b3/javascript-parse-com-js-update-row-with-pointer-column.html
-			var facility = new Parse.Object("Facility");
-			facility.id = event.get('associatedFacility').id;
+
+			//http://iswwwup.com/t/4e7c1e42b8b3/javascript-parse-com-js-update-row-with-pointer-column.html --- reference
+			//var facility = new Parse.Object("Facility");
+			//facility.id = event.get('associatedFacility').id;
 
 			var eventState = stateInstance.getStateOfEvent(thatEventAndRequest);
 			stateInstance.setState(eventState);
 
-
+//we might use a save method with callbacks. only an inline --- reference.
 //			facility.save(null, {
 //				success: function(fac) {
 //					response.success("saved");
@@ -60,10 +53,13 @@ Parse.Cloud.define("checkin", function(request, response) {
 //
 //				}
 //			});
+
+			//possible accessors... only here as a --- reference
 			//response.success(facility.get('sport').get('minPlayers'));
 			//response.success(event.get('associatedFacility').id);
 			//response.success(request.params.event.id);
 			//response.success(event.get("associatedFacility").get("name"));
+
 			response.success(stateInstance.checkin(thatEventAndRequest));
 		},
 		error : function(error) {

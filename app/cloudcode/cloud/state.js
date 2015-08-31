@@ -56,44 +56,4 @@ State.prototype.getStateOfEvent = function (state) {
 
 }
 
-
 module.exports = State;
-
-/*module.exports = {
-    initialize: function (){
-        //state = function() {
-        var s = {};
-            s.prototype = {
-                checkin: function(context) {
-                    return "prototype checkin";
-                }
-            },
-            //s.prototype.checkin = function(context){
-//
-  //          };
-
-            s.getOpeningState = function() {
-                return openingState;
-            };
-
-
-            s.setState =  function(state) {
-                this.state = state;
-            }
-        //};
-
-        return {
-            state : s,
-            getOpeningState : s.getOpeningState,
-            checkin : function (){
-                return s.checkin;
-            }
-        };
-    }
-
-    //prototype.checkin: function(context) {
-    //    return "Abstract checkin";
-    //}*
-
-}*/
-
