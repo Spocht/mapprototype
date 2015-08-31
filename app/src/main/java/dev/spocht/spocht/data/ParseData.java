@@ -1,8 +1,11 @@
 package dev.spocht.spocht.data;
 
+import android.util.Log;
+
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 /**
  * Created by mueller8 on 11.08.2015.
@@ -20,19 +23,21 @@ public abstract class ParseData extends ParseObject {
     }
     public void persist() {
         try {
+            this.pin();
             this.save();
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e("spocht.object", "Error while persisting", e);
         }
     }
     public void destroy()
     {
         try
         {
+            this.unpin();
             this.delete();
         }catch(ParseException e)
         {
-            e.printStackTrace();
+            Log.e("spocht.object", "Error while deleting", e);
         }
     }
 }

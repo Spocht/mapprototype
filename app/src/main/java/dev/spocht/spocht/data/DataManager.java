@@ -137,14 +137,13 @@ public class DataManager {
     }
 
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
-
-        ParseQuery<T> query = ParseQuery.getQuery(obj);
-        query.getInBackground(id, new GetCallback<T>() {
-            public void done(T object, ParseException e) {
+        ParseObject.createWithoutData(obj,"id").fetchIfNeededInBackground(new GetCallback<T>() {
+            @Override
+            public void done(T parseObject, ParseException e) {
                 if (e == null) {
-                    callback.operate(object);
+                    callback.operate(parseObject);
                 } else {
-                    Log.e("spocht.dataManager","Failed to load items:",e);
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
                 }
             }
         });
@@ -155,22 +154,42 @@ public class DataManager {
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         query.whereWithinKilometers("location", location, distance);
         query.orderByAscending("location");
-        query.setLimit(10); //todo: magic number
-        query.include("sport");
-        query.include("events");
+//        query.setLimit(10); //todo: magic number
+        query.fromLocalDatastore();
         query.findInBackground(new FindCallback<Facility>() {
             @Override
             public void done(List<Facility> list, ParseException e) {
-                if(e == null)
+                if(null == e)
                 {
-                    callback.operate(list);
+                    if(null != list)
+                    {
+                        callback.operate(list);
+                    }
+                    ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+                    query.whereWithinKilometers("location", location, distance);
+                    query.orderByAscending("location");
+                    query.include("sport");
+                    query.include("events");
+                    query.findInBackground(new FindCallback<Facility>() {
+                        @Override
+                        public void done(List<Facility> list, ParseException e) {
+                            if (e == null) {
+                                Facility.pinAllInBackground(list);
+                                callback.operate(list);
+                            } else {
+                                Log.e("spocht.dataManager", "Error finding facilities:", e);
+                            }
+                        }
+                    });
                 }
                 else
                 {
-                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                    Log.e("spocht.datamanager","Error finding facilities",e);
                 }
             }
         });
+
+
     }
 
     public static void injectContext(Context ctx) {

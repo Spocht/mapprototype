@@ -1,6 +1,7 @@
 package dev.spocht.spocht.data;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.parse.ParseClassName;
 import com.parse.ParseException;
@@ -103,7 +104,7 @@ public class SpochtUser extends ParseUser {
         try {
             save();
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e("spocht.user", "Error while persisting", e);
         }
     }
 
