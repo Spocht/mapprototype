@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -45,8 +44,7 @@ public class MapsActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        GoogleMap.OnMarkerClickListener,
-        DetailFragment.OnFragmentInteractionListener {
+        GoogleMap.OnMarkerClickListener {
 
     private static android.content.Context context;
 
@@ -232,14 +230,19 @@ public class MapsActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
 
-        TextView tv = (TextView) findViewById(R.id.fragment_detail_title);
-        tv.setText(marker.getTitle());
+        Fragment frag = new DetailFragment();
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.animator.slide_in_bottom, R.animator.slide_out_bottom);
+
+        ft.replace(R.id.details_fragment, frag);
+        ft.commit();
+
+
+//        TextView tv = (TextView) findViewById(R.id.fragment_detail_title);
+//        tv.setText(marker.getTitle());
 
         return true;
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }

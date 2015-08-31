@@ -3,7 +3,9 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     tools:context="${relativePackage}.${activityClass}"
-    android:id="@+id/pos">
+    android:id="@+id/pos"
+    android:animateLayoutChanges="true"
+    >
 
     <fragment
         android:id="@+id/map" tools:context=".MapsActivity"
@@ -12,18 +14,8 @@
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
 
-    <fragment
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:name="dev.spocht.spocht.fragment.DetailFragment"
-        android:id="@+id/details_fragment"
-        android:layout_toStartOf="@+id/refreshButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/refreshButton"
-        android:layout_alignParentBottom="false" />
-
     <android.support.design.widget.FloatingActionButton
-        android:layout_width="56dp"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
         android:id="@+id/refreshButton"
         android:src="@drawable/ic_refresh_black_24dp"
@@ -31,7 +23,19 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="16dp"
-        android:onClick="loadMarkers" />
+        android:onClick="loadMarkers"
+        android:layout_marginRight="16dp" />
+
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:name="dev.spocht.spocht.fragment.DetailFragment"
+        android:id="@+id/details_fragment"
+        android:layout_toStartOf="@+id/refreshButton"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/refreshButton"
+        android:layout_alignParentBottom="false" />
 
 
 </RelativeLayout>
