@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
@@ -62,7 +63,7 @@ public class MapsActivity extends AppCompatActivity
                     location.getLatitude(),
                     location.getLongitude());
             //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
 
             updateMarkers(new GeoPoint(location));
 
@@ -72,7 +73,7 @@ public class MapsActivity extends AppCompatActivity
     };
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
-    private HashMap<Facility,Marker> mapFacilityRev=new HashMap<>(20);
+    private HashSet<String>          setFacilities=new HashSet<>(20);
 
     private static android.content.Context context;
 
@@ -266,7 +267,7 @@ public class MapsActivity extends AppCompatActivity
                 for(Facility f:facilities)
                 {
                     Log.d("spocht.maps","Got facility: "+f.name());
-                    if(!mapFacilityRev.containsKey(f)) {
+                    if(!setFacilities.contains(f.getObjectId())) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
@@ -274,7 +275,7 @@ public class MapsActivity extends AppCompatActivity
                                         .anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
-                        mapFacilityRev.put(f, marker);
+                        setFacilities.add(f.getObjectId());
                         Log.d("spocht.maps","stored facility: "+f.name());
                     }
                 }
