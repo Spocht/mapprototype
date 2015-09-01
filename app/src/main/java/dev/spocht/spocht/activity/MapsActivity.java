@@ -1,10 +1,8 @@
 package dev.spocht.spocht.activity;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -43,7 +35,6 @@ import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
-import dev.spocht.spocht.data.Sport;
 import dev.spocht.spocht.listener.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
@@ -76,16 +67,16 @@ public class MapsActivity extends AppCompatActivity
 
     };
 
-    DetailFragment detailFragment;
-    boolean isDetailFragmentVisible = false;
-    boolean isAnimating = false;
+    DetailFragment mDetailFragment;
+    boolean mIsDetailFragmentVisible = false;
+    boolean mIsAnimating = false;
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
     private static android.content.Context context;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    private ArrayList<Stub> locationList;
+    private ArrayList<Stub> mLocationList;
 
 
     public static android.content.Context getAppContext() {
@@ -104,7 +95,7 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("activity/MapsActivityOnCreate");
 
-        detailFragment = new DetailFragment();
+        mDetailFragment = new DetailFragment();
 
         super.onCreate(savedInstanceState);
 
@@ -123,7 +114,6 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
-        loadLocations();
     }
 
     View.OnClickListener mapClickListener = new View.OnClickListener () {
@@ -224,10 +214,9 @@ public class MapsActivity extends AppCompatActivity
         DataManager.getInstance().findFacilities(location, 1.5, new InfoRetriever<List<Facility>>() {
             @Override
             public void operate(List<Facility> facilities) {
-                for(Facility f:facilities)
-                {
-                    Log.d("spocht.maps","Got facility: "+f.name());
-                    if(!setFacilities.contains(f.getObjectId())) {
+                for (Facility f : facilities) {
+                    Log.d("spocht.maps", "Got facility: " + f.name());
+                    if (!setFacilities.contains(f.getObjectId())) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
@@ -237,51 +226,51 @@ public class MapsActivity extends AppCompatActivity
                         );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
-                        Log.d("spocht.maps","stored facility: "+f.name());
+                        Log.d("spocht.maps", "stored facility: " + f.name());
                     }
                 }
             }
         });
     }
 
-    //todo: remove
-    private void loadLocations() {
-        locationList = new ArrayList<Stub>();
-        locationList.add(new Lorrainepark());
-        locationList.add(new Steckweg());
-        locationList.add(new Spitalacker());
-        locationList.add(new Lorrainestrasse());
-    }
-
     @Override
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
+        System.out.println(mIsDetailFragmentVisible);
 
-        animateFragment(true);
+        mDetailFragment.setFacility(mapFacility.get(marker));
 
+        // if the fragment is already visible, only refresh contents
+        if (mIsDetailFragmentVisible) {
+            mDetailFragment.refreshContents();
+        } else {
+            // otherwise display it. Contents will then be refreshed via onResume()
+            animateFragment(true);
+        }
 
         return true;
     }
 
     private void animateFragment(boolean visible) {
-        if (isAnimating) {
+        if (mIsAnimating) {
             return;
         }
-        isAnimating = true;
+        mIsAnimating = true;
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         if (visible) {
-            isDetailFragmentVisible = true;
+            mIsDetailFragmentVisible = true;
             ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
 
             Log.d("animateFragment", "slide up");
-            ft.add(R.id.main_content, detailFragment);
+            ft.add(R.id.main_content, mDetailFragment);
             ft.addToBackStack(null);
             ft.commit();
 
         } else {
             Log.d("animanteFragment", "slide down");
+            mIsDetailFragmentVisible = false;
             getFragmentManager().popBackStack();
         }
 
@@ -289,14 +278,13 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onBackStackChanged() {
-        if (isDetailFragmentVisible) {
-            isDetailFragmentVisible = false;
+        if (mIsDetailFragmentVisible) {
             animateFragment(false);
         }
     }
 
     @Override
     public void onAnimationEnd() {
-        isAnimating = false;
+        mIsAnimating = false;
     }
 }

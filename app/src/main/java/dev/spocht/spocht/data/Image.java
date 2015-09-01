@@ -62,6 +62,11 @@ public class Image extends ParseData {
     }
     public Bitmap picture()
     {
+        try {
+            this.fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         ParseFile imgFile = (ParseFile)get("picture");
         Bitmap pic=null;
         if(null != imgFile) {
