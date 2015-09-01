@@ -1,15 +1,8 @@
 package dev.spocht.spocht;
 
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.StringDef;
-
-import com.parse.Parse;
-import com.parse.ParseObject;
-
-import dev.spocht.spocht.data.DataManager;
 
 /**
  * Created by edm on 01.08.15.

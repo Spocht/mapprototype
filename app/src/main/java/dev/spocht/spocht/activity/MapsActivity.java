@@ -1,12 +1,12 @@
 package dev.spocht.spocht.activity;
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -102,13 +103,13 @@ public class MapsActivity extends AppCompatActivity
 
     private void setUpActionBar() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // ActionBar was first introduced in HoneyComb
-            ActionBar a = getSupportActionBar();
-            if (a != null) {
-                a.setTitle(R.string.app_name);
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            // ActionBar was first introduced in HoneyComb
+//            ActionBar a = getActionBar();
+//            if (a != null) {
+//                a.setTitle(R.string.app_name);
+//            }
+//        }
     }
 
     @Override
@@ -159,7 +160,7 @@ public class MapsActivity extends AppCompatActivity
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -239,8 +240,8 @@ public class MapsActivity extends AppCompatActivity
 
     private void animateFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_fragment_in, R.animator.slide_fragment_out);
-        ft.add(R.id.move_to_back_container, detailFragment);
+        ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
+        ft.add(R.id.main_content, detailFragment);
         ft.addToBackStack(null);
         ft.commit();
     }
