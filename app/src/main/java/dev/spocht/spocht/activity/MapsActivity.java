@@ -109,7 +109,6 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
-        loadLocations();
     }
 
     private void setUpActionBar() {
@@ -211,6 +210,7 @@ public class MapsActivity extends AppCompatActivity
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
+                                                //todo: get resource by string!
 //                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
                                         .anchor(0, 1)
@@ -224,19 +224,9 @@ public class MapsActivity extends AppCompatActivity
         });
     }
 
-    //todo: remove
-    private void loadLocations() {
-        locationList = new ArrayList<Stub>();
-        locationList.add(new Lorrainepark());
-        locationList.add(new Steckweg());
-        locationList.add(new Spitalacker());
-        locationList.add(new Lorrainestrasse());
-    }
-
     @Override
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
-        Toast.makeText(getAppContext(),mapFacility.get(marker).comment(),Toast.LENGTH_SHORT);
 
         return true;
     }
