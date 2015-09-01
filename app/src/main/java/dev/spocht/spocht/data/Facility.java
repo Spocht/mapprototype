@@ -1,5 +1,7 @@
 package dev.spocht.spocht.data;
 
+import android.util.Log;
+
 import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
@@ -57,7 +59,7 @@ public class Facility extends ParseData {
     }
     public GeoPoint location()
     {
-        GeoPoint location = (GeoPoint)get("location");
+        GeoPoint location = new GeoPoint(getParseGeoPoint("location"));
         if(null == location)
         {
             location = defaultPoint;
@@ -156,7 +158,7 @@ public class Facility extends ParseData {
                 try {
                     pic = this.getParseObject("image").fetchIfNeeded();
                 } catch (com.parse.ParseException e) {
-                    //todo log?!
+                    Log.e("spocht.data","Error getting data",e);
                     pic = new Image();
                 }
             }
@@ -196,11 +198,12 @@ public class Facility extends ParseData {
         Sport sport = (Sport)get("sport");
         if(null == sport)
         {
+            Log.d("spocht.data","Facility.sport not avail");
             if(this.has("sport")) {
                 try {
                     sport = this.getParseObject("sport").fetchIfNeeded();
                 } catch (com.parse.ParseException e) {
-                    //todo log?!
+                    Log.e("spocht.data","Error getting data",e);
                     sport = new Sport("unknown", 0);
                 }
             }
@@ -244,7 +247,7 @@ public class Facility extends ParseData {
                 try {
                     events = this.getParseObject("event").fetchIfNeeded();
                 } catch (com.parse.ParseException e) {
-                    //todo log?!
+                    Log.e("spocht.data","Error getting data",e);
                     events = new ArrayList<Event>();
                 }
             }

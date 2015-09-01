@@ -1,12 +1,14 @@
 package dev.spocht.spocht.data;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.parse.SignUpCallback;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +16,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import bolts.Task;
 
 /**
  * Created by mueller8 on 29.08.2015.
@@ -98,19 +102,23 @@ public class SpochtUser extends ParseUser {
     }
     public void persist() {
         try {
-            this.save();
+            save();
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e("spocht.user", "Error while persisting", e);
         }
     }
-    public void destroy()
-    {
-        try
-        {
-            this.delete();
-        }catch(ParseException e)
-        {
-            e.printStackTrace();
-        }
+
+    //implement signup to prevent funny stuff
+    public void signUp() throws ParseException {
+        clearUpdated();
+        super.signUp();
+    }
+    public Task<Void> signUpInBackGround(){
+        clearUpdated();
+        return super.signUpInBackground();
+    }
+    public void signUpInBackGround(SignUpCallback cb){
+        clearUpdated();
+        super.signUpInBackground(cb);
     }
 }

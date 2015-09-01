@@ -21,6 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.data.GeoPoint;
 
 /**
  * Created by edm on 17.08.15.
@@ -82,6 +83,9 @@ public class MyLocationListener extends Activity implements
 
     public Location getLastLocation(){
         return lastLocation;
+    }
+    public GeoPoint getLastLocationGP(){
+        return new GeoPoint(lastLocation);
     }
 
     @Override
