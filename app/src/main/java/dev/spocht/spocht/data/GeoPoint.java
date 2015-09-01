@@ -14,6 +14,10 @@ public class GeoPoint extends ParseGeoPoint {
     {
         ;
     }
+    public GeoPoint(final ParseGeoPoint other)
+    {
+        super(other.getLatitude(),other.getLongitude());
+    }
     public GeoPoint(double latitude, double longitude)
     {
         super(latitude,longitude);

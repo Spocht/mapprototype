@@ -154,8 +154,6 @@ public class DataManager {
         Log.d("spocht.dataManager","Fin Facilities @ "+location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         query.whereWithinKilometers("location", location, distance);
-        query.orderByAscending("location");
-//        query.setLimit(10); //todo: magic number
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<Facility>() {
             @Override
@@ -168,7 +166,6 @@ public class DataManager {
                     }
                     ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
                     query.whereWithinKilometers("location", location, distance);
-                    query.orderByAscending("location");
                     query.include("sport");
                     query.include("events");
                     query.findInBackground(new FindCallback<Facility>() {

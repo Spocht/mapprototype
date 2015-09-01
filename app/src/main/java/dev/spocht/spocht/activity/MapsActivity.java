@@ -48,9 +48,6 @@ import dev.spocht.spocht.mock.location.Stub;
 
 public class MapsActivity extends AppCompatActivity
         implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
         GoogleMap.OnMarkerClickListener {
 
 
@@ -79,9 +76,6 @@ public class MapsActivity extends AppCompatActivity
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    private GoogleApiClient googleApiClient;
-    private Location lastLocation;
-    private LocationRequest locationRequest;
     private ArrayList<Stub> locationList;
 
 
@@ -90,34 +84,10 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    protected synchronized void buildGoogleApiClient() {
-
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    protected void createLocationRequest() {
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
     //this one is needed... unfortunately it is not mentioned in the tutorial
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient.connect();
-        googleApiClient.connect();
-        googleApiClient.connect();
 
     }
 
@@ -125,7 +95,6 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("activity/MapsActivityOnCreate");
         super.onCreate(savedInstanceState);
-        buildGoogleApiClient();
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
         myLocationListener = new MyLocationListener(context, locationCallback, true);
@@ -225,36 +194,6 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-        createLocationRequest();
-
-        startLocationUpdates();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-        System.out.println("NotConnected");
-        System.out.println(connectionResult.getErrorCode());
-    }
-
-
-    @Override
-    public void onLocationChanged(Location location) {
-        System.out.println(location.getLatitude() + " " + location.getLongitude());
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
-    }
-
     public void loadMarkers(View view) {
         updateMarkers(myLocationListener.getLastLocationGP());
     }
@@ -283,6 +222,7 @@ public class MapsActivity extends AppCompatActivity
         });
     }
 
+    //todo: remove
     private void loadLocations() {
         locationList = new ArrayList<Stub>();
         locationList.add(new Lorrainepark());

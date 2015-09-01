@@ -57,7 +57,7 @@ public class Facility extends ParseData {
     }
     public GeoPoint location()
     {
-        GeoPoint location = (GeoPoint)get("location");
+        GeoPoint location = new GeoPoint(getParseGeoPoint("location"));
         if(null == location)
         {
             location = defaultPoint;
