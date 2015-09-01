@@ -39,6 +39,7 @@ import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
+import dev.spocht.spocht.data.Sport;
 import dev.spocht.spocht.listener.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
@@ -200,7 +201,7 @@ public class MapsActivity extends AppCompatActivity
 
     private void updateMarkers(final GeoPoint location)
     {
-        DataManager.getInstance().findFacilities(location, 0.2, new InfoRetriever<List<Facility>>() {
+        DataManager.getInstance().findFacilities(location, 1.5, new InfoRetriever<List<Facility>>() {
             @Override
             public void operate(List<Facility> facilities) {
                 for(Facility f:facilities)
@@ -210,6 +211,7 @@ public class MapsActivity extends AppCompatActivity
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
+//                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
                                         .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
                                         .anchor(0, 1)
                         );
