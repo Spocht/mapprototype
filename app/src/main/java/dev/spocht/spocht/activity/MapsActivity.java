@@ -212,7 +212,7 @@ public class MapsActivity extends AppCompatActivity
                                         .position(f.location().toLatLng())
                                         .title(f.name())
 //                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
-                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
                                         .anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
