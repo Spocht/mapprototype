@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.layout.FractionalLinearLayout;
@@ -26,5 +27,17 @@ public class DetailFragment extends Fragment {
         FractionalLinearLayout view = (FractionalLinearLayout) inflater.inflate(R.layout.fragment_detail, container, false);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        TextView name = (TextView) getView().findViewById(R.id.fragment_detail_title);
+        TextView fieldCount = (TextView) getView().findViewById(R.id.fragment_detail_fieldCount);
+        TextView personCount = (TextView) getView().findViewById(R.id.fragment_detail_personCount);
+        name.setText("Facility Name");
+        fieldCount.setText("Anzahl Felder");
+        personCount.setText("Anzahl Personen");
     }
 }

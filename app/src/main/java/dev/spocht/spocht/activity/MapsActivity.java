@@ -1,6 +1,7 @@
 package dev.spocht.spocht.activity;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.fragment.DetailFragment;
+import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
@@ -42,7 +44,9 @@ public class MapsActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener,
+        FragmentManager.OnBackStackChangedListener,
+        OnDetailsFragmentListener {
 
     private static android.content.Context context;
 
@@ -54,6 +58,8 @@ public class MapsActivity extends AppCompatActivity
     private ArrayList<Stub> locationList;
 
     DetailFragment detailFragment;
+    boolean isDetailFragmentVisible = false;
+    boolean isAnimating = false;
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -97,10 +103,19 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
 
+        getFragmentManager().addOnBackStackChangedListener(this);
+
         setUpMapIfNeeded();
         setUpActionBar();
         loadLocations();
     }
+
+    View.OnClickListener mapClickListener = new View.OnClickListener () {
+        @Override
+        public void onClick(View view) {
+            animateFragment(false);
+        }
+    };
 
     private void setUpActionBar() {
 
@@ -234,28 +249,46 @@ public class MapsActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         System.out.println(marker.getTitle());
 
-        animateFragment();
+        animateFragment(true);
 
-
-//        TextView name = (TextView) findViewById(R.id.fragment_detail_title);
-//        TextView fieldCount = (TextView) findViewById(R.id.fragment_detail_fieldCount);
-//        TextView personCount = (TextView) findViewById(R.id.fragment_detail_personCount);
-//        name.setText("Facility Name");
-//        fieldCount.setText("Anzahl Felder");
-//        personCount.setText("Anzahl Personen");
 
         return true;
     }
 
-    private void animateFragment() {
+    private void animateFragment(boolean visible) {
+        if (isAnimating) {
+            return;
+        }
+        isAnimating = true;
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
 
+        if (visible) {
+            isDetailFragmentVisible = true;
+            ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
 
-        ft.add(R.id.main_content, detailFragment);
+            Log.d("animateFragment", "slide up");
+            ft.add(R.id.main_content, detailFragment);
+            ft.addToBackStack(null);
+            ft.commit();
 
-        ft.addToBackStack(null);
+        } else {
+            Log.d("animanteFragment", "slide down");
+            getFragmentManager().popBackStack();
+        }
 
-        ft.commit();
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if (isDetailFragmentVisible) {
+            isDetailFragmentVisible = false;
+            animateFragment(false);
+        }
+    }
+
+    @Override
+    public void onAnimationEnd() {
+        isAnimating = false;
     }
 }

@@ -25,6 +25,7 @@ public class MainActivity extends FragmentActivity {
         setContext();
         DataManager.getInstance();
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void setContext () {

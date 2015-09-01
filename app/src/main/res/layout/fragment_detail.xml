@@ -29,6 +29,7 @@
                 android:id="@+id/fragment_detail_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="Large Text"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -36,6 +37,7 @@
                 android:id="@+id/fragment_detail_fieldCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="Field Count"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -43,6 +45,7 @@
                 android:id="@+id/fragment_detail_personCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="Person Count"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
