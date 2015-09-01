@@ -108,18 +108,11 @@ public class DataManager {
         SpochtUser user = new SpochtUser(mail,password);
         user.setEmail(mail);
         user.seen();
-        Task<Void> task = user.signUpInBackground();
-
         try {
-            task.waitForCompletion();
-        } catch (InterruptedException e) {
-            return new SpochtUser();
-        }
-        if(!task.isFaulted())
-        {
+            user.signUp();
             return user;
-        }
-        else {
+        } catch (ParseException e) {
+            Log.e("spocht.dataManager","SignUp Failed",e);
             return new SpochtUser();
         }
     }
@@ -151,7 +144,7 @@ public class DataManager {
 
     public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
-        Log.d("spocht.dataManager","Fin Facilities @ "+location);
+        Log.d("spocht.dataManager", "Fin Facilities @ " + location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         query.whereWithinKilometers("location", location, distance);
         query.fromLocalDatastore();
