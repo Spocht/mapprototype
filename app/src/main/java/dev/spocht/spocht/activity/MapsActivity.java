@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,10 +30,21 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.fragment.DetailFragment;
 import dev.spocht.spocht.listener.OnDetailsFragmentListener;
+import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.data.DataManager;
+import dev.spocht.spocht.data.DatenSchleuder;
+import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.GeoPoint;
+import dev.spocht.spocht.data.InfoRetriever;
+import dev.spocht.spocht.data.Sport;
+import dev.spocht.spocht.listener.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
@@ -41,54 +53,51 @@ import dev.spocht.spocht.mock.location.Stub;
 
 public class MapsActivity extends AppCompatActivity
         implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
         GoogleMap.OnMarkerClickListener,
         FragmentManager.OnBackStackChangedListener,
         OnDetailsFragmentListener {
 
-    private static android.content.Context context;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    MyLocationListener myLocationListener;
+    LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+        @Override
+        public Void operate(Location location) {
 
-    private GoogleApiClient googleApiClient;
-    private Location lastLocation;
-    private LocationRequest locationRequest;
-    private ArrayList<Stub> locationList;
+            LatLng latLng = new LatLng(
+                    location.getLatitude(),
+                    location.getLongitude());
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
+
+            updateMarkers(new GeoPoint(location));
+
+            return null;
+        }
+
+    };
 
     DetailFragment detailFragment;
     boolean isDetailFragmentVisible = false;
     boolean isAnimating = false;
 
+    private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
+    private HashSet<String>          setFacilities=new HashSet<>(20);
+    private static android.content.Context context;
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+
+    private ArrayList<Stub> locationList;
+
+
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    protected void createLocationRequest() {
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
 
     //this one is needed... unfortunately it is not mentioned in the tutorial
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient.connect();
+
     }
 
     @Override
@@ -99,9 +108,16 @@ public class MapsActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
 
-        buildGoogleApiClient();
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
+        myLocationListener = new MyLocationListener(context, locationCallback, true);
+
+        //SPOCHT-13:
+        //setup() had a method to DataManager.getInstance that
+        //was called there. that leaded to unfortunate
+        //Parse.enableLocalDatastore-called-twice-Exceptions.
+        //now the context is given as a param.
+        DatenSchleuder.getInstance().setup(DataManager.getInstance().getContext());
 
         getFragmentManager().addOnBackStackChangedListener(this);
 
@@ -144,7 +160,9 @@ public class MapsActivity extends AppCompatActivity
             case R.id.menu_settings:
                 return false;
             case R.id.menu_logout:
+                DataManager.getInstance().logout();
                 startActivity(new Intent(this, LoginActivity.class));
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -197,46 +215,36 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(this);
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-        createLocationRequest();
-        startLocationUpdates();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-        System.out.println("NotConnected");
-        System.out.println(connectionResult.getErrorCode());
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        System.out.println(location.getLatitude() + " " + location.getLongitude());
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
-    }
-
     public void loadMarkers(View view) {
-        for (Stub loc: locationList) {
-            mMap.addMarker(new MarkerOptions()
-                            .position(loc.getLatLng())
-                            .title(loc.getName())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
-                            .anchor(0, 1)
-            );
-            System.out.println(loc.getClass());
-        }
+        updateMarkers(myLocationListener.getLastLocationGP());
     }
 
+    private void updateMarkers(final GeoPoint location)
+    {
+        DataManager.getInstance().findFacilities(location, 1.5, new InfoRetriever<List<Facility>>() {
+            @Override
+            public void operate(List<Facility> facilities) {
+                for(Facility f:facilities)
+                {
+                    Log.d("spocht.maps","Got facility: "+f.name());
+                    if(!setFacilities.contains(f.getObjectId())) {
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                        .position(f.location().toLatLng())
+                                        .title(f.name())
+//                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
+                                        .anchor(0, 1)
+                        );
+                        mapFacility.put(marker, f);
+                        setFacilities.add(f.getObjectId());
+                        Log.d("spocht.maps","stored facility: "+f.name());
+                    }
+                }
+            }
+        });
+    }
+
+    //todo: remove
     private void loadLocations() {
         locationList = new ArrayList<Stub>();
         locationList.add(new Lorrainepark());

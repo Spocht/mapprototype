@@ -32,7 +32,7 @@ public class EventMonitor {
 
 
     public EventMonitor(Context ctx) {
-        facility.generateTestData();
+//        facility.generateTestData();
         myLocationListener = new MyLocationListener(
                 ctx,
                 new LocationCallback<Void, Location>() {
@@ -42,15 +42,15 @@ public class EventMonitor {
                         newParseGeoPoint.setLongitude(location.getLongitude());
                         if (newParseGeoPoint.distanceInKilometersTo(eventParseGeoPoint) >=
                                 maxDistanceToEventInKilometers) {
-                            System.out.println("Bla");
+                            System.out.println("Location too far away. Checking out.");
                         } else {
-                            System.out.println("Bli");
+                            System.out.println("Location still in range. Noop.");
                         }
 
-                        System.out.println("EventMonitor:"+location);
                         return null;
                     }
-                }
+                },
+                false
          );
     }
 

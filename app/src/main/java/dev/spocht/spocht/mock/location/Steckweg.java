@@ -14,7 +14,7 @@ public final class Steckweg implements Stub {
 
     LatLng latLng;
 
-    public void Steckweg() {
+    public Steckweg() {
         // hiermit wird eine Exception geworfen.... :-(
         latLng = new LatLng(LATITUDE, LONGITUDE);
     }
@@ -27,5 +27,10 @@ public final class Steckweg implements Stub {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public String getDesc() {
+        return DESCRIPTION;
     }
 }
