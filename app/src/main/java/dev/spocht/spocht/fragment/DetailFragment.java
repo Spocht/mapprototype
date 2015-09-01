@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.layout.FractionalLinearLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,7 +22,8 @@ import dev.spocht.spocht.R;
 public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        FractionalLinearLayout view = (FractionalLinearLayout) inflater.inflate(R.layout.fragment_detail, container, false);
 
         return view;
     }

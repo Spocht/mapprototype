@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -235,14 +236,26 @@ public class MapsActivity extends AppCompatActivity
 
         animateFragment();
 
+
+//        TextView name = (TextView) findViewById(R.id.fragment_detail_title);
+//        TextView fieldCount = (TextView) findViewById(R.id.fragment_detail_fieldCount);
+//        TextView personCount = (TextView) findViewById(R.id.fragment_detail_personCount);
+//        name.setText("Facility Name");
+//        fieldCount.setText("Anzahl Felder");
+//        personCount.setText("Anzahl Personen");
+
         return true;
     }
 
     private void animateFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
+
+
         ft.add(R.id.main_content, detailFragment);
+
         ft.addToBackStack(null);
+
         ft.commit();
     }
 }
