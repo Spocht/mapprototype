@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -41,7 +42,6 @@ public class MyLocationListener extends Activity implements
         CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);
         locationCallbacks.add(callback);
         buildGoogleApiClient();
-        lastLocation= new Location("");
     }
 
     private static GoogleApiClient googleApiClient = null;
@@ -86,6 +86,7 @@ public class MyLocationListener extends Activity implements
         return lastLocation;
     }
     public GeoPoint getLastLocationGP(){
+        Log.d("LocationListener","lastLocation: "+lastLocation);
         return new GeoPoint(lastLocation);
     }
 

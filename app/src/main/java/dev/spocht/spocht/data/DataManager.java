@@ -169,7 +169,7 @@ public class DataManager {
 
     public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
-        Log.d("spocht.dataManager", "Fin Facilities @ " + location);
+        Log.d("spocht.dataManager", "Find Facilities @ " + location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         query.whereWithinKilometers("location", location, distance);
         query.fromLocalDatastore();
