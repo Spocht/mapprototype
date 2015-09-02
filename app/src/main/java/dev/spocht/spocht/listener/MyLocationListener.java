@@ -41,6 +41,7 @@ public class MyLocationListener extends Activity implements
         CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);
         locationCallbacks.add(callback);
         buildGoogleApiClient();
+        lastLocation= new Location("");
     }
 
     private static GoogleApiClient googleApiClient = null;

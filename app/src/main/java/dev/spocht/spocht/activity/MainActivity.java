@@ -25,9 +25,26 @@ public class MainActivity extends FragmentActivity {
         setContext();
         //"Let there be light", spoke god... but he meant
         //"Let there be a DataManager".
-        DataManager.getInstance();
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
+        if (DataManager.getInstance().isAnon()) {
+            // If user is anonymous, send the user to LoginSignupActivity.class
+            Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            // If current user is NOT anonymous user
+            // Get current user data from Parse.com
+            if (DataManager.getInstance().isLoggedIn()) {
+                // Send logged in users to Welcome.class
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                // Send user to LoginSignupActivity.class
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
     }
 
     private void setContext () {

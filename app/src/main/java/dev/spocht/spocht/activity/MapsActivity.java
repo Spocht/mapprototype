@@ -99,6 +99,7 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
         myLocationListener = new MyLocationListener(context, locationCallback, true);
+        Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
 
         //SPOCHT-13:
         //setup() had a method to DataManager.getInstance that
@@ -203,10 +204,9 @@ public class MapsActivity extends AppCompatActivity
         DataManager.getInstance().findFacilities(location, 1.5, new InfoRetriever<List<Facility>>() {
             @Override
             public void operate(List<Facility> facilities) {
-                for(Facility f:facilities)
-                {
-                    Log.d("spocht.maps","Got facility: "+f.name());
-                    if(!setFacilities.contains(f.getObjectId())) {
+                for (Facility f : facilities) {
+                    Log.d("spocht.maps", "Got facility: " + f.name());
+                    if (!setFacilities.contains(f.getObjectId())) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
@@ -217,7 +217,7 @@ public class MapsActivity extends AppCompatActivity
                         );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
-                        Log.d("spocht.maps","stored facility: "+f.name());
+                        Log.d("spocht.maps", "stored facility: " + f.name());
                     }
                 }
             }
