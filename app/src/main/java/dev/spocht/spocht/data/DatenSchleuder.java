@@ -3,6 +3,7 @@ package dev.spocht.spocht.data;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -71,10 +72,15 @@ public class DatenSchleuder {
                 {
                     throwHistorie();
                 }
+                else if((l.getLatitude() == 30)&&(l.getLongitude() == 30))
+                {
+                    createUsers();
+                }
                 return null;
             }
         };
         myLocationListener = new MyLocationListener(ctx,locationCallback, false);
+        Log.d("spocht.datenSchleuder","Setup");
     }
 
 
@@ -85,12 +91,6 @@ public class DatenSchleuder {
         locations.add(new Lorrainestrasse());
         locations.add(new Steckweg());
         locations.add(new Spitalacker());
-        ArrayList<ItemUser> users = new ArrayList<>(10);
-        users.add(new ItemUser("lugi@lolwut.org","honigimkopf"));
-        users.add(new ItemUser("edm@streetparade.ch","atemlos"));
-        users.add(new ItemUser("rudi@victoryismi.ne","schwerterkaffee"));
-        users.add(new ItemUser("test@parse.com","iossucks"));
-        users.add(new ItemUser("gays@microsoft.com","redmond"));
 
         sport.persist();
         Image pic = new Image("default", BitmapFactory.decodeResource(DataManager.getInstance().getContext().getResources(), R.drawable.spochtlogo2));
@@ -104,23 +104,7 @@ public class DatenSchleuder {
             facility.persist();
             lstFacility.add(facility);
         }
-        for(ItemUser u:users)
-        {
-            SpochtUser user = new SpochtUser(u.name, u.password);
-            user.setEmail(u.name);
-            Experience xp = new Experience(sport);
-            xp.persist();
-            user.setExperience(xp);
-            user.seen();
-
-            try {
-                user.signUp();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            lstUser.add(user);
-        }
+        createUsers();
         for(int cnt =5;cnt>0;cnt--) {
             System.out.println("__ Let things settle... ["+cnt+"]");
             try {
@@ -139,6 +123,57 @@ public class DatenSchleuder {
                 }
             });
         }
+    }
+    public void createUsers()
+    {
+        sport.persist();
+
+        ArrayList<ItemUser> users = new ArrayList<>(10);
+        users.add(new ItemUser("lugi@lolwut.org","honigimkopf"));
+        users.add(new ItemUser("edm@streetparade.ch","atemlos"));
+        users.add(new ItemUser("rudi@victoryismi.ne","schwerterkaffee"));
+        users.add(new ItemUser("test@parse.com","iossucks"));
+        users.add(new ItemUser("gays@microsoft.com","redmond"));
+
+        for(ItemUser u:users)
+        {
+
+
+            SpochtUser user = DataManager.getInstance().signup(u.name,u.password);
+            Experience xp = new Experience(sport);
+            xp.persist();
+            user.setExperience(xp);
+            user.seen();
+            user.saveEventually(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(null == e)
+                    {
+                        Log.d("spocht.dataschleuder","User created");
+                    }
+                    else
+                    {
+                        Log.e("spocht.dataschleuder","create users",e);
+                    }
+                }
+            });
+
+//            SpochtUser user = new SpochtUser(u.name, u.password);
+//            user.user().setEmail(u.name);
+//            Experience xp = new Experience(sport);
+//            xp.persist();
+//            user.setExperience(xp);
+//            user.seen();
+//
+//            try {
+//                user.signUp();
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+
+            lstUser.add(user);
+        }
+
     }
     public void createHistorie(final String nameEvent, final Facility facility, final SpochtUser user, final Date date, final Outcome outcome)
     {

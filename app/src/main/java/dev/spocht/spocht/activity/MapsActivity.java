@@ -100,6 +100,7 @@ public class MapsActivity extends AppCompatActivity
         MapsActivity.context = getApplicationContext();
         myLocationListener = new MyLocationListener(context, locationCallback, true);
         Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
+        toastWelcome.show();
 
         //SPOCHT-13:
         //setup() had a method to DataManager.getInstance that

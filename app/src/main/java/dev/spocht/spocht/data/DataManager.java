@@ -5,7 +5,9 @@ import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.LogInCallback;
 import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -26,6 +28,7 @@ import dev.spocht.spocht.monitor.EventMonitor;
 public class DataManager {
     private static volatile DataManager instance = null;
     private static Context context;
+    private SpochtUser currentUser;
 
     private DataManager() {
         if (context == null) {
@@ -50,6 +53,15 @@ public class DataManager {
                 getContext().getString(R.string.parse_application_id),
                 getContext().getString(R.string.parse_client_key)
         );
+
+        ParseUser.enableAutomaticUser();
+        ParseACL defaultACL = new ParseACL();
+        // Optionally enable public read access.
+        // defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicWriteAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
+
 
         ParsePush.subscribeInBackground("", new SaveCallback() {
             @Override
@@ -98,7 +110,18 @@ public class DataManager {
 
         try {
             user.waitForCompletion();
+            if(!user.isFaulted()) {
+                ParseUser res = user.getResult();
+                ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
+                query.whereEqualTo("user", res);
+                query.include("user");
+                currentUser = query.getFirst();
+                currentUser.pin();
+            }
         } catch (InterruptedException e) {
+            return false;
+        } catch (ParseException e) {
+            Log.e("spocht.dataManager","Login",e);
             return false;
         }
         return !user.isFaulted();
@@ -106,10 +129,12 @@ public class DataManager {
     public SpochtUser signup(String mail, String password)
     {
         SpochtUser user = new SpochtUser(mail,password);
-        user.setEmail(mail);
+        user.user().setEmail(mail);
         user.seen();
         try {
-            user.signUp();
+            user.user().signUp();
+            user.updateAclBlocking();
+            user.pin();
             return user;
         } catch (ParseException e) {
             Log.e("spocht.dataManager","SignUp Failed",e);
@@ -151,10 +176,8 @@ public class DataManager {
         query.findInBackground(new FindCallback<Facility>() {
             @Override
             public void done(List<Facility> list, ParseException e) {
-                if(null == e)
-                {
-                    if(null != list)
-                    {
+                if (null == e) {
+                    if (null != list) {
                         callback.operate(list);
                     }
                     ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
@@ -170,10 +193,8 @@ public class DataManager {
                             }
                         }
                     });
-                }
-                else
-                {
-                    Log.e("spocht.datamanager","Error finding facilities",e);
+                } else {
+                    Log.e("spocht.datamanager", "Error finding facilities", e);
                 }
             }
         });
@@ -182,13 +203,22 @@ public class DataManager {
     }
 
     public static void injectContext(Context ctx) {
-        Log.d("spocht.datamanager","Injecting Context: " + ctx);
+        Log.d("spocht.datamanager", "Injecting Context: " + ctx);
         context = ctx;
     }
 
     public Context getContext(){
 
         return this.context;
+    }
+
+    public SpochtUser currentUser()
+    {
+        if(currentUser == null)
+        {
+            return new SpochtUser();
+        }
+        return currentUser;
     }
 
     private void registerMonitors(){

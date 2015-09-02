@@ -3,6 +3,7 @@ package dev.spocht.spocht.data;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.parse.ParseACL;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -23,7 +24,7 @@ import bolts.Task;
  * Created by mueller8 on 29.08.2015.
  */
 @ParseClassName("SpochtUser")
-public class SpochtUser extends ParseUser {
+public class SpochtUser extends ParseData {
     public SpochtUser()
     {
         ;
@@ -32,6 +33,71 @@ public class SpochtUser extends ParseUser {
     {
         setUsername(name);
         setPassword(password);
+    }
+    public SpochtUser(final ParseUser user)
+    {
+        setUser(user);
+    }
+    public void setUsername(final String name)
+    {
+        user().setUsername(name);
+    }
+    public String getUsername()
+    {
+        return user().getUsername();
+    }
+    public void setPassword(final String password)
+    {
+        user().setPassword(password);
+    }
+    public void setUser(final ParseUser user)
+    {
+        put("user", user);
+        if(null != user().getObjectId()) {
+            updateAcl();
+        }
+        setUpdated();
+    }
+    public ParseUser user()
+    {
+        ParseUser user;
+        try {
+            this.fetchIfNeeded();
+            if(this.has("user")) {
+                user = (ParseUser) get("user");
+                if (null == user) {
+                    user = this.getParseObject("_User").fetchIfNeeded();
+                }
+            }
+            else
+            {
+                user = new ParseUser();
+                setUser(user);
+            }
+        }
+        catch (com.parse.ParseException e)
+        {
+            Log.e("spocht.data","Error fetching data",e);
+            user = new ParseUser();
+        }
+        return(user);
+    }
+    public void updateAclBlocking() throws ParseException {
+        ParseACL acl = new ParseACL(user());
+        acl.setPublicReadAccess(true);
+        acl.setPublicWriteAccess(false);
+        setACL(acl);
+        save();
+        clearUpdated();
+    }
+    public void updateAcl()
+    {
+        ParseACL acl = new ParseACL(user());
+        acl.setPublicReadAccess(true);
+        acl.setPublicWriteAccess(false);
+        setACL(acl);
+        saveEventually();
+        clearUpdated();
     }
     public Date lastSeen()
     {
@@ -45,7 +111,7 @@ public class SpochtUser extends ParseUser {
     public void seen()
     {
         Date date = new Date();
-        put("lastSeen",date);
+        put("lastSeen", date);
         setUpdated();
     }
     public void setExperience(final Experience xp)
@@ -74,51 +140,20 @@ public class SpochtUser extends ParseUser {
     }
     public List<Experience> experiences()
     {
-        List<Experience> xps = getList("experience");
-        if(null == xps)
-        {
-            try {
-                xps = this.getParseObject("experience").fetchIfNeeded();
-            }
-            catch (com.parse.ParseException e)
+        List<Experience> xps;
+        try {
+            this.fetchIfNeeded();
+            xps = getList("experience");
+            if(null == xps)
             {
-                //todo log?!
-                xps= new ArrayList<Experience>();
+                    xps = this.getParseObject("experience").fetchIfNeeded();
             }
+        }
+        catch (com.parse.ParseException e)
+        {
+            //todo log?!
+            xps= new ArrayList<Experience>();
         }
         return(xps);
-    }
-
-    //implement stuff of the ParseData Class
-
-    private Boolean updated;
-    protected synchronized void setUpdated(){
-        updated = true;
-    }
-    protected synchronized Boolean clearUpdated(){
-        Boolean tmp = updated;
-        updated = false;
-        return tmp;
-    }
-    public void persist() {
-        try {
-            save();
-        } catch (ParseException e) {
-            Log.e("spocht.user", "Error while persisting", e);
-        }
-    }
-
-    //implement signup to prevent funny stuff
-    public void signUp() throws ParseException {
-        clearUpdated();
-        super.signUp();
-    }
-    public Task<Void> signUpInBackGround(){
-        clearUpdated();
-        return super.signUpInBackground();
-    }
-    public void signUpInBackGround(SignUpCallback cb){
-        clearUpdated();
-        super.signUpInBackground(cb);
     }
 }
