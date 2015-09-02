@@ -48,6 +48,25 @@ public class DatenSchleuder {
     private Sport               sport       = new Sport("tabletennis",2);
     private ArrayList<SpochtUser> lstUser   = new ArrayList<SpochtUser>(10);
     private MyLocationListener myLocationListener;
+    private LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+        @Override
+        public Void operate(Location l) {
+            Log.d("spocht.datenschleuder","Location: "+l.toString());
+            if((l.getLatitude() == 10)&&(l.getLongitude() == 10))
+            {
+                throwInitialData();
+            }
+            else if((l.getLatitude() == 20)&&(l.getLongitude() == 20))
+            {
+                throwHistorie();
+            }
+            else if((l.getLatitude() == 30)&&(l.getLongitude() == 30))
+            {
+                createUsers();
+            }
+            return null;
+        }
+    };
 
     private DatenSchleuder()
     {
@@ -61,26 +80,8 @@ public class DatenSchleuder {
     //SPOCHT-13
     public void setup(Context ctx)
     {
-        LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
-            @Override
-            public Void operate(Location l) {
-                if((l.getLatitude() == 10)&&(l.getLongitude() == 10))
-                {
-                    throwInitialData();
-                }
-                else if((l.getLatitude() == 20)&&(l.getLongitude() == 20))
-                {
-                    throwHistorie();
-                }
-                else if((l.getLatitude() == 30)&&(l.getLongitude() == 30))
-                {
-                    createUsers();
-                }
-                return null;
-            }
-        };
         myLocationListener = new MyLocationListener(ctx,locationCallback, false);
-        Log.d("spocht.datenSchleuder","Setup");
+        Log.d("spocht.datenschleuder","Setup");
     }
 
 

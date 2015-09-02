@@ -102,6 +102,7 @@ public class MapsActivity extends AppCompatActivity
         Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
         toastWelcome.show();
 
+        Log.d("spocht.mapsactivity","Loged in "+DataManager.getInstance().currentUser().getUsername());
         //SPOCHT-13:
         //setup() had a method to DataManager.getInstance that
         //was called there. that leaded to unfortunate
