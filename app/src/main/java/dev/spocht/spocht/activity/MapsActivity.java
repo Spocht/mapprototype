@@ -205,6 +205,12 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(this);
     }
 
+    /**
+     * refreah button click handler
+     *
+     * @deprecated
+     * @param view
+     */
     public void loadMarkers(View view) {
         updateMarkers(myLocationListener.getLastLocationGP());
     }

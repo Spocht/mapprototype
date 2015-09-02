@@ -48,7 +48,7 @@ public class DetailFragment extends Fragment {
     }
 
     public void refreshContents() {
-        // indivual elements are seperated into according methods to simplify maintenance
+        // individual elements are separated into according methods to simplify maintenance
         setImage();
         setTitle();
         setFieldCount();
@@ -66,6 +66,19 @@ public class DetailFragment extends Fragment {
         mFacility = facility;
     }
 
+    /**
+     * CheckIn Button click handler
+     *
+     * @param view
+     */
+    public void buttonCheckInClick(View view) {
+        // todo: click has to invoke a short animation
+        Log.d("DetailFragment", "User wants to check-In");
+    }
+
+    /*
+     * below are alle the methods used to update this fragments contents
+     */
     private void setImage() {
         mImage.setImageBitmap(mFacility.image().picture());
     }
