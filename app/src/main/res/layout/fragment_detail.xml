@@ -1,4 +1,5 @@
 <dev.spocht.spocht.layout.FractionalLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/details_fragment"
     android:layout_width="match_parent"
@@ -7,48 +8,46 @@
     android:columnCount="2"
     android:rowCount="1">
 
-    <LinearLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/fragment_detail_image"
             android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/paerkli_k"
+            android:layout_height="57dp"
             tools:ignore="ContentDescription" />
 
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/fragment_detail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="fill_vertical">
+            android:layout_toEndOf="@+id/fragment_detail_image"
+            android:text="{TITLE}"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/black" />
 
-            <TextView
-                android:id="@+id/fragment_detail_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="Large Text"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+        <TextView
+            android:id="@+id/fragment_detail_fieldCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/fragment_detail_image"
+            android:layout_below="@+id/fragment_detail_title"
+            android:text="{FIELD_COUNT}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/black" />
 
-            <TextView
-                android:id="@+id/fragment_detail_fieldCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="Field Count"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+        <TextView
+            android:id="@+id/fragment_detail_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/fragment_detail_image"
+            android:layout_below="@+id/fragment_detail_fieldCount"
+            android:text="{COMMENT}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/black" />
 
-            <TextView
-                android:id="@+id/fragment_detail_personCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="Person Count"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
 </dev.spocht.spocht.layout.FractionalLinearLayout>

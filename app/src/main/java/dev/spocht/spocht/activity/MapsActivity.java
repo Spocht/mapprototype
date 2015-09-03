@@ -1,10 +1,8 @@
 package dev.spocht.spocht.activity;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,14 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -37,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.fragment.DetailFragment;
 import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
@@ -45,12 +36,7 @@ import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
-import dev.spocht.spocht.data.Sport;
 import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.mock.location.Lorrainepark;
-import dev.spocht.spocht.mock.location.Lorrainestrasse;
-import dev.spocht.spocht.mock.location.Spitalacker;
-import dev.spocht.spocht.mock.location.Steckweg;
 import dev.spocht.spocht.mock.location.Stub;
 
 public class MapsActivity extends AppCompatActivity
@@ -73,9 +59,9 @@ public class MapsActivity extends AppCompatActivity
 
     };
 
-    DetailFragment detailFragment;
-    boolean isDetailFragmentVisible = false;
-    boolean isAnimating = false;
+    DetailFragment mDetailFragment;
+    boolean mIsDetailFragmentVisible = false;
+    boolean mIsAnimating = false;
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
@@ -98,7 +84,7 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("spocht.mapsactivity", "activity/MapsActivityOnCreate");
 
-        detailFragment = new DetailFragment();
+        mDetailFragment = new DetailFragment();
 
         super.onCreate(savedInstanceState);
 
@@ -220,6 +206,12 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(this);
     }
 
+    /**
+     * refreah button click handler
+     *
+     * @deprecated
+     * @param view
+     */
     public void loadMarkers(View view) {
         updateMarkers(MyLocationListener.getInstance().getLastLocationGP());
     }
@@ -256,35 +248,43 @@ public class MapsActivity extends AppCompatActivity
         });
     }
 
-
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d("spocht.activity",marker.getTitle());
-        animateFragment(true);
+        System.out.println(mIsDetailFragmentVisible);
+        mDetailFragment.setFacility(mapFacility.get(marker));
 
+        // if the fragment is already visible, only refresh contents
+        if (mIsDetailFragmentVisible) {
+            mDetailFragment.refreshContents();
+        } else {
+            // otherwise display it. Contents will then be refreshed via onResume()
+            animateFragment(true);
+        }
 
         return true;
     }
 
     private void animateFragment(boolean visible) {
-        if (isAnimating) {
+        if (mIsAnimating) {
             return;
         }
-        isAnimating = true;
+        mIsAnimating = true;
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         if (visible) {
-            isDetailFragmentVisible = true;
+            mIsDetailFragmentVisible = true;
             ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
 
             Log.d("animateFragment", "slide up");
-            ft.add(R.id.main_content, detailFragment);
+            ft.add(R.id.main_content, mDetailFragment);
             ft.addToBackStack(null);
             ft.commit();
 
         } else {
             Log.d("animanteFragment", "slide down");
+            mIsDetailFragmentVisible = false;
             getFragmentManager().popBackStack();
         }
 
@@ -292,14 +292,13 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onBackStackChanged() {
-        if (isDetailFragmentVisible) {
-            isDetailFragmentVisible = false;
+        if (mIsDetailFragmentVisible) {
             animateFragment(false);
         }
     }
 
     @Override
     public void onAnimationEnd() {
-        isAnimating = false;
+        mIsAnimating = false;
     }
 }
