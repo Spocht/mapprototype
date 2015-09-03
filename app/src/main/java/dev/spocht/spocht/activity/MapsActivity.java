@@ -85,7 +85,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("activity/MapsActivityOnCreate");
+        Log.d("spocht.mapsactivity", "activity/MapsActivityOnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
@@ -236,7 +236,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println(marker.getTitle());
+        Log.d("spocht.activity",marker.getTitle());
 
         return true;
     }

@@ -129,7 +129,7 @@ public class Event extends ParseData {
                             participation.persist();
                         }
                     } else {
-                        System.out.println("Error while saving participation object");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });
@@ -181,7 +181,7 @@ public class Event extends ParseData {
                             facility.persist();
                         }
                     } else {
-                        System.out.println("Error while saving facility object");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });

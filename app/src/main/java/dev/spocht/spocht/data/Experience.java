@@ -100,7 +100,7 @@ public class Experience extends ParseData {
                             sport.persist();
                         }
                     } else {
-                        System.out.println("Error while saving sport object");
+                        Log.e("spocht.data","Error saving data.",e);
                     }
                 }
             });

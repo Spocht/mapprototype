@@ -169,7 +169,7 @@ public class Facility extends ParseData {
                             pic.persist();
                         }
                     } else {
-                        System.out.println("Error while saving image object");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });
@@ -215,7 +215,7 @@ public class Facility extends ParseData {
                             sport.persist();
                         }
                     } else {
-                        System.out.println("Error while saving sport object");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });
@@ -262,7 +262,7 @@ public class Facility extends ParseData {
                                 event.persist();
                             }
                         } else {
-                            System.out.println("Error while saving event object");
+                            Log.e("spocht.data", "Error saving data.", e);
                         }
                     }
                 });

@@ -52,7 +52,7 @@ public class Participation extends ParseData {
                             user.persist();
                         }
                     } else {
-                        System.out.println("Error while saving sport object");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });

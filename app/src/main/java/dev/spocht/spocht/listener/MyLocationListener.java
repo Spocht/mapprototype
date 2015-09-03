@@ -123,7 +123,7 @@ public class MyLocationListener extends Activity implements
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("Not ui manipulating");
+                        Log.d("spocht.locationListener", "Not ui manipulating");
                         cbb.lc.operate(loc);
                     }
                 }).start();
@@ -135,7 +135,7 @@ public class MyLocationListener extends Activity implements
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println("Running manipulation");
+                                Log.d("spocht.locationListener","Running manipulation");
                                 cbb.lc.operate(loc);
                             }
                         });

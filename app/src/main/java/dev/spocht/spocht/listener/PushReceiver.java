@@ -22,7 +22,7 @@ public class PushReceiver extends ParseBroadcastReceiver {
                 JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
                 if(json.has("alert"))
                 {
-                    System.out.println("Alert: " + json.getString("alert"));
+                    Log.d("spocht.push","Alert: " + json.getString("alert"));
                 }
                 if(json.has("event"))
                 {

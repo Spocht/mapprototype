@@ -108,7 +108,7 @@ public class DatenSchleuder {
         }
         createUsers();
         for(int cnt =5;cnt>0;cnt--) {
-            System.out.println("__ Let things settle... ["+cnt+"]");
+            Log.d("spocht.datenschleuder", "__ Let things settle... [" + cnt + "]");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -120,7 +120,7 @@ public class DatenSchleuder {
             f.saveEventually(new SaveCallback() {
                 public void done(ParseException e) {
                     if (null != e) {
-                        System.out.println("Error while saving facility object");
+                        Log.e("spocht.datenschleuder","Error while saving facility object",e);
                     }
                 }
             });

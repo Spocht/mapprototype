@@ -2,6 +2,7 @@ package dev.spocht.spocht.monitor;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
@@ -42,9 +43,9 @@ public class EventMonitor {
                         newParseGeoPoint.setLongitude(location.getLongitude());
                         if (newParseGeoPoint.distanceInKilometersTo(eventParseGeoPoint) >=
                                 maxDistanceToEventInKilometers) {
-                            System.out.println("Location too far away. Checking out.");
+                            Log.d("spocht.eventMonitor", "Location too far away. Checking out.");
                         } else {
-                            System.out.println("Location still in range. Noop.");
+                            Log.d("spocht.eventMonitor","Location still in range. Noop.");
                         }
 
                         return null;

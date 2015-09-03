@@ -5,6 +5,7 @@ package dev.spocht.spocht;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.StringDef;
+import android.util.Log;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -41,7 +42,7 @@ public class Application extends android.app.Application {
     }
     @Override
     public void onCreate(){
-        System.out.println("OnCreateApplication");
+        Log.d("spocht.application","OnCreateApplication");
         super.onCreate();
     }
 

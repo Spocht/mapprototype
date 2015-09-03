@@ -134,7 +134,7 @@ public class SpochtUser extends ParseData {
                         }
                         setUpdated();
                     } else {
-                        System.out.println("Error while saving experience object for ["+getUsername()+"]");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });
