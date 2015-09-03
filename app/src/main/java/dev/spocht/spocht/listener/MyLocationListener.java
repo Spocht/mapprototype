@@ -32,20 +32,38 @@ public class MyLocationListener extends Activity implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private static List<CallbacksAndTheirUiBehaviour> locationCallbacks = new ArrayList<>();
+    private static MyLocationListener instance = new MyLocationListener();
+
+    private List<CallbacksAndTheirUiBehaviour> locationCallbacks = new ArrayList<>();
     private Location lastLocation;
     private Context ctx;
+    private GoogleApiClient googleApiClient = null;
+    private LocationRequest locationRequest;
 
 
-    public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb, boolean um) {
-        this.ctx = ctx;
+    private MyLocationListener()
+    {
+        lastLocation = new Location("");
+
+    }
+    public void register(LocationCallback<Void, Location> cb, boolean um)
+    {
         CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);
         locationCallbacks.add(callback);
-        buildGoogleApiClient();
     }
 
-    private static GoogleApiClient googleApiClient = null;
+    public static MyLocationListener getInstance()
+    {
+        return instance;
+    }
 
+    public static synchronized void create(Context ctx)
+    {
+        if(null == getInstance().ctx) {
+            getInstance().ctx = ctx;
+        }
+        getInstance().buildGoogleApiClient();
+    }
 
     private synchronized GoogleApiClient buildGoogleApiClient() {
         if (googleApiClient == null) {
@@ -59,7 +77,6 @@ public class MyLocationListener extends Activity implements
         return googleApiClient;
     }
 
-    private LocationRequest locationRequest;
 
     protected void createLocationRequest(){
         locationRequest = new LocationRequest();

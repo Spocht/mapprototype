@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -51,8 +52,6 @@ public class MapsActivity extends AppCompatActivity
         implements
         GoogleMap.OnMarkerClickListener {
 
-
-    MyLocationListener myLocationListener;
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
         public Void operate(Location location) {
@@ -60,10 +59,7 @@ public class MapsActivity extends AppCompatActivity
             LatLng latLng = new LatLng(
                     location.getLatitude(),
                     location.getLongitude());
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
-
-            updateMarkers(new GeoPoint(location));
 
             return null;
         }
@@ -72,13 +68,8 @@ public class MapsActivity extends AppCompatActivity
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
-
-    private static android.content.Context context;
-
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
-    private ArrayList<Stub> locationList;
-
+    private static android.content.Context  context;
+    private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -98,7 +89,9 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
-        myLocationListener = new MyLocationListener(context, locationCallback, true);
+
+        MyLocationListener.create(context);
+        MyLocationListener.getInstance().register(locationCallback, true);
         Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
         toastWelcome.show();
 
@@ -182,6 +175,13 @@ public class MapsActivity extends AppCompatActivity
                 setUpMap();
             }
         }
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
+                updateMarkers(new GeoPoint(cameraPosition.target));
+            }
+        });
     }
 
     /**
@@ -198,12 +198,19 @@ public class MapsActivity extends AppCompatActivity
 
 
     public void loadMarkers(View view) {
-        updateMarkers(myLocationListener.getLastLocationGP());
+        updateMarkers(MyLocationListener.getInstance().getLastLocationGP());
     }
 
     private void updateMarkers(final GeoPoint location)
     {
-        DataManager.getInstance().findFacilities(location, 1.5, new InfoRetriever<List<Facility>>() {
+
+        double distance = new GeoPoint(mMap.getProjection().getVisibleRegion().nearLeft).distanceInKilometersTo(location);
+        Log.d("spocht.mapsactivity","Search distance: "+distance);
+        if(distance > 5)
+        {
+            distance = 5;
+        }
+        DataManager.getInstance().findFacilities(location, distance, new InfoRetriever<List<Facility>>() {
             @Override
             public void operate(List<Facility> facilities) {
                 for (Facility f : facilities) {
@@ -225,6 +232,7 @@ public class MapsActivity extends AppCompatActivity
             }
         });
     }
+
 
     @Override
     public boolean onMarkerClick(Marker marker) {

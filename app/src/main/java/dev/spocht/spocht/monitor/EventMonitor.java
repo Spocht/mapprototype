@@ -33,8 +33,8 @@ public class EventMonitor {
 
     public EventMonitor(Context ctx) {
 //        facility.generateTestData();
-        myLocationListener = new MyLocationListener(
-                ctx,
+        MyLocationListener.create(ctx);
+        MyLocationListener.getInstance().register(
                 new LocationCallback<Void, Location>() {
                     @Override
                     public Void operate(Location location) {

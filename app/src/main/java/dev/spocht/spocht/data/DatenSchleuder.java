@@ -80,7 +80,8 @@ public class DatenSchleuder {
     //SPOCHT-13
     public void setup(Context ctx)
     {
-        myLocationListener = new MyLocationListener(ctx,locationCallback, false);
+        MyLocationListener.create(ctx);
+        MyLocationListener.getInstance().register(locationCallback, false);
         Log.d("spocht.datenschleuder","Setup");
     }
 
