@@ -166,6 +166,20 @@ public class DataManager {
             @Override
             public void done(T parseObject, ParseException e) {
                 if (e == null) {
+                    parseObject.pinInBackground();
+                    callback.operate(parseObject);
+                } else {
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                }
+            }
+        });
+    }
+    public <T extends ParseData> void update(String id, Class<T> obj, final InfoRetriever<T> callback) {
+        ParseObject.createWithoutData(obj, "id").fetchInBackground(new GetCallback<T>() {
+            @Override
+            public void done(T parseObject, ParseException e) {
+                if (e == null) {
+                    parseObject.pinInBackground();
                     callback.operate(parseObject);
                 } else {
                     Log.e("spocht.dataManager", "Failed to load items:", e);

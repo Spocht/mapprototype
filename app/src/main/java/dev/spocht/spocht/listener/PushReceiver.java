@@ -9,6 +9,10 @@ import com.parse.ParseBroadcastReceiver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import dev.spocht.spocht.data.DataManager;
+import dev.spocht.spocht.data.Event;
+import dev.spocht.spocht.data.InfoRetriever;
+
 /**
  * Created by mueller8 on 30.08.2015.
  */
@@ -28,6 +32,12 @@ public class PushReceiver extends ParseBroadcastReceiver {
                 {
                     JSONObject content = json.getJSONObject("event");
                     Log.d("spocht.push","Update of Event "+ content.getString("id"));
+                    DataManager.getInstance().update(content.getString("id"), Event.class, new InfoRetriever<Event>() {
+                        @Override
+                        public void operate(Event event) {
+                            //todo: notify GUI about the update
+                        }
+                    });
                 }
 
             } catch (JSONException e) {
