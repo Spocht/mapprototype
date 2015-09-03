@@ -9,7 +9,7 @@ import com.parse.ParseQuery;
 /**
  * Created by edm on 11.08.15.
  */
-@ParseClassName("Invitation")
-public class Invitation extends ParseData {
+@ParseClassName("Game")
+public class Game extends ParseData {
 
 }

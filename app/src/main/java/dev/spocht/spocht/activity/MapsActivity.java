@@ -1,17 +1,19 @@
 package dev.spocht.spocht.activity;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -21,6 +23,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -34,6 +37,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.fragment.DetailFragment;
+import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
@@ -50,7 +55,9 @@ import dev.spocht.spocht.mock.location.Stub;
 
 public class MapsActivity extends AppCompatActivity
         implements
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener,
+        FragmentManager.OnBackStackChangedListener,
+        OnDetailsFragmentListener {
 
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
@@ -65,6 +72,10 @@ public class MapsActivity extends AppCompatActivity
         }
 
     };
+
+    DetailFragment detailFragment;
+    boolean isDetailFragmentVisible = false;
+    boolean isAnimating = false;
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
@@ -86,7 +97,11 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("spocht.mapsactivity", "activity/MapsActivityOnCreate");
+
+        detailFragment = new DetailFragment();
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
 
@@ -103,19 +118,28 @@ public class MapsActivity extends AppCompatActivity
         //now the context is given as a param.
         DatenSchleuder.getInstance().setup(DataManager.getInstance().getContext());
 
+        getFragmentManager().addOnBackStackChangedListener(this);
+
         setUpMapIfNeeded();
         setUpActionBar();
     }
 
+    View.OnClickListener mapClickListener = new View.OnClickListener () {
+        @Override
+        public void onClick(View view) {
+            animateFragment(false);
+        }
+    };
+
     private void setUpActionBar() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // ActionBar was first introduced in HoneyComb
-            ActionBar a = getSupportActionBar();
-            if (a != null) {
-                a.setTitle(R.string.app_name);
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            // ActionBar was first introduced in HoneyComb
+//            ActionBar a = getActionBar();
+//            if (a != null) {
+//                a.setTitle(R.string.app_name);
+//            }
+//        }
     }
 
     @Override
@@ -168,7 +192,7 @@ public class MapsActivity extends AppCompatActivity
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -195,7 +219,6 @@ public class MapsActivity extends AppCompatActivity
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.setOnMarkerClickListener(this);
     }
-
 
     public void loadMarkers(View view) {
         updateMarkers(MyLocationListener.getInstance().getLastLocationGP());
@@ -237,7 +260,46 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d("spocht.activity",marker.getTitle());
+        animateFragment(true);
+
 
         return true;
+    }
+
+    private void animateFragment(boolean visible) {
+        if (isAnimating) {
+            return;
+        }
+        isAnimating = true;
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        if (visible) {
+            isDetailFragmentVisible = true;
+            ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
+
+            Log.d("animateFragment", "slide up");
+            ft.add(R.id.main_content, detailFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+
+        } else {
+            Log.d("animanteFragment", "slide down");
+            getFragmentManager().popBackStack();
+        }
+
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if (isDetailFragmentVisible) {
+            isDetailFragmentVisible = false;
+            animateFragment(false);
+        }
+    }
+
+    @Override
+    public void onAnimationEnd() {
+        isAnimating = false;
     }
 }
