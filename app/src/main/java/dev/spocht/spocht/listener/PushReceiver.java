@@ -24,6 +24,11 @@ public class PushReceiver extends ParseBroadcastReceiver {
                 {
                     System.out.println("Alert: " + json.getString("alert"));
                 }
+                if(json.has("event"))
+                {
+                    JSONObject content = json.getJSONObject("event");
+                    Log.d("spocht.push","Update of Event "+ content.getString("id"));
+                }
 
             } catch (JSONException e) {
                 Log.e("spocht.push","JSONException",e);

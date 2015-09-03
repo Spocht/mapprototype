@@ -210,6 +210,7 @@ public class Event extends ParseData {
             participation.persist();
             //todo if successful API call, update local Event
             if(true) {
+                DataManager.getInstance().registerPushChannel(this.getObjectId());
                 setParticipation(participation);
             }
             else
@@ -221,6 +222,7 @@ public class Event extends ParseData {
     public void checkOut(final SpochtUser user)
     {
         //todo: call API
+        DataManager.getInstance().unregisterPushChannel(this.getObjectId());
         if(!getState().equals("grey")) {
             //game has not been ended by end()
             List<Participation> participations = participants();

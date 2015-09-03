@@ -63,18 +63,7 @@ public class DataManager {
         ParseACL.setDefaultACL(defaultACL, true);
 
 
-        ParsePush.subscribeInBackground("", new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-                } else {
-                    Log.e("com.parse.push", "failed to subscribe for push", e);
-                }
-            }
-        });
-
-
+        registerPushChannel("");
 
         registerMonitors();
 
@@ -223,5 +212,43 @@ public class DataManager {
 
     private void registerMonitors(){
         EventMonitor eventMonitor = new EventMonitor(context);
+    }
+    public void registerPushChannel(final String name)
+    {
+        if(null != name) {
+            ParsePush.subscribeInBackground(name, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("spocht.dataManager", "Push ["+name+"]: successfully subscribed to the channel.");
+                    } else {
+                        Log.e("spocht.dataManager", "Push ["+name+"]: failed to subscribe", e);
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.e("spocht.dataManager","Push registration failed! Null Pointer");
+        }
+    }
+    public void unregisterPushChannel(final String name)
+    {
+        if(null != name) {
+            ParsePush.unsubscribeInBackground(name, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("spocht.dataManager", "Push ["+name+"]: successfully unsubscribed to the channel.");
+                    } else {
+                        Log.e("spocht.dataManager", "Push ["+name+"]: failed to unsubscribe", e);
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.e("spocht.dataManager","Push registration failed! Null Pointer");
+        }
     }
 }
