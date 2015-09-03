@@ -1,4 +1,4 @@
-package dev.spocht.spocht.fragment;
+package dev.spocht.spocht.activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -66,16 +66,6 @@ public class DetailFragment extends Fragment {
         mFacility = facility;
     }
 
-    /**
-     * CheckIn Button click handler
-     *
-     * @param view
-     */
-    public void buttonCheckInClick(View view) {
-        // todo: click has to invoke a short animation
-        Log.d("DetailFragment", "User wants to check-In");
-    }
-
     /*
      * below are alle the methods used to update this fragments contents
      */
@@ -89,7 +79,7 @@ public class DetailFragment extends Fragment {
 
     private void setFieldCount() {
         int number = mFacility.numberOfFields();
-        mFieldCount.setText(String.valueOf(number) + (number == 1 ? R.string.field : R.string.fields));
+        mFieldCount.setText(String.valueOf(number) + (number == 1 ? getString(R.string.field) : getString(R.string.fields)));
     }
 
     private void setComment() {

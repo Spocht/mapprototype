@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.fragment.DetailFragment;
 import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
@@ -36,10 +35,6 @@ import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
 import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.mock.location.Lorrainepark;
-import dev.spocht.spocht.mock.location.Lorrainestrasse;
-import dev.spocht.spocht.mock.location.Spitalacker;
-import dev.spocht.spocht.mock.location.Steckweg;
 import dev.spocht.spocht.mock.location.Stub;
 
 public class MapsActivity extends AppCompatActivity
