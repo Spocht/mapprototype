@@ -69,15 +69,17 @@ public class Image extends ParseData {
     }
     public Bitmap picture()
     {
-        ParseFile imgFile = (ParseFile)get("picture");
+        ParseFile imgFile = null;
         Bitmap pic=null;
-        if(null != imgFile) {
-            try {
-                byte[] data = imgFile.getData();
-                pic = BitmapFactory.decodeByteArray(data, 0, data.length);
-            } catch (ParseException e) {
-                e.printStackTrace();
+        try {
+            this.fetchIfNeeded();
+            imgFile = (ParseFile)get("picture");
+            if(null != imgFile) {
+                    byte[] data = imgFile.getData();
+                    pic = BitmapFactory.decodeByteArray(data, 0, data.length);
             }
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
         }
 
         if(null == pic)
