@@ -3,6 +3,7 @@ package dev.spocht.spocht.data;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Picture;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.parse.GetDataCallback;
@@ -38,7 +39,13 @@ public class Image extends ParseData {
     }
     public String name()
     {
-        String name = getString("name");
+        String name = null;
+        try {
+            this.fetchIfNeeded();
+            name = getString("name");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == name)
         {
             name = new String("unknown");

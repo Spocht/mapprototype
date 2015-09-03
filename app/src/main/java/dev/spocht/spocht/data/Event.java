@@ -1,5 +1,7 @@
 package dev.spocht.spocht.data;
 
+import android.util.Log;
+
 import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
@@ -59,7 +61,13 @@ public class Event extends ParseData {
     }
     public String name()
     {
-        String name = getString("name");
+        String name = null;
+        try {
+            this.fetchIfNeeded();
+            name = getString("name");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == name)
         {
             name = new String("unknown");
@@ -73,7 +81,13 @@ public class Event extends ParseData {
     }
     public Date startTime()
     {
-        Date date = (Date)get("startTime");
+        Date date = null;
+        try{
+            this.fetchIfNeeded();
+            date = (Date)get("startTime");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == date)
         {
             date = getUpdatedAt();
@@ -87,7 +101,13 @@ public class Event extends ParseData {
     }
     public String getState()
     {
-        String st = getString("state");
+        String st=null;
+        try{
+            this.fetchIfNeeded();
+            st= getString("state");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == st)
         {
             st = "unknown";
@@ -121,21 +141,23 @@ public class Event extends ParseData {
     }
     public List<Participation> participants()
     {
-        List<Participation> participations = getList("participants");
-        if(null == participations)
-        {
-            if(this.has("participants")) {
-                try {
-                    participations = this.getParseObject("participation").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    //todo log?!
+        List<Participation> participations=null;
+        try {
+            this.fetchIfNeeded();
+             participations = getList("participants");
+            if(null == participations)
+            {
+                if(this.has("participants")) {
+                        participations = this.getParseObject("participation").fetchIfNeeded();
+                }
+                else
+                {
                     participations = new ArrayList<Participation>();
                 }
             }
-            else
-            {
-                participations = new ArrayList<Participation>();
-            }
+        } catch (com.parse.ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+            participations = new ArrayList<Participation>();
         }
         return(participations);
     }
@@ -170,22 +192,26 @@ public class Event extends ParseData {
     }
     public Facility facility()
     {
-        Facility facility = (Facility)get("facility");
-        if(null == facility)
-        {
-            if(this.has("facility")) {
-                try {
+        Facility facility =null;
+        try{
+            this.fetchIfNeeded();
+            facility = (Facility)get("facility");
+            if(null == facility)
+            {
+                if(this.has("facility")) {
                     facility = this.getParseObject("facility").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    //todo log?!
+
+                }
+                else
+                {
                     facility = new Facility();
                 }
             }
-            else
-            {
-                facility = new Facility();
-            }
+        } catch (com.parse.ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+            facility = new Facility();
         }
+
         return(facility);
     }
 

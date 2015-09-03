@@ -45,7 +45,13 @@ public class Facility extends ParseData {
     }
     public String name()
     {
-        String name = getString("name");
+        String name = null;
+        try {
+            this.fetchIfNeeded();
+            name = getString("name");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == name)
         {
             name = new String("unknown");
