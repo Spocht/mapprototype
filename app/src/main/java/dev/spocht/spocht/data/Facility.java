@@ -65,7 +65,13 @@ public class Facility extends ParseData {
     }
     public GeoPoint location()
     {
-        GeoPoint location = new GeoPoint(getParseGeoPoint("location"));
+        GeoPoint location = null;
+        try{
+            this.fetchIfNeeded();
+            location = new GeoPoint(getParseGeoPoint("location"));
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == location)
         {
             location = defaultPoint;
@@ -95,7 +101,13 @@ public class Facility extends ParseData {
     }
     public int numberOfFields()
     {
-        int num = getInt("numberOfFields");
+        int num = 0;
+        try{
+            this.fetchIfNeeded();
+            num = getInt("numberOfFields");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(num <1)
         {
             num = 1;
@@ -109,7 +121,13 @@ public class Facility extends ParseData {
     }
     public String comment()
     {
-        String comment = getString("comment");
+        String comment = null;
+        try{
+            this.fetchIfNeeded();
+            comment = getString("comment");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == comment)
         {
             comment = "Zone X-Ray";
@@ -124,7 +142,13 @@ public class Facility extends ParseData {
     }
     public double rating()
     {
-        double val = (double)get("rating");
+        double val = 0;
+        try {
+            this.fetchIfNeeded();
+            val = (double)get("rating");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(val <0)
         {
             val=0;
@@ -157,21 +181,23 @@ public class Facility extends ParseData {
     }
     public Image image()
     {
-        Image pic = (Image)get("image");
-        if(null == pic)
-        {
-            if(this.has("image")) {
-                try {
+        Image pic = null;
+        try{
+            this.fetchIfNeeded();
+            pic = (Image)get("image");
+            if(null == pic)
+            {
+                if(this.has("image")) {
                     pic = this.getParseObject("image").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    Log.e("spocht.data","Error getting data",e);
+                }
+                else
+                {
                     pic = new Image();
                 }
             }
-            else
-            {
-                pic = new Image();
-            }
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+            pic = new Image();
         }
         return(pic);
     }
@@ -201,22 +227,24 @@ public class Facility extends ParseData {
     }
     public Sport sport()
     {
-        Sport sport = (Sport)get("sport");
-        if(null == sport)
-        {
-            Log.d("spocht.data","Facility.sport not avail");
-            if(this.has("sport")) {
-                try {
+        Sport sport = null;
+
+        try {
+            this.fetchIfNeeded();
+            sport = (Sport)get("sport");
+            if(null == sport)
+            {
+                if(this.has("sport")) {
                     sport = this.getParseObject("sport").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    Log.e("spocht.data","Error getting data",e);
+                }
+                else
+                {
                     sport = new Sport("unknown", 0);
                 }
             }
-            else
-            {
-                sport = new Sport("unknown", 0);
-            }
+        } catch (com.parse.ParseException e) {
+            Log.e("spocht.data","Error getting data",e);
+            sport = new Sport("unknown", 0);
         }
         return(sport);
     }
@@ -246,21 +274,23 @@ public class Facility extends ParseData {
     }
     public List<Event> events()
     {
-        List<Event> events = getList("events");
-        if(null == events)
-        {
-            if(this.has("events")) {
-                try {
-                    events = this.getParseObject("event").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    Log.e("spocht.data","Error getting data",e);
+        List<Event> events = null;
+        try {
+            this.fetchIfNeeded();
+            events = getList("events");
+            if(null == events)
+            {
+                if(this.has("events")) {
+                        events = this.getParseObject("event").fetchIfNeeded();
+                }
+                else
+                {
                     events = new ArrayList<Event>();
                 }
             }
-            else
-            {
-                events = new ArrayList<Event>();
-            }
+        } catch (com.parse.ParseException e) {
+            Log.e("spocht.data","Error getting data",e);
+            events = new ArrayList<Event>();
         }
         return(events);
     }
