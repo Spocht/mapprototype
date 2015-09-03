@@ -59,9 +59,9 @@ public class MapsActivity extends AppCompatActivity
 
     };
 
-    DetailFragment mDetailFragment;
-    boolean mIsDetailFragmentVisible = false;
-    boolean mIsAnimating = false;
+    private DetailFragment mDetailFragment;
+    private boolean mIsDetailFragmentVisible = false;
+    private boolean mIsAnimating = false;
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
