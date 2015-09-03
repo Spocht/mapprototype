@@ -1,5 +1,7 @@
 package dev.spocht.spocht.data;
 
+import android.util.Log;
+
 import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
@@ -31,7 +33,13 @@ public class Experience extends ParseData {
     }
     public int xp()
     {
-        int xp = getInt("xp");
+        int xp = 0;
+        try{
+            this.fetchIfNeeded();
+            xp = getInt("xp");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(xp < 0)
         {
             xp = 0;
@@ -45,7 +53,13 @@ public class Experience extends ParseData {
     }
     public int level()
     {
-        int lvl = getInt("level");
+        int lvl = 0;
+        try{
+            this.fetchIfNeeded();
+            lvl = getInt("level");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(lvl < 1)
         {
             lvl = 1;
@@ -97,21 +111,23 @@ public class Experience extends ParseData {
     }
     public Sport sport()
     {
-        Sport sport = (Sport)get("sport");
-        if(null == sport)
-        {
-            if(this.has("sport")) {
-                try {
-                    sport = this.getParseObject("sport").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    //todo log?!
+        Sport sport = null;
+        try {
+            this.fetchIfNeeded();
+            sport = (Sport)get("sport");
+            if(null == sport)
+            {
+                if(this.has("sport")) {
+                        sport = this.getParseObject("sport").fetchIfNeeded();
+                }
+                else
+                {
                     sport = new Sport("unknown", 0);
                 }
             }
-            else
-            {
-                sport = new Sport("unknown", 0);
-            }
+        } catch (com.parse.ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+            sport = new Sport("unknown", 0);
         }
         return(sport);
     }
