@@ -27,7 +27,7 @@ public class DetailFragment extends Fragment {
     private ImageView mImage;
     private TextView mName;
     private TextView mFieldCount;
-    private TextView mPersonCount;
+    private TextView mComment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,9 +42,9 @@ public class DetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mImage       = (ImageView) view.findViewById(R.id.fragment_detail_image);
-        mName        = (TextView) getView().findViewById(R.id.fragment_detail_title);
-        mFieldCount  = (TextView) getView().findViewById(R.id.fragment_detail_fieldCount);
-        mPersonCount = (TextView) getView().findViewById(R.id.fragment_detail_personCount);
+        mName        = (TextView)  view.findViewById(R.id.fragment_detail_title);
+        mFieldCount  = (TextView)  view.findViewById(R.id.fragment_detail_fieldCount);
+        mComment = (TextView)  view.findViewById(R.id.fragment_detail_comment);
     }
 
     public void refreshContents() {
@@ -52,7 +52,7 @@ public class DetailFragment extends Fragment {
         setImage();
         setTitle();
         setFieldCount();
-        setPersonCount();
+        setComment();
     }
 
     @Override
@@ -88,17 +88,11 @@ public class DetailFragment extends Fragment {
     }
 
     private void setFieldCount() {
-        mFieldCount.setText(String.valueOf(mFacility.numberOfFields()) + " Spielfelder");
+        int number = mFacility.numberOfFields();
+        mFieldCount.setText(String.valueOf(number) + (number == 1 ? R.string.field : R.string.fields));
     }
 
-    private void setPersonCount() {
-        List<Event> eventList = mFacility.events();
-        int participants = 0;
-
-        for (Event e: eventList) {
-            participants = participants + e.participants().size();
-        }
-
-        mPersonCount.setText(String.valueOf(participants) + " Personen");
+    private void setComment() {
+        mComment.setText(mFacility.comment());
     }
 }
