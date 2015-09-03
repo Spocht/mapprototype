@@ -91,7 +91,23 @@ public class DataManager {
     }
     public Boolean isLoggedIn()
     {
-        return(null != ParseUser.getCurrentUser());
+        if(null != ParseUser.getCurrentUser())
+        {
+            try {
+                loadUser();
+            } catch (ParseException e) {
+                Log.e("spocht.dataManager","Fail to fetch user",e);
+            }
+            return true;
+        }
+        return(false);
+    }
+    public void loadUser() throws ParseException {
+        ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.include("user");
+        currentUser = query.getFirst();
+        currentUser.pin();
     }
     public Boolean login(String mail, String password)
     {
@@ -100,12 +116,7 @@ public class DataManager {
         try {
             user.waitForCompletion();
             if(!user.isFaulted()) {
-                ParseUser res = user.getResult();
-                ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
-                query.whereEqualTo("user", res);
-                query.include("user");
-                currentUser = query.getFirst();
-                currentUser.pin();
+                loadUser();
             }
         } catch (InterruptedException e) {
             return false;
