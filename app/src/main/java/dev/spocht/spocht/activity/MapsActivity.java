@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;

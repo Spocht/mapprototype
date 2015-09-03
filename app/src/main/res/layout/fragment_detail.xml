@@ -49,5 +49,11 @@
             android:textColor="@color/black" />
 
     </RelativeLayout>
+    <ListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_detail_event_infoContainer"
+        android:background="#ffb100" />
 
 </dev.spocht.spocht.layout.FractionalLinearLayout>
