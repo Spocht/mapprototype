@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -57,8 +59,6 @@ public class MapsActivity extends AppCompatActivity
         FragmentManager.OnBackStackChangedListener,
         OnDetailsFragmentListener {
 
-
-    MyLocationListener myLocationListener;
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
         public Void operate(Location location) {
@@ -66,10 +66,7 @@ public class MapsActivity extends AppCompatActivity
             LatLng latLng = new LatLng(
                     location.getLatitude(),
                     location.getLongitude());
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
-
-            updateMarkers(new GeoPoint(location));
 
             return null;
         }
@@ -82,11 +79,8 @@ public class MapsActivity extends AppCompatActivity
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
-    private static android.content.Context context;
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
-    private ArrayList<Stub> locationList;
-
+    private static android.content.Context  context;
+    private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
@@ -102,7 +96,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("activity/MapsActivityOnCreate");
+        Log.d("spocht.mapsactivity", "activity/MapsActivityOnCreate");
 
         detailFragment = new DetailFragment();
 
@@ -110,8 +104,13 @@ public class MapsActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
-        myLocationListener = new MyLocationListener(context, locationCallback, true);
 
+        MyLocationListener.create(context);
+        MyLocationListener.getInstance().register(locationCallback, true);
+        Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
+        toastWelcome.show();
+
+        Log.d("spocht.mapsactivity","Loged in "+DataManager.getInstance().currentUser().getUsername());
         //SPOCHT-13:
         //setup() had a method to DataManager.getInstance that
         //was called there. that leaded to unfortunate
@@ -123,7 +122,6 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
-        loadLocations();
     }
 
     View.OnClickListener mapClickListener = new View.OnClickListener () {
@@ -201,6 +199,13 @@ public class MapsActivity extends AppCompatActivity
                 setUpMap();
             }
         }
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
+                updateMarkers(new GeoPoint(cameraPosition.target));
+            }
+        });
     }
 
     /**
@@ -216,47 +221,45 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void loadMarkers(View view) {
-        updateMarkers(myLocationListener.getLastLocationGP());
+        updateMarkers(MyLocationListener.getInstance().getLastLocationGP());
     }
 
     private void updateMarkers(final GeoPoint location)
     {
-        DataManager.getInstance().findFacilities(location, 1.5, new InfoRetriever<List<Facility>>() {
+
+        double distance = new GeoPoint(mMap.getProjection().getVisibleRegion().nearLeft).distanceInKilometersTo(location);
+        Log.d("spocht.mapsactivity","Search distance: "+distance);
+        if(distance > 5)
+        {
+            distance = 5;
+        }
+        DataManager.getInstance().findFacilities(location, distance, new InfoRetriever<List<Facility>>() {
             @Override
             public void operate(List<Facility> facilities) {
-                for(Facility f:facilities)
-                {
-                    Log.d("spocht.maps","Got facility: "+f.name());
-                    if(!setFacilities.contains(f.getObjectId())) {
+                for (Facility f : facilities) {
+                    Log.d("spocht.maps", "Got facility: " + f.name());
+                    if (!setFacilities.contains(f.getObjectId())) {
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
+                                                //todo: get resource by string!
 //                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
                                         .anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
-                        Log.d("spocht.maps","stored facility: "+f.name());
+                        Log.d("spocht.maps", "stored facility: " + f.name());
                     }
                 }
             }
         });
     }
 
-    //todo: remove
-    private void loadLocations() {
-        locationList = new ArrayList<Stub>();
-        locationList.add(new Lorrainepark());
-        locationList.add(new Steckweg());
-        locationList.add(new Spitalacker());
-        locationList.add(new Lorrainestrasse());
-    }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println(marker.getTitle());
-
+        Log.d("spocht.activity",marker.getTitle());
         animateFragment(true);
 
 

@@ -36,7 +36,6 @@ public class Sport extends ParseData {
         } catch (ParseException e) {
             Log.e("spocht.data", "Error getting data", e);
         }
-//        String name = getString("name");
         if(null == name)
         {
             name = new String("unknown");

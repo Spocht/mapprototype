@@ -3,6 +3,7 @@ package dev.spocht.spocht.data;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -47,6 +48,25 @@ public class DatenSchleuder {
     private Sport               sport       = new Sport("tabletennis",2);
     private ArrayList<SpochtUser> lstUser   = new ArrayList<SpochtUser>(10);
     private MyLocationListener myLocationListener;
+    private LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+        @Override
+        public Void operate(Location l) {
+            Log.d("spocht.datenschleuder","Location: "+l.toString());
+            if((l.getLatitude() == 10)&&(l.getLongitude() == 10))
+            {
+                throwInitialData();
+            }
+            else if((l.getLatitude() == 20)&&(l.getLongitude() == 20))
+            {
+                throwHistorie();
+            }
+            else if((l.getLatitude() == 30)&&(l.getLongitude() == 30))
+            {
+                createUsers();
+            }
+            return null;
+        }
+    };
 
     private DatenSchleuder()
     {
@@ -60,21 +80,9 @@ public class DatenSchleuder {
     //SPOCHT-13
     public void setup(Context ctx)
     {
-        LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
-            @Override
-            public Void operate(Location l) {
-                if((l.getLatitude() == 10)&&(l.getLongitude() == 10))
-                {
-                    throwInitialData();
-                }
-                else if((l.getLatitude() == 20)&&(l.getLongitude() == 20))
-                {
-                    throwHistorie();
-                }
-                return null;
-            }
-        };
-        myLocationListener = new MyLocationListener(ctx,locationCallback, false);
+        MyLocationListener.create(ctx);
+        MyLocationListener.getInstance().register(locationCallback, false);
+        Log.d("spocht.datenschleuder","Setup");
     }
 
 
@@ -85,12 +93,6 @@ public class DatenSchleuder {
         locations.add(new Lorrainestrasse());
         locations.add(new Steckweg());
         locations.add(new Spitalacker());
-        ArrayList<ItemUser> users = new ArrayList<>(10);
-        users.add(new ItemUser("lugi@lolwut.org","honigimkopf"));
-        users.add(new ItemUser("edm@streetparade.ch","atemlos"));
-        users.add(new ItemUser("rudi@victoryismi.ne","schwerterkaffee"));
-        users.add(new ItemUser("test@parse.com","iossucks"));
-        users.add(new ItemUser("gays@microsoft.com","redmond"));
 
         sport.persist();
         Image pic = new Image("default", BitmapFactory.decodeResource(DataManager.getInstance().getContext().getResources(), R.drawable.spochtlogo2));
@@ -104,25 +106,9 @@ public class DatenSchleuder {
             facility.persist();
             lstFacility.add(facility);
         }
-        for(ItemUser u:users)
-        {
-            SpochtUser user = new SpochtUser(u.name, u.password);
-            user.setEmail(u.name);
-            Experience xp = new Experience(sport);
-            xp.persist();
-            user.setExperience(xp);
-            user.seen();
-
-            try {
-                user.signUp();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            lstUser.add(user);
-        }
+        createUsers();
         for(int cnt =5;cnt>0;cnt--) {
-            System.out.println("__ Let things settle... ["+cnt+"]");
+            Log.d("spocht.datenschleuder", "__ Let things settle... [" + cnt + "]");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -134,11 +120,62 @@ public class DatenSchleuder {
             f.saveEventually(new SaveCallback() {
                 public void done(ParseException e) {
                     if (null != e) {
-                        System.out.println("Error while saving facility object");
+                        Log.e("spocht.datenschleuder","Error while saving facility object",e);
                     }
                 }
             });
         }
+    }
+    public void createUsers()
+    {
+        sport.persist();
+
+        ArrayList<ItemUser> users = new ArrayList<>(10);
+        users.add(new ItemUser("lugi@lolwut.org","honigimkopf"));
+        users.add(new ItemUser("edm@streetparade.ch","atemlos"));
+        users.add(new ItemUser("rudi@victoryismi.ne","schwerterkaffee"));
+        users.add(new ItemUser("test@parse.com","iossucks"));
+        users.add(new ItemUser("gays@microsoft.com","redmond"));
+
+        for(ItemUser u:users)
+        {
+
+
+            SpochtUser user = DataManager.getInstance().signup(u.name,u.password);
+            Experience xp = new Experience(sport);
+            xp.persist();
+            user.setExperience(xp);
+            user.seen();
+            user.saveEventually(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(null == e)
+                    {
+                        Log.d("spocht.dataschleuder","User created");
+                    }
+                    else
+                    {
+                        Log.e("spocht.dataschleuder","create users",e);
+                    }
+                }
+            });
+
+//            SpochtUser user = new SpochtUser(u.name, u.password);
+//            user.user().setEmail(u.name);
+//            Experience xp = new Experience(sport);
+//            xp.persist();
+//            user.setExperience(xp);
+//            user.seen();
+//
+//            try {
+//                user.signUp();
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+
+            lstUser.add(user);
+        }
+
     }
     public void createHistorie(final String nameEvent, final Facility facility, final SpochtUser user, final Date date, final Outcome outcome)
     {
