@@ -101,7 +101,13 @@ public class SpochtUser extends ParseData {
     }
     public Date lastSeen()
     {
-        Date date= (Date)get("lastSeen");
+        Date date= null;
+        try {
+            this.fetchIfNeeded();
+            date = (Date)get("lastSeen");
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
         if(null == date)
         {
             date= new Date();
@@ -140,7 +146,7 @@ public class SpochtUser extends ParseData {
     }
     public List<Experience> experiences()
     {
-        List<Experience> xps;
+        List<Experience> xps=null;
         try {
             this.fetchIfNeeded();
             xps = getList("experience");
@@ -151,7 +157,7 @@ public class SpochtUser extends ParseData {
         }
         catch (com.parse.ParseException e)
         {
-            //todo log?!
+            Log.e("spocht.data", "Error getting data", e);
             xps= new ArrayList<Experience>();
         }
         return(xps);
