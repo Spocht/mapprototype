@@ -103,7 +103,7 @@ public class DetailFragment extends ListFragment {
         int number = mFacility.numberOfFields();
         mFieldCount.setText(
                 String.valueOf(number) + " " +
-                (number == 1 ? getString(R.string.field) : getString(R.string.fields))
+                        (number == 1 ? getString(R.string.field) : getString(R.string.fields))
         );
     }
 

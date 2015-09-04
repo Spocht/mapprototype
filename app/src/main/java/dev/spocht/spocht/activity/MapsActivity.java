@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -39,9 +40,7 @@ import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 
 public class MapsActivity extends AppCompatActivity
         implements
-        GoogleMap.OnMarkerClickListener,
-        FragmentManager.OnBackStackChangedListener,
-        OnDetailsFragmentListener {
+        GoogleMap.OnMarkerClickListener {
 
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
@@ -108,18 +107,9 @@ public class MapsActivity extends AppCompatActivity
         //now the context is given as a param.
         DatenSchleuder.getInstance().setup(DataManager.getInstance().getContext());
 
-        getFragmentManager().addOnBackStackChangedListener(this);
-
         setUpMapIfNeeded();
         setUpActionBar();
     }
-
-    View.OnClickListener mapClickListener = new View.OnClickListener () {
-        @Override
-        public void onClick(View view) {
-            animateFragment(false);
-        }
-    };
 
     private void setUpActionBar() {
 
@@ -205,9 +195,17 @@ public class MapsActivity extends AppCompatActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.setOnMarkerClickListener(this);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.d("Map", "Fragment should now slide down");
+                animateFragment(false);
+            }
+        });
     }
 
     /**
@@ -224,7 +222,7 @@ public class MapsActivity extends AppCompatActivity
     {
 
         double distance = new GeoPoint(mMap.getProjection().getVisibleRegion().nearLeft).distanceInKilometersTo(location);
-        Log.d("spocht.mapsactivity","Search distance: "+distance);
+        Log.d("spocht.mapsactivity", "Search distance: " + distance);
         if(distance > 5)
         {
             distance = 5;
@@ -275,15 +273,9 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void animateFragment(boolean visible) {
-        if (mIsAnimating) {
-            return;
-        }
-        mIsAnimating = true;
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-
         if (visible) {
             mIsDetailFragmentVisible = true;
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
 
             Log.d("animateFragment", "slide up");
@@ -296,18 +288,9 @@ public class MapsActivity extends AppCompatActivity
             mIsDetailFragmentVisible = false;
             getFragmentManager().popBackStack();
         }
-
     }
 
-    @Override
-    public void onBackStackChanged() {
-        if (mIsDetailFragmentVisible) {
-            animateFragment(false);
-        }
-    }
-
-    @Override
-    public void onAnimationEnd() {
-        mIsAnimating = false;
+    public void createNew(View view) {
+        Log.d("DetailFragment", "Create new event");
     }
 }
