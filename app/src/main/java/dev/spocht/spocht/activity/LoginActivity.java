@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.DataManager;
 
 /**
  * A login screen that offers login via email/password.
@@ -47,7 +48,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private AsyncTask<Void,Void,Boolean> mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -69,7 +70,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptLogin(true); //todo: Enter on Login-Screen is LOGIN or Register?
                     return true;
                 }
                 return false;
@@ -81,13 +82,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptLogin(true);
             }
         });
         mEmailSignUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptLogin(false);
             }
         });
 
@@ -105,7 +106,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
+    public void attemptLogin(final Boolean login) {
         if (mAuthTask != null) {
             return;
         }
@@ -147,16 +148,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            if(true == login) {
+                mAuthTask = new UserLoginTask(email, password);
+            }
+            else
+            {
+                mAuthTask = new UserRegisterTask(email,password);
+            }
             mAuthTask.execute((Void) null);
-
-            startActivity(new Intent(this, MapsActivity.class));
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
+        return email.matches("([a-z]+[a-z0-9]*[.]{0,1})+@([a-z]+[a-z0-9]*[.])+[a-z]+");
     }
 
     private boolean isPasswordValid(String password) {
@@ -254,6 +258,42 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mEmailView.setAdapter(adapter);
     }
 
+    public class UserRegisterTask extends AsyncTask<Void,Void,Boolean>{
+        private final String mEmail;
+        private final String mPassword;
+        UserRegisterTask(String email, String password)
+        {
+            mEmail = email;
+            mPassword = password;
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            //in case of fail an empty user will be returned
+            return (null != DataManager.getInstance().signup(mEmail,mPassword).getObjectId());
+        }
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mAuthTask = null;
+            showProgress(false);
+
+            if (success) {
+                Intent intent = new Intent(LoginActivity.this,
+                        MapsActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+
+                mEmailView.setError("user already registered");
+                mEmailView.requestFocus();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+            showProgress(false);
+        }
+    }
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -270,24 +310,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            return true;
+            return DataManager.getInstance().login(mEmail, mPassword);
         }
 
         @Override
@@ -296,6 +319,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
+                Intent intent = new Intent(LoginActivity.this,
+                        MapsActivity.class);
+                startActivity(intent);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
