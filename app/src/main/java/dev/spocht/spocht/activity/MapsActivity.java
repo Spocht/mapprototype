@@ -95,7 +95,11 @@ public class MapsActivity extends AppCompatActivity
 
         MyLocationListener.create(context);
         MyLocationListener.getInstance().register(locationCallback, true);
-        Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
+        Toast toastWelcome = Toast.makeText(
+                context,
+                getString(R.string.welcome)+ " " + DataManager.getInstance().currentUser().getUsername(),
+                Toast.LENGTH_LONG
+        );
         toastWelcome.show();
 
         Log.d("spocht.mapsactivity","Loged in "+DataManager.getInstance().currentUser().getUsername());
