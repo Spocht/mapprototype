@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -251,7 +252,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d("spocht.activity",marker.getTitle());
+        Log.d("spocht.activity", marker.getTitle());
         System.out.println(mIsDetailFragmentVisible);
         mDetailFragment.setFacility(mapFacility.get(marker));
 
