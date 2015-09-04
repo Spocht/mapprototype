@@ -18,7 +18,7 @@ import dev.spocht.spocht.data.Event;
  */
 public class EventAdapter extends ArrayAdapter<Event> {
     public EventAdapter(Context context, ArrayList<Event> events) {
-        super(context, 0, events);
+        super(context, R.layout.event_list, events);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.event_list, parent, false);
         }
 
-        Log.d("EventAdapter", "pupulating fields for event " + event.name());
+        Log.d("EventAdapter", "populating fields for event " + event.name());
         TextView eventName = (TextView) convertView.findViewById(R.id.fragment_detail_event_name);
         TextView eventTime = (TextView) convertView.findViewById(R.id.fragment_detail_event_timeStarted);
         TextView eventPart = (TextView) convertView.findViewById(R.id.fragment_detail_event_participant);

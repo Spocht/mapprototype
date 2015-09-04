@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,14 +23,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.data.Event;
-import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
@@ -39,7 +35,7 @@ import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
 import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.mock.location.Stub;
+import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -64,6 +60,8 @@ public class MapsActivity extends AppCompatActivity
     DetailFragment mDetailFragment;
     boolean mIsDetailFragmentVisible = false;
     boolean mIsAnimating = false;
+
+    Marker mSelectedMarker;
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
@@ -258,17 +256,22 @@ public class MapsActivity extends AppCompatActivity
     public boolean onMarkerClick(Marker marker) {
         Log.d("spocht.activity", marker.getTitle());
         System.out.println(mIsDetailFragmentVisible);
-        mDetailFragment.setFacility(mapFacility.get(marker));
+
+        mSelectedMarker = marker;
 
         // if the fragment is already visible, only refresh contents
-        if (mIsDetailFragmentVisible) {
-            mDetailFragment.refreshContents();
-        } else {
+        if ( ! mIsDetailFragmentVisible) {
             // otherwise display it. Contents will then be refreshed via onResume()
             animateFragment(true);
+        } else {
+            mDetailFragment.refreshContents();
         }
 
         return true;
+    }
+
+    public Facility getSelectedFacility() {
+        return mapFacility.get(mSelectedMarker);
     }
 
     private void animateFragment(boolean visible) {
