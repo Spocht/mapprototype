@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.callbacks.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
@@ -233,14 +234,20 @@ public class MapsActivity extends AppCompatActivity
                 for (Facility f : facilities) {
                     Log.d("spocht.maps", "Got facility: " + f.name());
                     if (!setFacilities.contains(f.getObjectId())) {
+                        //todo: set color according to facility's state
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
                         Marker marker = mMap.addMarker(new MarkerOptions()
-                                        .position(f.location().toLatLng())
-                                        .title(f.name())
-                                                //todo: get resource by string!
-//                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
-                                        .anchor(0, 1)
-                        );
+                                .position(f.location().toLatLng())
+                                .title(f.name())
+                                .icon(BitmapDescriptorFactory.fromResource(
+                                        // this will throw a NotFoundException if the icon is not found
+                                        getResources()
+                                                .getIdentifier(
+                                                        iconDescriptor,
+                                                        "drawable",
+                                                        Application.PACKAGE_NAME
+                                                ))).anchor(0, 1)
+                                );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
                         Log.d("spocht.maps", "stored facility: " + f.name());
