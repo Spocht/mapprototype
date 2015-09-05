@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.purchase.InAppPurchaseListener;
+
 import java.util.ArrayList;
 
+import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
@@ -23,6 +26,7 @@ public class DetailFragment extends ListFragment {
     private EventAdapter mEventAdapter;
 
     private ImageView mImage;
+    private TextView mType;
     private TextView mName;
     private TextView mFieldCount;
     private TextView mComment;
@@ -36,10 +40,7 @@ public class DetailFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         FractionalLinearLayout view = (FractionalLinearLayout) inflater.inflate(R.layout.fragment_detail, container, false);
-
-
 
         return view;
     }
@@ -49,6 +50,7 @@ public class DetailFragment extends ListFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mImage       = (ImageView) view.findViewById(R.id.fragment_detail_image);
+        mType        = (TextView)  view.findViewById(R.id.fragment_detail_type);
         mName        = (TextView)  view.findViewById(R.id.fragment_detail_title);
         mFieldCount  = (TextView)  view.findViewById(R.id.fragment_detail_fieldCount);
         mComment     = (TextView)  view.findViewById(R.id.fragment_detail_comment);
@@ -79,6 +81,7 @@ public class DetailFragment extends ListFragment {
         setFieldCount();
         setComment();
         setEvents();
+        setType();
     }
 
     @Override
@@ -108,8 +111,22 @@ public class DetailFragment extends ListFragment {
     }
 
     private void setComment() {
-
         mComment.setText(mFacility.comment());
+    }
+
+    private void setType() {
+        Log.d("DetailFragment", "Trying to find string resource for " + mFacility.sport().name());
+
+        String type = (String) getResources().getText(
+            getResources().getIdentifier(
+                mFacility.sport().name(),
+                "string",
+                Application.PACKAGE_NAME
+            )
+        );
+
+        // ensure first letter capitalized
+        mType.setText(Character.toUpperCase(type.charAt(0)) + type.substring(1));
     }
 
     private void setEvents() {

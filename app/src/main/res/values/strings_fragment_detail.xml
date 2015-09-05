@@ -1,4 +1,4 @@
 <resources>
-    <string name="field">Spielfeld</string>
-    <string name="fields">Spielfelder</string>
+    <string name="field">field</string>
+    <string name="fields">fields</string>
 </resources>
