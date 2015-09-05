@@ -1,5 +1,4 @@
 
-
 var state = require("cloud/state.js");
 var stateInstance = new state;
 //---REF

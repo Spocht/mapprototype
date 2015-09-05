@@ -1,15 +1,22 @@
 package dev.spocht.spocht.data;
 
 import android.content.Context;
-import android.provider.Telephony;
+import android.util.Log;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.LogInCallback;
 import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.util.List;
 
 import bolts.Task;
 import dev.spocht.spocht.R;
@@ -19,18 +26,11 @@ import dev.spocht.spocht.monitor.EventMonitor;
  * Created by edm on 11.08.15.
  */
 public class DataManager {
-
     private static volatile DataManager instance = null;
-    private final static DataManagerLock lock = new DataManagerLock();
-    private static volatile boolean initializing = false;
-
     private static Context context;
-
-
+    private SpochtUser currentUser;
 
     private DataManager() {
-
-
         if (context == null) {
             throw new Error("Oops! Context not set. Please set it first by injectContext");
         }
@@ -54,8 +54,16 @@ public class DataManager {
                 getContext().getString(R.string.parse_client_key)
         );
 
+        ParseUser.enableAutomaticUser();
+        ParseACL defaultACL = new ParseACL();
+        // Optionally enable public read access.
+        // defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicWriteAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
 
 
+        registerPushChannel("");
 
         registerMonitors();
 
@@ -65,8 +73,6 @@ public class DataManager {
     //https://en.wikipedia.org/wiki/Singleton_pattern
 
     public synchronized static DataManager getInstance(){
-
-
         //double checked locking... still leads to
         //Parse.enbleLocalDatastore-called-twice-Exceptions
         //when DataManager.geInstance is called in CTOR of DataManager,
@@ -85,15 +91,37 @@ public class DataManager {
     }
     public Boolean isLoggedIn()
     {
-        return(null != ParseUser.getCurrentUser());
+        if(null != ParseUser.getCurrentUser())
+        {
+            try {
+                loadUser();
+            } catch (ParseException e) {
+                Log.e("spocht.dataManager","Fail to fetch user",e);
+            }
+            return true;
+        }
+        return(false);
+    }
+    public void loadUser() throws ParseException {
+        ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.include("user");
+        currentUser = query.getFirst();
+        currentUser.pin();
     }
     public Boolean login(String mail, String password)
     {
-        Task<ParseUser> user=ParseUser.logInInBackground(mail,password);
+        Task<ParseUser> user=ParseUser.logInInBackground(mail, password);
 
         try {
             user.waitForCompletion();
+            if(!user.isFaulted()) {
+                loadUser();
+            }
         } catch (InterruptedException e) {
+            return false;
+        } catch (ParseException e) {
+            Log.e("spocht.dataManager","Login",e);
             return false;
         }
         return !user.isFaulted();
@@ -101,25 +129,27 @@ public class DataManager {
     public SpochtUser signup(String mail, String password)
     {
         SpochtUser user = new SpochtUser(mail,password);
-        user.setEmail(mail);
+        user.user().setEmail(mail);
         user.seen();
-        Task<Void> task = user.signUpInBackground();
-
         try {
-            task.waitForCompletion();
-        } catch (InterruptedException e) {
-            return new SpochtUser();
-        }
-        if(!task.isFaulted())
-        {
+            user.user().signUp();
+            user.updateAclBlocking();
+            user.pin();
             return user;
-        }
-        else {
+        } catch (ParseException e) {
+            Log.e("spocht.dataManager","SignUp Failed",e);
             return new SpochtUser();
         }
     }
     public void logout()
     {
+        currentUser().unpinInBackground();
+        findFacilitiesLocal(new GeoPoint(), -1, new InfoRetriever<List<Facility>>() {
+            @Override
+            public void operate(List<Facility> facilities) {
+                Facility.unpinAllInBackground(facilities);
+            }
+        });
         Task<Void> task = ParseUser.logOutInBackground();
         try
         {
@@ -127,27 +157,84 @@ public class DataManager {
         }
         catch(InterruptedException e)
         {
-            //todo: crash report?
+            Log.e("spocht.dataManager","Logout failed ",e);
         }
     }
 
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
-
-        ParseQuery<T> query = ParseQuery.getQuery(obj);
-        query.getInBackground(id, new GetCallback<T>() {
-            public void done(T object, ParseException e) {
+        ParseObject.createWithoutData(obj, "id").fetchIfNeededInBackground(new GetCallback<T>() {
+            @Override
+            public void done(T parseObject, ParseException e) {
                 if (e == null) {
-                    callback.operate(object);
+                    parseObject.pinInBackground();
+                    callback.operate(parseObject);
                 } else {
-                    System.out.println("failed to load items:: "+e.getMessage());
-                    // something went wrong
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                }
+            }
+        });
+    }
+    public <T extends ParseData> void update(String id, Class<T> obj, final InfoRetriever<T> callback) {
+        ParseObject.createWithoutData(obj, "id").fetchInBackground(new GetCallback<T>() {
+            @Override
+            public void done(T parseObject, ParseException e) {
+                if (e == null) {
+                    parseObject.pinInBackground();
+                    callback.operate(parseObject);
+                } else {
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                }
+            }
+        });
+    }
+    public void findFacilitiesLocal(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    {
+        Log.d("spocht.dataManager", "Find Facilities locally @ " + location);
+        ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+        if(distance > 0) {
+            query.whereWithinKilometers("location", location, distance);
+        }
+        query.fromLocalDatastore();
+        query.findInBackground(new FindCallback<Facility>() {
+            @Override
+            public void done(List<Facility> list, ParseException e) {
+                if (null == e) {
+                    if (null != list) {
+                        callback.operate(list);
+                    }
+                } else {
+                    Log.e("spocht.datamanager", "Error finding facilities", e);
+                }
+            }
+        });
+    }
+    public void findFacilitiesRemote(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    {
+        Log.d("spocht.dataManager", "Find Facilities remote @ " + location);
+        ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+        query.whereWithinKilometers("location", location, distance);
+        query.findInBackground(new FindCallback<Facility>() {
+            @Override
+            public void done(List<Facility> list, ParseException e) {
+                if (e == null) {
+                    Facility.pinAllInBackground(list);
+                    callback.operate(list);
+                } else {
+                    Log.e("spocht.dataManager", "Error finding facilities:", e);
                 }
             }
         });
     }
 
+    public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    {
+        Log.d("spocht.dataManager", "Find Facilities @ " + location);
+        findFacilitiesLocal(location, distance, callback);
+        findFacilitiesRemote(location,distance,callback);
+    }
+
     public static void injectContext(Context ctx) {
-        System.out.println("Injecting Context: " + ctx);
+        Log.d("spocht.datamanager", "Injecting Context: " + ctx);
         context = ctx;
     }
 
@@ -156,20 +243,55 @@ public class DataManager {
         return this.context;
     }
 
+    public SpochtUser currentUser()
+    {
+        if(currentUser == null)
+        {
+            return new SpochtUser();
+        }
+        return currentUser;
+    }
+
     private void registerMonitors(){
 
         EventMonitor eventMonitor = new EventMonitor(context);
     }
-
-    private static class DataManagerLock{
-
-        boolean locked = false;
-
-        public boolean isLocked(){
-            return locked == true;
+    public void registerPushChannel(final String name)
+    {
+        if(null != name) {
+            ParsePush.subscribeInBackground(name, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("spocht.dataManager", "Push ["+name+"]: successfully subscribed to the channel.");
+                    } else {
+                        Log.e("spocht.dataManager", "Push ["+name+"]: failed to subscribe", e);
+                    }
+                }
+            });
         }
-        public void lock(){
-            locked = true;
+        else
+        {
+            Log.e("spocht.dataManager","Push registration failed! Null Pointer");
+        }
+    }
+    public void unregisterPushChannel(final String name)
+    {
+        if(null != name) {
+            ParsePush.unsubscribeInBackground(name, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("spocht.dataManager", "Push ["+name+"]: successfully unsubscribed to the channel.");
+                    } else {
+                        Log.e("spocht.dataManager", "Push ["+name+"]: failed to unsubscribe", e);
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.e("spocht.dataManager","Push registration failed! Null Pointer");
         }
     }
 }

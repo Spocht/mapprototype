@@ -2,22 +2,21 @@ package dev.spocht.spocht.monitor;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
-import dev.spocht.spocht.callbacks.LocationCallback;
-import dev.spocht.spocht.data.DataManager;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.listener.MyLocationListener;
+import dev.spocht.spocht.location.MyLocationListener;
 
 /**
  * Created by edm on 26.08.15.
@@ -28,8 +27,6 @@ public class EventMonitor {
 
     private Event event;
 
-    private ParseUser parseUser;
-
     private double maxDistanceToEventInKilometers = 0.2;
 
 
@@ -39,12 +36,11 @@ public class EventMonitor {
 
     MyLocationListener myLocationListener;
 
-    //allenfalls SpochtUser übergeben.
-    public EventMonitor(Context ctx, ParseUser pu, Event e){
-        this.parseUser = pu;
-        this.event = e;
-        myLocationListener = new MyLocationListener(
-                ctx,
+
+    public EventMonitor(Context ctx) {
+//        facility.generateTestData();
+        MyLocationListener.create(ctx);
+        MyLocationListener.getInstance().register(
                 new LocationCallback<Void, Location>() {
                     @Override
                     public Void operate(Location location) {
@@ -52,7 +48,7 @@ public class EventMonitor {
                         newParseGeoPoint.setLongitude(location.getLongitude());
                         if (newParseGeoPoint.distanceInKilometersTo(eventParseGeoPoint) >=
                                 maxDistanceToEventInKilometers) {
-                            System.out.println("Location too far away. Checking out.");
+                            Log.d("spocht.eventMonitor", "Location too far away. Checking out.");
                             Map<String, Map<String, String>> cloudParams = new HashMap<>();
                             Map <String, String> event = new HashMap<>();
                             event.put("id", event.get("objectId"));
@@ -67,7 +63,7 @@ public class EventMonitor {
                                 e.printStackTrace();
                             }
                         } else {
-                            System.out.println("Location still in range. Noop.");
+                            Log.d("spocht.eventMonitor","Location still in range. Noop.");
                         }
 
                         return null;
@@ -75,44 +71,6 @@ public class EventMonitor {
                 },
                 false
         );
-
-
-    }
-
-    public EventMonitor(Context ctx) {
-//        facility.generateTestData();
-        myLocationListener = new MyLocationListener(
-                ctx,
-                new LocationCallback<Void, Location>() {
-                    @Override
-                    public Void operate(Location location) {
-                        newParseGeoPoint.setLatitude(location.getLatitude());
-                        newParseGeoPoint.setLongitude(location.getLongitude());
-                        if (newParseGeoPoint.distanceInKilometersTo(eventParseGeoPoint) >=
-                                maxDistanceToEventInKilometers) {
-                            System.out.println("Location too far away. Checking out.");
-                            Map<String, Map<String, String>> cloudParams = new HashMap<>();
-                            Map <String, String> event = new HashMap<>();
-                            event.put("id", "8vK94WXVGe");
-                            Map <String, String> user = new HashMap<>();
-                            user.put("id", "PGcfBOKlmE");
-                            cloudParams.put("event", event);
-                            cloudParams.put("user", user);
-
-                            try {
-                                ParseCloud.callFunction("checkout", cloudParams);
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            System.out.println("Location still in range. Noop.");
-                        }
-
-                        return null;
-                    }
-                },
-                false
-         );
     }
 
 

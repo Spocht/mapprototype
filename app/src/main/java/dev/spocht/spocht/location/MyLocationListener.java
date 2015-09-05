@@ -1,18 +1,16 @@
-package dev.spocht.spocht.listener;
+package dev.spocht.spocht.location;
 
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +18,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.data.GeoPoint;
 
 /**
  * Created by edm on 17.08.15.
@@ -30,19 +28,38 @@ public class MyLocationListener extends Activity implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private static List<CallbacksAndTheirUiBehaviour> locationCallbacks = new ArrayList<>();
+    private static MyLocationListener instance = new MyLocationListener();
+
+    private List<CallbacksAndTheirUiBehaviour> locationCallbacks = new ArrayList<>();
     private Location lastLocation;
     private Context ctx;
+    private GoogleApiClient googleApiClient = null;
+    private LocationRequest locationRequest;
 
-    public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb, boolean um) {
-        this.ctx = ctx;
+
+    private MyLocationListener()
+    {
+        lastLocation = new Location("");
+
+    }
+    public void register(LocationCallback<Void, Location> cb, boolean um)
+    {
         CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);
         locationCallbacks.add(callback);
-        buildGoogleApiClient();
     }
 
-    private static GoogleApiClient googleApiClient = null;
+    public static MyLocationListener getInstance()
+    {
+        return instance;
+    }
 
+    public static synchronized void create(Context ctx)
+    {
+        if(null == getInstance().ctx) {
+            getInstance().ctx = ctx;
+        }
+        getInstance().buildGoogleApiClient();
+    }
 
     private synchronized GoogleApiClient buildGoogleApiClient() {
         if (googleApiClient == null) {
@@ -56,7 +73,6 @@ public class MyLocationListener extends Activity implements
         return googleApiClient;
     }
 
-    private LocationRequest locationRequest;
 
     protected void createLocationRequest(){
         locationRequest = new LocationRequest();
@@ -82,6 +98,10 @@ public class MyLocationListener extends Activity implements
     public Location getLastLocation(){
         return lastLocation;
     }
+    public GeoPoint getLastLocationGP(){
+        Log.d("LocationListener","lastLocation: "+lastLocation);
+        return new GeoPoint(lastLocation);
+    }
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -99,7 +119,7 @@ public class MyLocationListener extends Activity implements
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("Not ui manipulating");
+                        Log.d("spocht.locationListener", "Not ui manipulating");
                         cbb.lc.operate(loc);
                     }
                 }).start();
@@ -111,7 +131,7 @@ public class MyLocationListener extends Activity implements
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println("Running manipulation");
+                                Log.d("spocht.locationListener","Running manipulation");
                                 cbb.lc.operate(loc);
                             }
                         });

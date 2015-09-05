@@ -1,120 +1,105 @@
 package dev.spocht.spocht.activity;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
+import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
-import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.mock.location.Lorrainepark;
-import dev.spocht.spocht.mock.location.Lorrainestrasse;
-import dev.spocht.spocht.mock.location.Spitalacker;
-import dev.spocht.spocht.mock.location.Steckweg;
-import dev.spocht.spocht.mock.location.Stub;
+import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.GeoPoint;
+import dev.spocht.spocht.data.InfoRetriever;
+import dev.spocht.spocht.location.MyLocationListener;
 
 public class MapsActivity extends AppCompatActivity
         implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
         GoogleMap.OnMarkerClickListener {
 
-
-    MyLocationListener myLocationListener;
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
-        public Void operate(Location l) {
+        public Void operate(Location location) {
 
             LatLng latLng = new LatLng(
-                    l.getLatitude(),
-                    l.getLongitude());
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                    location.getLatitude(),
+                    location.getLongitude());
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
+
             return null;
         }
 
     };
 
-    private static android.content.Context context;
+    private DetailFragment mDetailFragment;
+    private boolean mIsDetailFragmentVisible = false;
+    private boolean mIsAnimating = false;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    Marker mSelectedMarker;
 
-    private GoogleApiClient googleApiClient;
-    private Location lastLocation;
-    private LocationRequest locationRequest;
-    private ArrayList<Stub> locationList;
+    private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
+    private HashSet<String>          setFacilities=new HashSet<>(20);
+    private static android.content.Context  context;
+    private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
     }
 
 
-    protected synchronized void buildGoogleApiClient() {
-
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    protected void createLocationRequest() {
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
     //this one is needed... unfortunately it is not mentioned in the tutorial
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient.connect();
-        googleApiClient.connect();
-        googleApiClient.connect();
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("activity/MapsActivityOnCreate");
+        Log.d("spocht.mapsactivity", "activity/MapsActivityOnCreate");
+
+        mDetailFragment = new DetailFragment();
+
         super.onCreate(savedInstanceState);
-        buildGoogleApiClient();
+
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
-        myLocationListener = new MyLocationListener(context, locationCallback, true);
 
+        MyLocationListener.create(context);
+        MyLocationListener.getInstance().register(locationCallback, true);
+        Toast toastWelcome = Toast.makeText(
+                context,
+                getString(R.string.welcome)+ " " + DataManager.getInstance().currentUser().getUsername(),
+                Toast.LENGTH_LONG
+        );
+        toastWelcome.show();
+
+        Log.d("spocht.mapsactivity","Loged in "+DataManager.getInstance().currentUser().getUsername());
         //SPOCHT-13:
         //setup() had a method to DataManager.getInstance that
         //was called there. that leaded to unfortunate
@@ -124,18 +109,17 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
-        loadLocations();
     }
 
     private void setUpActionBar() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // ActionBar was first introduced in HoneyComb
-            ActionBar a = getSupportActionBar();
-            if (a != null) {
-                a.setTitle(R.string.app_name);
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            // ActionBar was first introduced in HoneyComb
+//            ActionBar a = getActionBar();
+//            if (a != null) {
+//                a.setTitle(R.string.app_name);
+//            }
+//        }
     }
 
     @Override
@@ -150,7 +134,6 @@ public class MapsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_stats:
-                DatenSchleuder.getInstance().throwHistorie();
                 return false;
             case R.id.menu_settings:
                 return false;
@@ -189,7 +172,7 @@ public class MapsActivity extends AppCompatActivity
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -205,70 +188,115 @@ public class MapsActivity extends AppCompatActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.setOnMarkerClickListener(this);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.d("Map", "Fragment should now slide down");
+                animateFragment(false);
+            }
+        });
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
+                updateMarkers(new GeoPoint(cameraPosition.target));
+            }
+        });
     }
 
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-        createLocationRequest();
-
-        startLocationUpdates();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-        System.out.println("NotConnected");
-        System.out.println(connectionResult.getErrorCode());
-    }
-
-
-    @Override
-    public void onLocationChanged(Location location) {
-        System.out.println(location.getLatitude() + " " + location.getLongitude());
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.0f));
-    }
-
+    /**
+     * refreah button click handler
+     *
+     * @deprecated
+     * @param view
+     */
     public void loadMarkers(View view) {
-        for (Stub loc: locationList) {
-            mMap.addMarker(new MarkerOptions()
-                            .position(loc.getLatLng())
-                            .title(loc.getName())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
-                            .anchor(0, 1)
-            );
-            System.out.println(loc.getClass());
-        }
-//        mMap.addMarker(new MarkerOptions().position(new Lorrainepark().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Lorrainestrasse().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Spitalacker().getLatLng()));
-//        mMap.addMarker(new MarkerOptions().position(new Steckweg().getLatLng()));
+        updateMarkers(MyLocationListener.getInstance().getLastLocationGP());
     }
 
-    private void loadLocations() {
-        locationList = new ArrayList<Stub>();
-        locationList.add(new Lorrainepark());
-        locationList.add(new Steckweg());
-        locationList.add(new Spitalacker());
-        locationList.add(new Lorrainestrasse());
+    private void updateMarkers(final GeoPoint location)
+    {
+
+        double distance = new GeoPoint(mMap.getProjection().getVisibleRegion().nearLeft).distanceInKilometersTo(location);
+        Log.d("spocht.mapsactivity", "Search distance: " + distance);
+        if(distance > 5)
+        {
+            distance = 5;
+        }
+        DataManager.getInstance().findFacilities(location, distance, new InfoRetriever<List<Facility>>() {
+            @Override
+            public void operate(List<Facility> facilities) {
+                for (Facility f : facilities) {
+                    Log.d("spocht.maps", "Got facility: " + f.name());
+                    if (!setFacilities.contains(f.getObjectId())) {
+                        //todo: set color according to facility's state
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(f.location().toLatLng())
+                                .title(f.name())
+                                .icon(BitmapDescriptorFactory.fromResource(
+                                        // this will throw a NotFoundException if the icon is not found
+                                        getResources()
+                                                .getIdentifier(
+                                                        iconDescriptor,
+                                                        "drawable",
+                                                        Application.PACKAGE_NAME
+                                                ))).anchor(0, 1)
+                                );
+                        mapFacility.put(marker, f);
+                        setFacilities.add(f.getObjectId());
+                        Log.d("spocht.maps", "stored facility: " + f.name());
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println(marker.getTitle());
+        Log.d("spocht.activity", marker.getTitle());
+        System.out.println(mIsDetailFragmentVisible);
+
+        mSelectedMarker = marker;
+
+        // if the fragment is already visible, only refresh contents
+        if ( ! mIsDetailFragmentVisible) {
+            // otherwise display it. Contents will then be refreshed via onResume()
+            animateFragment(true);
+        } else {
+            mDetailFragment.refreshContents();
+        }
 
         return true;
+    }
+
+    public Facility getSelectedFacility() {
+        return mapFacility.get(mSelectedMarker);
+    }
+
+    private void animateFragment(boolean visible) {
+        if (visible) {
+            mIsDetailFragmentVisible = true;
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
+
+            Log.d("animateFragment", "slide up");
+            ft.add(R.id.main_content, mDetailFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+
+        } else {
+            Log.d("animanteFragment", "slide down");
+            mIsDetailFragmentVisible = false;
+            getFragmentManager().popBackStack();
+        }
+    }
+
+    public void createNew(View view) {
+        Log.d("DetailFragment", "Create new event");
     }
 }

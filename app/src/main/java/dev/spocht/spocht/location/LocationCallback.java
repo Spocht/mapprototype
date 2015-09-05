@@ -1,4 +1,4 @@
-package dev.spocht.spocht.callbacks;
+package dev.spocht.spocht.location;
 
 /**
  * Created by edm on 18.08.15.

@@ -1,15 +1,9 @@
 package dev.spocht.spocht;
 
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.StringDef;
-
-import com.parse.Parse;
-import com.parse.ParseObject;
-
-import dev.spocht.spocht.data.DataManager;
+import android.util.Log;
 
 /**
  * Created by edm on 01.08.15.
@@ -32,6 +26,10 @@ public class Application extends android.app.Application {
 
     private static final float DEFAULT_SEARCH_DISTANCE = 250.0f;
 
+    // key used to dynamically resolve resources using getIdentifier()
+    // --> MUST be the same as defined in Manifest.xml
+    public static final String PACKAGE_NAME = "dev.spocht.spocht";
+
     private static SharedPreferences preferences;
 
     //private static ConfigHelper configHelper;
@@ -41,18 +39,10 @@ public class Application extends android.app.Application {
     }
     @Override
     public void onCreate(){
-        System.out.println("OnCreateApplication");
+        Log.d("spocht.application","OnCreateApplication");
         super.onCreate();
-        //DataManager.getInstance();
-        //registerSubclasses();
-        //Parse.enableLocalDatastore(this);
-        //Parse.initialize(this, "@string/parse_application_id", "@string/parse_client_key");
     }
 
-    private void registerSubclasses(){
-        //ParseObject.registerSubclass(MetaModel.class);
-
-    }
 
     public static Context getContext() {
         return getContext();

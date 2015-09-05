@@ -1,5 +1,7 @@
 package dev.spocht.spocht.data;
 
+import android.util.Log;
+
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -26,7 +28,14 @@ public class Participation extends ParseData {
     }
     public Outcome outcome()
     {
-        return (Outcome.valueOf(getString("outcome")));
+        Outcome out=Outcome.GAVEUP;
+        try {
+            this.fetchIfNeeded();
+            out=Outcome.valueOf(getString("outcome"));
+        } catch (ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+        }
+        return (out);
     }
 
     public void setUser(final SpochtUser user)
@@ -43,7 +52,7 @@ public class Participation extends ParseData {
                             user.persist();
                         }
                     } else {
-                        System.out.println("Error while saving sport object");
+                        Log.e("spocht.data", "Error saving data.", e);
                     }
                 }
             });
@@ -55,21 +64,23 @@ public class Participation extends ParseData {
     }
     public SpochtUser user()
     {
-        SpochtUser user = (SpochtUser)get("user");
-        if(null == user)
-        {
-            if(this.has("user")) {
-                try {
-                    user = this.getParseObject("user").fetchIfNeeded();
-                } catch (com.parse.ParseException e) {
-                    //todo log?!
+        SpochtUser user = null;
+        try {
+            this.fetchIfNeeded();
+            user = (SpochtUser)get("user");
+            if(null == user)
+            {
+                if(this.has("user")) {
+                        user = this.getParseObject("user").fetchIfNeeded();
+                }
+                else
+                {
                     user = new SpochtUser();
                 }
             }
-            else
-            {
-                user = new SpochtUser();
-            }
+        } catch (com.parse.ParseException e) {
+            Log.e("spocht.data", "Error getting data", e);
+            user = new SpochtUser();
         }
         return(user);
     }
