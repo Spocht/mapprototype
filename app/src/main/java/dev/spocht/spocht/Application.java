@@ -26,6 +26,10 @@ public class Application extends android.app.Application {
 
     private static final float DEFAULT_SEARCH_DISTANCE = 250.0f;
 
+    // key used to dynamically resolve resources using getIdentifier()
+    // --> MUST be the same as defined in Manifest.xml
+    public static final String PACKAGE_NAME = "dev.spocht.spocht";
+
     private static SharedPreferences preferences;
 
     //private static ConfigHelper configHelper;

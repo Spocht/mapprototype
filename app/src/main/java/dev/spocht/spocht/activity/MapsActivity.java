@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
@@ -38,9 +40,7 @@ import dev.spocht.spocht.location.MyLocationListener;
 
 public class MapsActivity extends AppCompatActivity
         implements
-        GoogleMap.OnMarkerClickListener,
-        FragmentManager.OnBackStackChangedListener,
-        OnDetailsFragmentListener {
+        GoogleMap.OnMarkerClickListener {
 
     LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
@@ -59,6 +59,8 @@ public class MapsActivity extends AppCompatActivity
     private DetailFragment mDetailFragment;
     private boolean mIsDetailFragmentVisible = false;
     private boolean mIsAnimating = false;
+
+    Marker mSelectedMarker;
 
     private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
     private HashSet<String>          setFacilities=new HashSet<>(20);
@@ -90,7 +92,11 @@ public class MapsActivity extends AppCompatActivity
 
         MyLocationListener.create(context);
         MyLocationListener.getInstance().register(locationCallback, true);
-        Toast toastWelcome = Toast.makeText(context,"Welcome "+DataManager.getInstance().currentUser().getUsername(),Toast.LENGTH_LONG);
+        Toast toastWelcome = Toast.makeText(
+                context,
+                getString(R.string.welcome)+ " " + DataManager.getInstance().currentUser().getUsername(),
+                Toast.LENGTH_LONG
+        );
         toastWelcome.show();
 
         Log.d("spocht.mapsactivity","Loged in "+DataManager.getInstance().currentUser().getUsername());
@@ -101,18 +107,9 @@ public class MapsActivity extends AppCompatActivity
         //now the context is given as a param.
         DatenSchleuder.getInstance().setup(DataManager.getInstance().getContext());
 
-        getFragmentManager().addOnBackStackChangedListener(this);
-
         setUpMapIfNeeded();
         setUpActionBar();
     }
-
-    View.OnClickListener mapClickListener = new View.OnClickListener () {
-        @Override
-        public void onClick(View view) {
-            animateFragment(false);
-        }
-    };
 
     private void setUpActionBar() {
 
@@ -198,9 +195,17 @@ public class MapsActivity extends AppCompatActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.setOnMarkerClickListener(this);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.d("Map", "Fragment should now slide down");
+                animateFragment(false);
+            }
+        });
     }
 
     /**
@@ -217,7 +222,7 @@ public class MapsActivity extends AppCompatActivity
     {
 
         double distance = new GeoPoint(mMap.getProjection().getVisibleRegion().nearLeft).distanceInKilometersTo(location);
-        Log.d("spocht.mapsactivity","Search distance: "+distance);
+        Log.d("spocht.mapsactivity", "Search distance: " + distance);
         if(distance > 5)
         {
             distance = 5;
@@ -228,14 +233,20 @@ public class MapsActivity extends AppCompatActivity
                 for (Facility f : facilities) {
                     Log.d("spocht.maps", "Got facility: " + f.name());
                     if (!setFacilities.contains(f.getObjectId())) {
+                        //todo: set color according to facility's state
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
                         Marker marker = mMap.addMarker(new MarkerOptions()
-                                        .position(f.location().toLatLng())
-                                        .title(f.name())
-                                                //todo: get resource by string!
-//                                        .icon(BitmapDescriptorFactory.fromResource(Resources.getSystem().getIdentifier("spocht_" + f.sport().name() + "_" + "grey", "drawable", "android")))
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.spocht_tabletennis_grey))
-                                        .anchor(0, 1)
-                        );
+                                .position(f.location().toLatLng())
+                                .title(f.name())
+                                .icon(BitmapDescriptorFactory.fromResource(
+                                        // this will throw a NotFoundException if the icon is not found
+                                        getResources()
+                                                .getIdentifier(
+                                                        iconDescriptor,
+                                                        "drawable",
+                                                        Application.PACKAGE_NAME
+                                                ))).anchor(0, 1)
+                                );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
                         Log.d("spocht.maps", "stored facility: " + f.name());
@@ -247,31 +258,30 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d("spocht.activity",marker.getTitle());
+        Log.d("spocht.activity", marker.getTitle());
         System.out.println(mIsDetailFragmentVisible);
-        mDetailFragment.setFacility(mapFacility.get(marker));
+
+        mSelectedMarker = marker;
 
         // if the fragment is already visible, only refresh contents
-        if (mIsDetailFragmentVisible) {
-            mDetailFragment.refreshContents();
-        } else {
+        if ( ! mIsDetailFragmentVisible) {
             // otherwise display it. Contents will then be refreshed via onResume()
             animateFragment(true);
+        } else {
+            mDetailFragment.refreshContents();
         }
 
         return true;
     }
 
+    public Facility getSelectedFacility() {
+        return mapFacility.get(mSelectedMarker);
+    }
+
     private void animateFragment(boolean visible) {
-        if (mIsAnimating) {
-            return;
-        }
-        mIsAnimating = true;
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-
         if (visible) {
             mIsDetailFragmentVisible = true;
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.animator.slide_fragment_in, 0, 0, R.animator.slide_fragment_out);
 
             Log.d("animateFragment", "slide up");
@@ -284,18 +294,9 @@ public class MapsActivity extends AppCompatActivity
             mIsDetailFragmentVisible = false;
             getFragmentManager().popBackStack();
         }
-
     }
 
-    @Override
-    public void onBackStackChanged() {
-        if (mIsDetailFragmentVisible) {
-            animateFragment(false);
-        }
-    }
-
-    @Override
-    public void onAnimationEnd() {
-        mIsAnimating = false;
+    public void createNew(View view) {
+        Log.d("DetailFragment", "Create new event");
     }
 }

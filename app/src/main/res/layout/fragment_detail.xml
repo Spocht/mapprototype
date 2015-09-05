@@ -16,15 +16,24 @@
             android:id="@+id/fragment_detail_image"
             android:layout_width="100dp"
             android:layout_height="57dp"
-            tools:ignore="ContentDescription" />
-
+            android:padding="5dp"
+            tools:ignore="ContentDescription"/>
 
         <TextView
-            android:id="@+id/fragment_detail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/fragment_detail_type"
+            android:text="{TYPE}"
             android:layout_toEndOf="@+id/fragment_detail_image"
+            android:textColor="@color/black"  />
+        <TextView
+            android:id="@+id/fragment_detail_title"
+            android:layout_below="@id/fragment_detail_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="{TITLE}"
+            android:layout_toEndOf="@+id/fragment_detail_image"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/black" />
 
@@ -32,8 +41,8 @@
             android:id="@+id/fragment_detail_fieldCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/fragment_detail_image"
-            android:layout_below="@+id/fragment_detail_title"
+            android:layout_toEndOf="@id/fragment_detail_image"
+            android:layout_below="@id/fragment_detail_title"
             android:text="{FIELD_COUNT}"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/black" />
@@ -42,12 +51,28 @@
             android:id="@+id/fragment_detail_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/fragment_detail_image"
-            android:layout_below="@+id/fragment_detail_fieldCount"
+            android:layout_toEndOf="@id/fragment_detail_image"
+            android:layout_below="@id/fragment_detail_fieldCount"
             android:text="{COMMENT}"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/black" />
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_new_releases_black_24dp"
+            android:onClick="createNew"
+            />
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_detail_comment"
+            android:background="#ffb100" />
 
     </RelativeLayout>
+
 
 </dev.spocht.spocht.activity.FractionalLinearLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SpochT</string>
+    <string name="title_activity_maps">Karte</string>
+    <string name="pos_actual">Position</string>
+    <string name="menu_stats">Statistiken</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="menu_logout">Abmelden</string>
+    <string name="title_activity_main">SpochT</string>
+    <string name="action_settings">Einstellungen</string>
+</resources>
