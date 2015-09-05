@@ -34,7 +34,6 @@ public class MyLocationListener extends Activity implements
     private Location lastLocation;
     private Context ctx;
 
-
     public MyLocationListener(Context ctx, LocationCallback<Void, Location> cb, boolean um) {
         this.ctx = ctx;
         CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);

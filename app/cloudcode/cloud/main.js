@@ -31,7 +31,7 @@ Parse.Cloud.define("spochtRokks", function(request, response) {
 
 Parse.Cloud.define("checkin", function(request, response) {
 	var eventQuery = new Parse.Query("Event");
-	eventQuery.equalTo("objectId", request.params.event.id).include("associatedFacility.sport");
+	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
 	eventQuery.first({
 		success : function(event) {
 			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
@@ -68,13 +68,15 @@ Parse.Cloud.define("checkin", function(request, response) {
 	});
 });
 
+
+
 //Log out a user from an ongoing event in case they get too far away.
 //Test curl:
 //curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkout
 
 Parse.Cloud.define("checkout", function(request, response) {
 	var eventQuery = new Parse.Query("Event");
-	eventQuery.equalTo("objectId", request.params.event.id).include("associatedFacility.sport");
+	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
 	eventQuery.first({
 		success: function(event) {
 			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
@@ -95,7 +97,5 @@ Parse.Cloud.define("checkout", function(request, response) {
 	stateInstance.checkout = function(context){
 		return "yeah";
 	}
-
-
 
 });

@@ -157,6 +157,7 @@ public class DataManager {
     }
 
     private void registerMonitors(){
+
         EventMonitor eventMonitor = new EventMonitor(context);
     }
 
