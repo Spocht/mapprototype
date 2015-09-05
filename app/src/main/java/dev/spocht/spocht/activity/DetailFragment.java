@@ -17,7 +17,6 @@ import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.layout.FractionalLinearLayout;
 
 public class DetailFragment extends ListFragment {
     private Facility mFacility;

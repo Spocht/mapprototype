@@ -1,4 +1,4 @@
-<dev.spocht.spocht.layout.FractionalLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.spocht.spocht.activity.FractionalLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/details_fragment"
@@ -75,4 +75,4 @@
     </RelativeLayout>
 
 
-</dev.spocht.spocht.layout.FractionalLinearLayout>
+</dev.spocht.spocht.activity.FractionalLinearLayout>

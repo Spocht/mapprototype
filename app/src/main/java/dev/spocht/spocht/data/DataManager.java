@@ -91,7 +91,23 @@ public class DataManager {
     }
     public Boolean isLoggedIn()
     {
-        return(null != ParseUser.getCurrentUser());
+        if(null != ParseUser.getCurrentUser())
+        {
+            try {
+                loadUser();
+            } catch (ParseException e) {
+                Log.e("spocht.dataManager","Fail to fetch user",e);
+            }
+            return true;
+        }
+        return(false);
+    }
+    public void loadUser() throws ParseException {
+        ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.include("user");
+        currentUser = query.getFirst();
+        currentUser.pin();
     }
     public Boolean login(String mail, String password)
     {
@@ -100,12 +116,7 @@ public class DataManager {
         try {
             user.waitForCompletion();
             if(!user.isFaulted()) {
-                ParseUser res = user.getResult();
-                ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
-                query.whereEqualTo("user", res);
-                query.include("user");
-                currentUser = query.getFirst();
-                currentUser.pin();
+                loadUser();
             }
         } catch (InterruptedException e) {
             return false;
@@ -132,6 +143,13 @@ public class DataManager {
     }
     public void logout()
     {
+        currentUser().unpinInBackground();
+        findFacilitiesLocal(new GeoPoint(), -1, new InfoRetriever<List<Facility>>() {
+            @Override
+            public void operate(List<Facility> facilities) {
+                Facility.unpinAllInBackground(facilities);
+            }
+        });
         Task<Void> task = ParseUser.logOutInBackground();
         try
         {
@@ -139,15 +157,16 @@ public class DataManager {
         }
         catch(InterruptedException e)
         {
-            //todo: crash report?
+            Log.e("spocht.dataManager","Logout failed ",e);
         }
     }
 
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
-        ParseObject.createWithoutData(obj,"id").fetchIfNeededInBackground(new GetCallback<T>() {
+        ParseObject.createWithoutData(obj, "id").fetchIfNeededInBackground(new GetCallback<T>() {
             @Override
             public void done(T parseObject, ParseException e) {
                 if (e == null) {
+                    parseObject.pinInBackground();
                     callback.operate(parseObject);
                 } else {
                     Log.e("spocht.dataManager", "Failed to load items:", e);
@@ -155,12 +174,26 @@ public class DataManager {
             }
         });
     }
-
-    public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    public <T extends ParseData> void update(String id, Class<T> obj, final InfoRetriever<T> callback) {
+        ParseObject.createWithoutData(obj, "id").fetchInBackground(new GetCallback<T>() {
+            @Override
+            public void done(T parseObject, ParseException e) {
+                if (e == null) {
+                    parseObject.pinInBackground();
+                    callback.operate(parseObject);
+                } else {
+                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                }
+            }
+        });
+    }
+    public void findFacilitiesLocal(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
-        Log.d("spocht.dataManager", "Find Facilities @ " + location);
+        Log.d("spocht.dataManager", "Find Facilities locally @ " + location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
-        query.whereWithinKilometers("location", location, distance);
+        if(distance > 0) {
+            query.whereWithinKilometers("location", location, distance);
+        }
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<Facility>() {
             @Override
@@ -169,26 +202,35 @@ public class DataManager {
                     if (null != list) {
                         callback.operate(list);
                     }
-                    ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
-                    query.whereWithinKilometers("location", location, distance);
-                    query.findInBackground(new FindCallback<Facility>() {
-                        @Override
-                        public void done(List<Facility> list, ParseException e) {
-                            if (e == null) {
-                                Facility.pinAllInBackground(list);
-                                callback.operate(list);
-                            } else {
-                                Log.e("spocht.dataManager", "Error finding facilities:", e);
-                            }
-                        }
-                    });
                 } else {
                     Log.e("spocht.datamanager", "Error finding facilities", e);
                 }
             }
         });
+    }
+    public void findFacilitiesRemote(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    {
+        Log.d("spocht.dataManager", "Find Facilities remote @ " + location);
+        ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+        query.whereWithinKilometers("location", location, distance);
+        query.findInBackground(new FindCallback<Facility>() {
+            @Override
+            public void done(List<Facility> list, ParseException e) {
+                if (e == null) {
+                    Facility.pinAllInBackground(list);
+                    callback.operate(list);
+                } else {
+                    Log.e("spocht.dataManager", "Error finding facilities:", e);
+                }
+            }
+        });
+    }
 
-
+    public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
+    {
+        Log.d("spocht.dataManager", "Find Facilities @ " + location);
+        findFacilitiesLocal(location, distance, callback);
+        findFacilitiesRemote(location,distance,callback);
     }
 
     public static void injectContext(Context ctx) {

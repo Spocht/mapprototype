@@ -30,14 +30,13 @@ import java.util.List;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
-import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.listener.OnDetailsFragmentListener;
+import dev.spocht.spocht.location.MyLocationListener;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -57,9 +56,9 @@ public class MapsActivity extends AppCompatActivity
 
     };
 
-    DetailFragment mDetailFragment;
-    boolean mIsDetailFragmentVisible = false;
-    boolean mIsAnimating = false;
+    private DetailFragment mDetailFragment;
+    private boolean mIsDetailFragmentVisible = false;
+    private boolean mIsAnimating = false;
 
     Marker mSelectedMarker;
 
@@ -180,13 +179,6 @@ public class MapsActivity extends AppCompatActivity
                 setUpMap();
             }
         }
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
-                updateMarkers(new GeoPoint(cameraPosition.target));
-            }
-        });
     }
 
     /**
@@ -205,6 +197,13 @@ public class MapsActivity extends AppCompatActivity
             public void onMapClick(LatLng latLng) {
                 Log.d("Map", "Fragment should now slide down");
                 animateFragment(false);
+            }
+        });
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
+                updateMarkers(new GeoPoint(cameraPosition.target));
             }
         });
     }

@@ -70,11 +70,6 @@ public class Image extends ParseData {
     public Bitmap picture()
     {
         ParseFile imgFile = null;
-        try {
-            this.fetchIfNeeded();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         Bitmap pic=null;
         try {
             this.fetchIfNeeded();

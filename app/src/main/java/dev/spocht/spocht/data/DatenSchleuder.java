@@ -5,22 +5,15 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.parse.ParseACL;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseRole;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.callbacks.LocationCallback;
-import dev.spocht.spocht.listener.MyLocationListener;
+import dev.spocht.spocht.location.LocationCallback;
+import dev.spocht.spocht.location.MyLocationListener;
 import dev.spocht.spocht.mock.location.Lorrainepark;
 import dev.spocht.spocht.mock.location.Lorrainestrasse;
 import dev.spocht.spocht.mock.location.Spitalacker;
