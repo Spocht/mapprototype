@@ -85,7 +85,7 @@
                 <category android:name="dev.spocht.spocht" />
             </intent-filter>
         </receiver>
-        <receiver android:name="dev.spocht.spocht.listener.PushReceiver" android:exported="false">
+        <receiver android:name=".activity.PushReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
                 <action android:name="com.parse.push.intent.DELETE" />

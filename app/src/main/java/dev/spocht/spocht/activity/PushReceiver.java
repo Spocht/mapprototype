@@ -1,4 +1,4 @@
-package dev.spocht.spocht.listener;
+package dev.spocht.spocht.activity;
 
 import android.content.Context;
 import android.content.Intent;

@@ -4,14 +4,12 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
 
-import dev.spocht.spocht.callbacks.LocationCallback;
-import dev.spocht.spocht.data.DataManager;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.listener.MyLocationListener;
+import dev.spocht.spocht.location.MyLocationListener;
 
 /**
  * Created by edm on 26.08.15.

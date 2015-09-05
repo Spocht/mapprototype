@@ -23,21 +23,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.listener.OnDetailsFragmentListener;
-import dev.spocht.spocht.callbacks.LocationCallback;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
-import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.mock.location.Stub;
+import dev.spocht.spocht.location.MyLocationListener;
 
 public class MapsActivity extends AppCompatActivity
         implements

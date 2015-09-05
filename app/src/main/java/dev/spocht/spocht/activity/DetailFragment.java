@@ -2,24 +2,14 @@ package dev.spocht.spocht.activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.provider.CalendarContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.Marker;
-
-import java.util.List;
-
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.data.Participation;
-import dev.spocht.spocht.layout.FractionalLinearLayout;
 
 public class DetailFragment extends Fragment {
     private Facility mFacility;
