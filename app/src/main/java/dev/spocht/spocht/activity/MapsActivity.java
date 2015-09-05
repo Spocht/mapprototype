@@ -179,13 +179,6 @@ public class MapsActivity extends AppCompatActivity
                 setUpMap();
             }
         }
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
-                updateMarkers(new GeoPoint(cameraPosition.target));
-            }
-        });
     }
 
     /**
@@ -204,6 +197,13 @@ public class MapsActivity extends AppCompatActivity
             public void onMapClick(LatLng latLng) {
                 Log.d("Map", "Fragment should now slide down");
                 animateFragment(false);
+            }
+        });
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
+                updateMarkers(new GeoPoint(cameraPosition.target));
             }
         });
     }
