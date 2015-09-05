@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnonymousUtils;
@@ -20,7 +19,6 @@ import java.util.List;
 
 import bolts.Task;
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.monitor.EventMonitor;
 
 /**
  * Created by edm on 11.08.15.
@@ -29,6 +27,7 @@ public class DataManager {
     private static volatile DataManager instance = null;
     private static Context context;
     private SpochtUser currentUser;
+    private EventMonitor eventMonitor;
 
     private DataManager() {
         if (context == null) {
@@ -253,7 +252,7 @@ public class DataManager {
     }
 
     private void registerMonitors(){
-        EventMonitor eventMonitor = new EventMonitor(context);
+        eventMonitor = new EventMonitor(context);
     }
     public void registerPushChannel(final String name)
     {
