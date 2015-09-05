@@ -43,9 +43,4 @@ public class Application extends android.app.Application {
         super.onCreate();
     }
 
-
-    public static Context getContext() {
-        return getContext();
-    }
-
 }
