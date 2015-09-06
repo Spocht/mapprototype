@@ -74,7 +74,7 @@ public class DatenSchleuder {
     public void setup(Context ctx)
     {
         MyLocationListener.create(ctx);
-        MyLocationListener.getInstance().register(locationCallback, false);
+        MyLocationListener.getInstance().register(locationCallback, false,this);
         Log.d("spocht.datenschleuder","Setup");
     }
 
