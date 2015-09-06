@@ -232,16 +232,10 @@ public class Event extends ParseData {
     public void checkIn(final SpochtUser user)
     {
         if(!isUserCheckedIn(user)) {
-            Participation participation = new Participation(user, Outcome.GAVEUP);
-            participation.persist();
             //todo if successful API call, update local Event
             if(true) {
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
-                setParticipation(participation);
-            }
-            else
-            {
-                participation.destroy();
+                DataManager.getInstance().getEventMonitor().setEvent(this);
             }
         }
     }
@@ -249,18 +243,7 @@ public class Event extends ParseData {
     {
         //todo: call API
         DataManager.getInstance().unregisterPushChannel(this.getObjectId());
-        if(!getState().equals("grey")) {
-            //game has not been ended by end()
-            List<Participation> participations = participants();
-            for (Participation p : participations) {
-                if (p.user().getObjectId().equals(user.getObjectId())) {
-                    removeParticipation(p);
-                    p.setOutcome(Outcome.GAVEUP);
-                    p.destroy(); //todo: discuss with team
-                    return;
-                }
-            }
-        }
+        DataManager.getInstance().getEventMonitor().setEvent(null);
     }
     public void start()
     {
