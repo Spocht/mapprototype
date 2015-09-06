@@ -91,7 +91,7 @@ public class MapsActivity extends AppCompatActivity
         MapsActivity.context = getApplicationContext();
 
         MyLocationListener.create(context);
-        MyLocationListener.getInstance().register(locationCallback, true);
+        MyLocationListener.getInstance().register(locationCallback, true,this);
         Toast toastWelcome = Toast.makeText(
                 context,
                 getString(R.string.welcome)+ " " + DataManager.getInstance().currentUser().getUsername(),
