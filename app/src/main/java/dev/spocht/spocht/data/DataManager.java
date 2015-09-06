@@ -254,6 +254,10 @@ public class DataManager {
     private void registerMonitors(){
         eventMonitor = new EventMonitor(context);
     }
+    public EventMonitor getEventMonitor()
+    {
+        return eventMonitor;
+    }
     public void registerPushChannel(final String name)
     {
         if(null != name) {
