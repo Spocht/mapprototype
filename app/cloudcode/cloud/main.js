@@ -88,13 +88,40 @@ Parse.Cloud.define("checkout", function(request, response) {
 		}
 	});
 
-
-
-
-
 	//how to manuall overwrite a prototype-function
 	stateInstance.checkout = function(context){
 		return "yeah";
 	}
 
 });
+
+
+
+Parse.Cloud.define("posh", function(request, response){
+	var data = {channels: [""], data:{alert:"Checked in"}, where: new Parse.Query(Parse.Installation)};
+
+    Parse.Push.send({
+    	channels: [""],
+    	data:{
+    			alert:"Checked in"
+    		}
+    	},
+
+    	{
+    	success: function(bla){
+			// Push was successful
+                        response.success(bla);
+    	},
+    	error: function(e){
+    		response.error(error);
+    	}
+    });
+            //where: new Parse.Query(Parse.Installation)}).then(function(stuff){
+            //}));
+});
+
+
+
+
+
+

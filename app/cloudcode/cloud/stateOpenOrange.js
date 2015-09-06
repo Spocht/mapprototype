@@ -67,16 +67,43 @@ function StateOpenOrange (){
         }
 
         var eventPromise = Parse.Promise.as(_event);
-
+        var pushPromise = Parse.Promise.as(_event);
         //https://parse.com/docs/js/api/symbols/Parse.Promise.html#.as
         //with a little hacking from me
-        return Parse.Promise.when(eventPromise).then(function(_event){
+        var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
             _event.save().then(function(object){
 
              });
+
              return _event;
 
         })._result;
+
+
+        var eventId = _event.get("objectId");
+        var data = {channels: [eventId], data:{alert:"Checked in"}, where: new Parse.Query(Parse.Installation)};
+        Parse.Push.send({
+            	channels: ["VRjWyksupm"],
+            	data:{
+            			alert:"Checked in really"
+            		}
+            	},
+
+            	{
+            	success: function(bla){
+        			// Push was successful
+                                response.success(bla);
+            	},
+            	error: function(e){
+            		response.error(error);
+            	}
+            });
+        console.log("data");
+        console.log(data);
+        console.log("event");
+        console.log(_event);
+
+        return eventPromised;
 
     }
     this.checkout = function(eventAndRequest){

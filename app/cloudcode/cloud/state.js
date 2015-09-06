@@ -40,7 +40,7 @@ State.prototype.startGame = function startGame(eventAndRequest) {
 }
 
 State.prototype.stopGame = function stopGame(eventAndRequest) {
-    return "wannabe stop Game here, kind sir.";
+    return "wannabe stopGame here, kind sir.";
 }
 
 State.prototype.getOpeningState = function (){
@@ -56,8 +56,6 @@ State.prototype.setState = function (state_in) {
 }
 
 State.prototype.getStateOfEvent = function (state) {
-    //console.log("State");
-    //console.log(state);
     var stateField = state.passedEvent.get("state");
     if (stateField === undefined) {
         var event = new Parse.Object("Event");
