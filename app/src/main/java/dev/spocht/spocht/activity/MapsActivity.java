@@ -1,6 +1,5 @@
 package dev.spocht.spocht.activity;
 
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -37,7 +35,6 @@ import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
 import dev.spocht.spocht.listener.MyLocationListener;
-import dev.spocht.spocht.listener.OnDetailsFragmentListener;
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -232,22 +229,22 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public void operate(List<Facility> facilities) {
                 for (Facility f : facilities) {
-                    Log.d("spocht.maps", "Got facility: " + f.name());
+                    Log.d("spocht.maps", "Got facility: " + f.name() + " type: " + f.sport().name());
                     if (!setFacilities.contains(f.getObjectId())) {
                         //todo: set color according to facility's state
                         String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
                         Marker marker = mMap.addMarker(new MarkerOptions()
-                                .position(f.location().toLatLng())
-                                .title(f.name())
-                                .icon(BitmapDescriptorFactory.fromResource(
-                                        // this will throw a NotFoundException if the icon is not found
-                                        getResources()
-                                                .getIdentifier(
-                                                        iconDescriptor,
-                                                        "drawable",
-                                                        Application.PACKAGE_NAME
-                                                ))).anchor(0, 1)
-                                );
+                                        .position(f.location().toLatLng())
+                                        .title(f.name())
+                                        .icon(BitmapDescriptorFactory.fromResource(
+                                                // this will throw a NotFoundException if the icon is not found
+                                                getResources()
+                                                        .getIdentifier(
+                                                                iconDescriptor,
+                                                                "drawable",
+                                                                Application.PACKAGE_NAME
+                                                        ))).anchor(0, 1)
+                        );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
                         Log.d("spocht.maps", "stored facility: " + f.name());
