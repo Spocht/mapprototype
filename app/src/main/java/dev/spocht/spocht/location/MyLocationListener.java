@@ -14,7 +14,9 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,7 +32,7 @@ public class MyLocationListener extends Activity implements
 
     private static MyLocationListener instance = new MyLocationListener();
 
-    private List<CallbacksAndTheirUiBehaviour> locationCallbacks = new ArrayList<>();
+    private Map<Object,CallbacksAndTheirUiBehaviour> locationCallbacks = new HashMap<>(10);
     private Location lastLocation;
     private Context ctx;
     private GoogleApiClient googleApiClient = null;
@@ -42,10 +44,14 @@ public class MyLocationListener extends Activity implements
         lastLocation = new Location("");
 
     }
-    public void register(LocationCallback<Void, Location> cb, boolean um)
+    public void register(LocationCallback<Void, Location> cb, boolean um, final Object requester)
     {
         CallbacksAndTheirUiBehaviour callback = new CallbacksAndTheirUiBehaviour(cb, um);
-        locationCallbacks.add(callback);
+        locationCallbacks.put(requester,callback);
+    }
+    public void unregister(final Object requester)
+    {
+        locationCallbacks.remove(requester);
     }
 
     public static MyLocationListener getInstance()
@@ -114,7 +120,7 @@ public class MyLocationListener extends Activity implements
 
         final Location loc = location;
 
-        for (final CallbacksAndTheirUiBehaviour cbb: locationCallbacks) {
+        for (final CallbacksAndTheirUiBehaviour cbb: locationCallbacks.values()) {
             if (!cbb.uiManipulating) {
                 new Thread(new Runnable() {
                     @Override
