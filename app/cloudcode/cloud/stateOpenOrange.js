@@ -2,8 +2,6 @@ function StateOpenOrange (){
 
 
     var that = {};
-
-
     this.checkin = function(eventAndRequest){
 
 
@@ -23,14 +21,10 @@ function StateOpenOrange (){
         var _event = eventAndRequest.passedEvent;
         var request = eventAndRequest.passedRequest;
 
-
-        var that = this;
-
         var p;
-        var participants;
+        //var participants;
         var participantsCount = 0;
         try {
-            //participantsCount = _event.get("participants").length;
             participantsCount = _event.get("participants").length;
 
         }
@@ -39,9 +33,12 @@ function StateOpenOrange (){
         }
 
         //event.addUnique is special, as it atomically only adds uniquely in the
-        //backend. the object contains duplicates when one adds a user which is already
+        //backend. the local object contains duplicates when one adds a user which is already
         //in the collection. thus, counting gets wonked and manual counting labor is
         //deemed necessary.
+        //this is actually a corner case for when checkin in state orange is called
+        //twice with the same event and user.id. but that case is actually handled
+        //on the device. still, i leave it here.
         var alreadyInThere = false;
         if (participantsCount > 0) {
             for(var i = 0; i< _event.get("participants").length; i++) {
@@ -83,9 +80,10 @@ function StateOpenOrange (){
         var eventId = _event.get("objectId");
         var data = {channels: [eventId], data:{alert:"Checked in"}, where: new Parse.Query(Parse.Installation)};
         Parse.Push.send({
-            	channels: ["VRjWyksupm"],
+            	channels: [_event.id],
             	data:{
-            			alert:"Checked in really"
+            			alert:"Checked in"+_event.id,
+            			event: {"id": _event.id, "participants": [] }
             		}
             	},
 
@@ -98,11 +96,6 @@ function StateOpenOrange (){
             		response.error(error);
             	}
             });
-        console.log("data");
-        console.log(data);
-        console.log("event");
-        console.log(_event);
-
         return eventPromised;
 
     }
@@ -119,7 +112,23 @@ function StateOpenOrange (){
         catch (error) {
             console.log("Participants was empty");
         }
+        Parse.Push.send({
+            channels: [""],
+            data:{
+                    alert:"Checkout for:"+event.id,
+                    event: {"id": event.id }
+                }
+            },
 
+            {
+            success: function(bla){
+                // Push was successful
+                //response.success(bla);
+            },
+            error: function(e){
+                //response.error(error);
+            }
+        });
 
         event.save();
         return "StateOpenOrangeCheckout:"+minPlayers+""+event.get("participants").length;
@@ -127,7 +136,12 @@ function StateOpenOrange (){
     this.setState = function(){
 
     }
-
+    this.stopGame = function(){
+        return "NoOp: StateOpenOrangeStartGame";
+    }
+    this.stopGame = function(){
+        return "NoOp: StateOpenOrangeStopGame";
+    }
 }
 
 module.exports = StateOpenOrange;

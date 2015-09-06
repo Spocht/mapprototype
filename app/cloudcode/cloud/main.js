@@ -23,8 +23,6 @@ Parse.Cloud.define("spochtRokks", function(request, response) {
 });
 
 
-
-
 //Test curl:
 //curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkin
 
@@ -97,29 +95,39 @@ Parse.Cloud.define("checkout", function(request, response) {
 
 
 
-Parse.Cloud.define("posh", function(request, response){
-	var data = {channels: [""], data:{alert:"Checked in"}, where: new Parse.Query(Parse.Installation)};
+Parse.Cloud.define("startGame", function(request, response){
+var eventQuery = new Parse.Query("Event");
+	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
+	eventQuery.first({
+		success : function(event) {
+			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
+			var eventState = stateInstance.getStateOfEvent(thatEventAndRequest);
+			stateInstance.setState(eventState);
 
-    Parse.Push.send({
-    	channels: [""],
-    	data:{
-    			alert:"Checked in"
-    		}
-    	},
-
-    	{
-    	success: function(bla){
-			// Push was successful
-                        response.success(bla);
-    	},
-    	error: function(e){
-    		response.error(error);
-    	}
-    });
-            //where: new Parse.Query(Parse.Installation)}).then(function(stuff){
-            //}));
+			response.success(stateInstance.startGame(thatEventAndRequest));
+		},
+		error : function(error) {
+			response.error(error);
+		}
+	});
 });
 
+Parse.Cloud.define("stopGame", function(request, response){
+var eventQuery = new Parse.Query("Event");
+	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
+	eventQuery.first({
+		success : function(event) {
+			var thatEventAndRequest = {passedEvent:event, passedRequest:request};
+			var eventState = stateInstance.getStateOfEvent(thatEventAndRequest);
+			stateInstance.setState(eventState);
+
+			response.success(stateInstance.stopGame(thatEventAndRequest));
+		},
+		error : function(error) {
+			response.error(error);
+		}
+	});
+});
 
 
 

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Participation;
 
@@ -26,7 +27,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Event event = getItem(position);
+        final Event event = getItem(position);
 
         LayoutInflater li = LayoutInflater.from(getContext());
         if (null == convertView) {
@@ -57,6 +58,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         checkInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                event.checkIn(DataManager.getInstance().currentUser());
                 Log.d("DetailFragment", "Check into existing event");
             }
         });

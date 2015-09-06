@@ -9,6 +9,8 @@ var state;
 
 
 //      CLOSED("grey"),
+        var stateClosedGrey = require("cloud/stateClosedGrey.js");
+        var stateClosedGreyInstance = new stateClosedGrey;
 //      OPEN("orange"),
         var stateOpenOrange = require("cloud/stateOpenOrange.js");
         var stateOpenOrangeInstance = new stateOpenOrange;
@@ -53,7 +55,25 @@ State.prototype.setState = function (state_in) {
     this.checkin = state_in.checkin;
     this.checkout = state_in.checkout;
     this.startGame = state_in.startGame;
+    this.stopGame = state_in.stopGame;
 }
+
+State.myPush = function (payload, data) {
+	Parse.Push.send({
+        	channels: [""],
+        	data:{
+        			alert:"Checked in"
+        		}
+        	},
+
+        	{
+        	    success: function(bla){
+        	},
+        	    error: function(e){
+        	}
+        });
+}
+
 
 State.prototype.getStateOfEvent = function (state) {
     var stateField = state.passedEvent.get("state");
@@ -71,10 +91,13 @@ State.prototype.getStateOfEvent = function (state) {
         return stateReadyLightblueInstance;
     }
     if (stateField == "blue") {
-        return stateReadyLightblueInstance;
+        return statePlayingBlueInstance;
     }
     if (stateField == "yellow") {
         return stateDesertedYellowInstance;
+    }
+    if (stateField == "grey") {
+        return stateClosedGreyInstance;
     }
 
 }
