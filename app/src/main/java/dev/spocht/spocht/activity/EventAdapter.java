@@ -10,8 +10,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
+import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
@@ -39,7 +43,15 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView eventTime = (TextView) convertView.findViewById(R.id.fragment_detail_event_timeStarted);
 
         eventName.setText(event.name());
-        eventTime.setText(event.startTime().toString());
+        String startedAt = DataManager.getContext().getString(R.string.started_at);
+        String startedAtDate = null;
+        try {
+            startedAtDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(event.startTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        eventTime.setText(startedAt + " " + startedAtDate);
 
         // participants as list
         LinearLayout participantList = (LinearLayout) convertView.findViewById(R.id.fragment_detail_event_participant_list);
@@ -49,7 +61,8 @@ public class EventAdapter extends ArrayAdapter<Event> {
             View line = li.inflate(R.layout.participant_list, null);
 
             TextView tv = (TextView) line.findViewById(R.id.fragment_detail_event_participant);
-            tv.setText(part.user().getUsername());
+//            tv.setText(part.user().getUsername());
+            tv.setText("participation.user().getUsername() would crash me");
 
             participantList.addView(line);
         }

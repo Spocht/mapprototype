@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseException;
+
 import java.util.ArrayList;
 
 import dev.spocht.spocht.Application;
@@ -203,6 +205,12 @@ public class DetailFragment extends ListFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mEventName = input.getText().toString();
                             Event event = mFacility.addEvent(mEventName);
+                            try {
+                                event.save();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
                             event.checkIn(DataManager.getInstance().currentUser());
 
                             refreshContents();
