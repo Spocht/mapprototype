@@ -50,7 +50,9 @@ public class EventMonitor {
 
     public void setEvent(Event event) {
         if (null != mEvent) {
-            mEvent.checkOut(DataManager.getInstance().currentUser());
+            Event tmp=mEvent;
+            mEvent = null;
+            tmp.checkOut(DataManager.getInstance().currentUser());
         }
         if(null != event)
         {
