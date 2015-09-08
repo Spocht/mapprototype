@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.parse.GetCallback;
 import com.parse.ParseClassName;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by edm on 11.08.15.
@@ -231,13 +233,29 @@ public class Event extends ParseData {
     ///events to handle
     public void checkIn(final SpochtUser user)
     {
-        if(!isUserCheckedIn(user)) {
+        //when participants is empty this somehow NPEs
+        //cloudcode also checks for already logged in users,
+        //so for now this if is deactivated.
+        //consult with rudee!
+        //if(!isUserCheckedIn(user)) {
             //todo if successful API call, update local Event
-            if(true) {
+            Map<String, Map<String, String>> params = new HashMap<>();
+            Map<String, String> mappedEvent = new HashMap<>();
+            mappedEvent.put("id", this.getObjectId());
+            Map<String, String> mappedUser = new HashMap<>();
+            mappedUser.put("id", user.getObjectId());
+            params.put("event", mappedEvent );
+            params.put("user", mappedUser);
+            try {
+                System.out.println("Calling cloud function: checkin");
+                ParseCloud.callFunction("checkin", params);
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
-                DataManager.getInstance().getEventMonitor().setEvent(this);
+                //memleaks here when called more than once.
+                //DataManager.getInstance().getEventMonitor().setEvent(this);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        }
+        //}
     }
     public void checkOut(final SpochtUser user)
     {

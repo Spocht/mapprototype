@@ -161,7 +161,7 @@ public class DataManager {
     }
 
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
-        ParseObject.createWithoutData(obj, "id").fetchIfNeededInBackground(new GetCallback<T>() {
+        ParseObject.createWithoutData(obj, id).fetchIfNeededInBackground(new GetCallback<T>() {
             @Override
             public void done(T parseObject, ParseException e) {
                 if (e == null) {
@@ -174,7 +174,7 @@ public class DataManager {
         });
     }
     public <T extends ParseData> void update(String id, Class<T> obj, final InfoRetriever<T> callback) {
-        ParseObject.createWithoutData(obj, "id").fetchInBackground(new GetCallback<T>() {
+        ParseObject.createWithoutData(obj, id).fetchInBackground(new GetCallback<T>() {
             @Override
             public void done(T parseObject, ParseException e) {
                 if (e == null) {
