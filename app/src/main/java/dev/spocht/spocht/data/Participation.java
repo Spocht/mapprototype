@@ -64,6 +64,10 @@ public class Participation extends ParseData {
     }
     public SpochtUser user()
     {
+        if(this.getObjectId() == null)
+        {
+            return new SpochtUser();
+        }
         SpochtUser user = null;
         try {
             this.fetchIfNeeded();

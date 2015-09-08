@@ -61,6 +61,10 @@ public class SpochtUser extends ParseData {
     }
     public ParseUser user()
     {
+        if(null == this.getObjectId())
+        {
+            return new ParseUser();
+        }
         ParseUser user;
         try {
             this.fetchIfNeeded();
