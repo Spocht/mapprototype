@@ -7,9 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.google.android.gms.ads.purchase.InAppPurchaseListener;
 
 import java.util.ArrayList;
 
@@ -33,13 +32,23 @@ public class DetailFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FractionalLinearLayout view = (FractionalLinearLayout) inflater.inflate(R.layout.fragment_detail, container, false);
+
+        RelativeLayout infoLayout = (RelativeLayout) view.findViewById(R.id.details_fragment_infoContainer);
+        StateImageButton sib = new StateImageButton(getActivity().getBaseContext());
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.addRule(RelativeLayout.ALIGN_PARENT_END);
+        sib.setLayoutParams(params);
+
+        infoLayout.addView(sib);
 
         return view;
     }

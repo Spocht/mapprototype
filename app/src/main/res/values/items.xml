@@ -14,7 +14,5 @@
 -->
 
 <resources>
-
-    <item name="slide_up_down_fraction" type="dimen" format="float">0.6</item>
-
+    <item name="slide_up_down_fraction" type="dimen" format="float">0.5</item>
 </resources>

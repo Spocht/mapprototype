@@ -1,17 +1,20 @@
 package dev.spocht.spocht.activity;
 
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -57,8 +60,14 @@ public class MapsActivity extends AppCompatActivity
     };
 
     private DetailFragment mDetailFragment;
+    MapFragment mMapFragment;
     private boolean mIsDetailFragmentVisible = false;
     private boolean mIsAnimating = false;
+    boolean mIsDetailFragmentVisible = false;
+    boolean mIsAnimating = false;
+
+    int mScreenHeight;
+    float mNewHeight = -1;
 
     Marker mSelectedMarker;
 
@@ -172,8 +181,8 @@ public class MapsActivity extends AppCompatActivity
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
+            mMapFragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
+            mMap = mMapFragment.getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
@@ -190,6 +199,7 @@ public class MapsActivity extends AppCompatActivity
     private void setUpMap() {
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
+        mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(this);
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -231,22 +241,22 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public void operate(List<Facility> facilities) {
                 for (Facility f : facilities) {
-                    Log.d("spocht.maps", "Got facility: " + f.name());
+                    Log.d("spocht.maps", "Got facility: " + f.name() + " type: " + f.sport().name());
                     if (!setFacilities.contains(f.getObjectId())) {
                         //todo: set color according to facility's state
                         String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
                         Marker marker = mMap.addMarker(new MarkerOptions()
-                                .position(f.location().toLatLng())
-                                .title(f.name())
-                                .icon(BitmapDescriptorFactory.fromResource(
-                                        // this will throw a NotFoundException if the icon is not found
-                                        getResources()
-                                                .getIdentifier(
-                                                        iconDescriptor,
-                                                        "drawable",
-                                                        Application.PACKAGE_NAME
-                                                ))).anchor(0, 1)
-                                );
+                                        .position(f.location().toLatLng())
+                                        .title(f.name())
+                                        .icon(BitmapDescriptorFactory.fromResource(
+                                                // this will throw a NotFoundException if the icon is not found
+                                                getResources()
+                                                        .getIdentifier(
+                                                                iconDescriptor,
+                                                                "drawable",
+                                                                Application.PACKAGE_NAME
+                                                        ))).anchor(0, 1)
+                        );
                         mapFacility.put(marker, f);
                         setFacilities.add(f.getObjectId());
                         Log.d("spocht.maps", "stored facility: " + f.name());
@@ -289,10 +299,35 @@ public class MapsActivity extends AppCompatActivity
             ft.addToBackStack(null);
             ft.commit();
 
+            // need this to resize map fragment back and forth
+            // it seems odd to have this here instead within onCreate() and is also kind of inefficient.
+            // but doing this in onCreate produces some weird shit. for some reason, doing it here is much more accurate
+            // could also have fiddled around with some crazy wild animations, but this is more phun.
+            if (-1 == mNewHeight) {
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+                mScreenHeight = size.y - getSupportActionBar().getHeight() - getResources().getDimensionPixelSize(resourceId);
+
+                // resize map
+                TypedValue rValue = new TypedValue();
+                getResources().getValue(R.dimen.slide_up_down_fraction, rValue, true);
+                float factor = 1.0f - rValue.getFloat();
+                mNewHeight = mScreenHeight * factor;
+            }
+            ViewGroup.LayoutParams lp = mMapFragment.getView().getLayoutParams();
+            lp.height = (int) mNewHeight;
+            mMapFragment.getView().setLayoutParams(lp);
         } else {
             Log.d("animanteFragment", "slide down");
             mIsDetailFragmentVisible = false;
             getFragmentManager().popBackStack();
+
+            // resize map back
+            ViewGroup.LayoutParams lp = mMapFragment.getView().getLayoutParams();
+            lp.height = mScreenHeight;
+            mMapFragment.getView().setLayoutParams(lp);
         }
     }
 
