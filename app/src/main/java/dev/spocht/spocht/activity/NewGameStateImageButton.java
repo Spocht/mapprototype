@@ -14,7 +14,7 @@ import dev.spocht.spocht.data.Event;
 
  * Created by highway on 06/09/15.
  */
-public class StateImageButton extends ImageButton {
+public class NewGameStateImageButton extends ImageButton {
     NewEventImageButtonState mNewGameState;
     StartGameImageButtonState mStartGameState;
     StopGameImageButtonState mStopGameState;
@@ -22,7 +22,7 @@ public class StateImageButton extends ImageButton {
 
     ImageButtonState mCurrentState;
 
-    public StateImageButton(Context context) {
+    public NewGameStateImageButton(Context context) {
         super(context);
 
         mNewGameState = new NewEventImageButtonState(this);

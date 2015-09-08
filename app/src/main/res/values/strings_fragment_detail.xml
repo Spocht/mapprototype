@@ -1,4 +1,7 @@
 <resources>
     <string name="field">field</string>
     <string name="fields">fields</string>
+    <string name="max_allowed_events_reached">You can\'t open more games than there are play fields.</string>
+    <string name="new_event">New game</string>
+    <string name="enter_event_name">Please enter your game\'s name.</string>
 </resources>

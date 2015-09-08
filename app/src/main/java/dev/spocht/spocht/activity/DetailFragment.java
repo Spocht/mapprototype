@@ -1,19 +1,29 @@
 package dev.spocht.spocht.activity;
 
+import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
 
@@ -22,12 +32,14 @@ public class DetailFragment extends ListFragment {
 
     private MapsActivity mActivity;
     private EventAdapter mEventAdapter;
-
+    private ImageButton mNewGameImageButton;
     private ImageView mImage;
     private TextView mType;
     private TextView mName;
     private TextView mFieldCount;
     private TextView mComment;
+
+    private int mSibId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,16 +51,17 @@ public class DetailFragment extends ListFragment {
         FractionalLinearLayout view = (FractionalLinearLayout) inflater.inflate(R.layout.fragment_detail, container, false);
 
         RelativeLayout infoLayout = (RelativeLayout) view.findViewById(R.id.details_fragment_infoContainer);
-        StateImageButton sib = new StateImageButton(getActivity().getBaseContext());
+        mNewGameImageButton = new ImageButton(getActivity().getBaseContext());
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
         params.addRule(RelativeLayout.ALIGN_PARENT_END);
-        sib.setLayoutParams(params);
+        mNewGameImageButton.setLayoutParams(params);
+        mNewGameImageButton.setImageResource(R.drawable.ic_new_releases_white_24dp);
 
-        infoLayout.addView(sib);
+        infoLayout.addView(mNewGameImageButton);
 
         return view;
     }
@@ -64,25 +77,21 @@ public class DetailFragment extends ListFragment {
         mComment     = (TextView)  view.findViewById(R.id.fragment_detail_comment);
 
         mActivity = (MapsActivity) getActivity();
-        mFacility = mActivity.getSelectedFacility();
-        ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
 
-        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
-        setListAdapter(mEventAdapter);
+        refreshContents();
 
-
-        int count = mFacility.events().size();
-        Log.d("EventAdapter", "mFacility holds " + String.valueOf(count) + " events");
-
-        setImage();
-        setTitle();
-        setFieldCount();
-        setComment();
-        setEvents();
+        Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
     }
 
     public void refreshContents() {
         mFacility = mActivity.getSelectedFacility();
+        if (null == mEventAdapter) {
+            ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
+
+            mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
+            setListAdapter(mEventAdapter);
+        }
+
         // individual elements are separated into according methods to simplify maintenance
         setImage();
         setTitle();
@@ -90,6 +99,10 @@ public class DetailFragment extends ListFragment {
         setComment();
         setEvents();
         setType();
+
+        Log.d(getClass().getCanonicalName(), "Fields: " + String.valueOf(mFacility.numberOfFields()) + ", events " + mFacility.events().size());
+
+        allowNewGame(mFacility.events().size() < mFacility.numberOfFields());
     }
 
     @Override
@@ -123,7 +136,7 @@ public class DetailFragment extends ListFragment {
     }
 
     private void setType() {
-        Log.d("DetailFragment", "Trying to find string resource for " + mFacility.sport().name());
+        Log.d(getClass().getCanonicalName(), "Trying to find string resource for " + mFacility.sport().name());
 
         String type = (String) getResources().getText(
             getResources().getIdentifier(
@@ -141,5 +154,85 @@ public class DetailFragment extends ListFragment {
         mEventAdapter.clear();
         mEventAdapter.addAll(mFacility.events());
         mEventAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Allow new event
+     *
+     * Toggles display of CreateNewGame-Button in detail fragment
+     *
+     * @param allow true to have the button displayed
+     */
+    public void allowNewGame(boolean allow) {
+        if (allow) {
+            mNewGameImageButton.setOnClickListener(new View.OnClickListener() {
+                public String mEventName;
+
+                @Override
+                public void onClick(View v) {
+
+                    Context context = getView().getContext();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle(getString(R.string.new_event));
+
+                    LinearLayout layout = new LinearLayout(context);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    layout.setLayoutParams(lp);
+                    layout.setGravity(Gravity.CLIP_VERTICAL);
+                    layout.setPadding(2, 2, 2, 2);
+
+                    TextView tv = new TextView(context);
+                    tv.setText(getString(R.string.enter_event_name));
+                    tv.setPadding(40, 40, 40, 40);
+                    tv.setGravity(Gravity.LEFT);
+                    tv.setTextSize(20);
+
+                    LinearLayout.LayoutParams tvParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    tvParams.bottomMargin = 5;
+
+                    final EditText input = new EditText(getView().getContext());
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                    layout.addView(tv, tvParams);
+                    layout.addView(input, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    builder.setView(layout);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mEventName = input.getText().toString();
+                            Event event = mFacility.addEvent();
+                            event.setName(mEventName);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
+                }
+            });
+        } else {
+            mNewGameImageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast toastWelcome = Toast.makeText(
+                            getView().getContext(),
+                            getString(R.string.max_allowed_events_reached),
+                            Toast.LENGTH_LONG
+                    );
+                    toastWelcome.show();
+                }
+            });
+        }
     }
 }
