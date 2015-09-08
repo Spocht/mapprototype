@@ -237,9 +237,9 @@ public class DataManager {
         context = ctx;
     }
 
-    public Context getContext(){
+    public static Context getContext(){
 
-        return this.context;
+        return context;
     }
 
     public SpochtUser currentUser()

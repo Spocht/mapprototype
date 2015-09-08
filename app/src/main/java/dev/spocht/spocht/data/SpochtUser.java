@@ -44,6 +44,12 @@ public class SpochtUser extends ParseData {
     }
     public String getUsername()
     {
+
+        try {
+            fetchIfNeeded();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return user().getUsername();
     }
     public void setPassword(final String password)

@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.parse.ParseGeoPoint;
 
+import dev.spocht.spocht.Application;
+import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.geoFence.GeoFence;
@@ -22,6 +24,7 @@ public class EventMonitor {
     private Event       mEvent=null;
     private GeoFence    mFence=null;
     private Context     mCtx;
+    private float mThreshhold;
     private GeoFenceCallback cbIn=new GeoFenceCallback() {
         @Override
         public void action() {
@@ -42,6 +45,8 @@ public class EventMonitor {
 
     public EventMonitor(Context ctx) {
         mCtx=ctx;
+        // spits out an exception somehow
+        // mThreshhold = DataManager.getContext().getResources().getDimension(R.dimen.geofence_threshold);
     }
 
     public Event event() {
@@ -54,6 +59,7 @@ public class EventMonitor {
         }
         if(null != event)
         {
+
             mFence = new GeoFence(event.facility().location().toLocation(),0.2,cbIn,cbOut,mCtx);
         }
         else

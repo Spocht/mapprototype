@@ -18,7 +18,7 @@ public class NewEventImageButtonState extends ImageButtonState {
     public void entry() {
         Log.d("StateImageButton", "CreatingNewEvent");
 
-        mContext.setImageResource(R.drawable.ic_new_releases_black_24dp);
+        mContext.setImageResource(R.drawable.ic_new_releases_white_24dp);
     }
 
     @Override
