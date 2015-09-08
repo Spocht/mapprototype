@@ -29,6 +29,6 @@
             android:id="@+id/fragment_detail_event_checkinButton"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_favorite_black_24dp"
+            android:src="@drawable/ic_favorite_white_24dp"
             />
     </RelativeLayout>

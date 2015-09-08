@@ -69,8 +69,8 @@ public class MapsActivity extends AppCompatActivity
 
     Marker mSelectedMarker;
 
-    private HashMap<Marker,Facility> mapFacility=new HashMap<>(20);
-    private HashSet<String>          setFacilities=new HashSet<>(20);
+    private HashMap<Marker,Facility> mapFacility   = new HashMap<>(20);
+    private HashSet<String>          setFacilities = new HashSet<>(20);
     private static android.content.Context  context;
     private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
 

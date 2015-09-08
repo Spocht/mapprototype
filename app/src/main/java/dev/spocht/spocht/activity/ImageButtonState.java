@@ -8,7 +8,7 @@ import dev.spocht.spocht.data.Event;
  * Created by highway on 06/09/15.
  */
 abstract public class ImageButtonState {
-    protected StateImageButton mContext;
+    protected NewGameStateImageButton mContext;
 
     public void entry() {
 

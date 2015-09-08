@@ -10,14 +10,14 @@ import dev.spocht.spocht.data.Event;
  * Created by highway on 06/09/15.
  */
 public class WaitingForPlayersImageButtonState extends ImageButtonState {
-    public WaitingForPlayersImageButtonState(StateImageButton context) {
+    public WaitingForPlayersImageButtonState(NewGameStateImageButton context) {
         mContext = context;
     }
 
     @Override
     public void entry() {
         Log.d("StateImageButton", "Waiting for Players");
-        mContext.setImageResource(R.drawable.ic_hourglass_empty_black_24dp);
+        mContext.setImageResource(R.drawable.ic_hourglass_empty_white_24dp);
     }
 
     @Override

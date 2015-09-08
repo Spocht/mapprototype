@@ -10,7 +10,7 @@ import dev.spocht.spocht.R;
  */
 public class StartGameImageButtonState extends ImageButtonState {
 
-    public StartGameImageButtonState(StateImageButton context) {
+    public StartGameImageButtonState(NewGameStateImageButton context) {
         mContext = context;
     }
 
@@ -21,7 +21,7 @@ public class StartGameImageButtonState extends ImageButtonState {
 
     @Override
     public void entry() {
-        mContext.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+        mContext.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         Log.d("StateImageButton", "Saving OutCome");
     }
 }

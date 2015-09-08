@@ -10,7 +10,7 @@ function StateReadyLightblue () {
             _event.set("state", "orange");
         }
         if (_event.get("participants").length == 0){
-            _event.set("state", "deserted");
+            _event.set("state", "grey");
         }
         Parse.Push.send({
                     channels: [_event.id],
@@ -36,6 +36,7 @@ function StateReadyLightblue () {
         var _request = eventAndRequest.passedRequest;
         if (_event.get("participants").length >= _event.get("facility").get("sport").get("minPlayers")){
             _event.set("state", "blue");
+            _event.set("startTime", new Date());
         }
 
         Parse.Push.send({
