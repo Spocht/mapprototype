@@ -19,6 +19,7 @@ import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
+import dev.spocht.spocht.data.EventState;
 import dev.spocht.spocht.data.Participation;
 
 /**
@@ -37,6 +38,13 @@ public class EventAdapter extends ArrayAdapter<Event> {
         if (null == convertView) {
             convertView = li.inflate(R.layout.event_list, parent, false);
         }
+
+        int bgColor = EventState.get(event.getState());
+        if (0 == bgColor) {
+            bgColor = R.color.white;
+        }
+
+        convertView.setBackgroundColor(convertView.getResources().getColor(bgColor));
 
         Log.d("EventAdapter", "populating fields for event " + event.name());
         TextView eventName = (TextView) convertView.findViewById(R.id.fragment_detail_event_name);
@@ -61,8 +69,8 @@ public class EventAdapter extends ArrayAdapter<Event> {
             View line = li.inflate(R.layout.participant_list, null);
 
             TextView tv = (TextView) line.findViewById(R.id.fragment_detail_event_participant);
-//            tv.setText(part.user().getUsername());
-            tv.setText("participation.user().getUsername() would crash me");
+            tv.setText(part.user().getUsername());
+//            tv.setText("participation.user().getUsername() would crash me");
 
             participantList.addView(line);
         }
