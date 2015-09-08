@@ -120,7 +120,7 @@ public class DataManager {
         } catch (InterruptedException e) {
             return false;
         } catch (ParseException e) {
-            Log.e("spocht.dataManager","Login",e);
+            Log.e(this.getClass().getCanonicalName(),"Login",e);
             return false;
         }
         return !user.isFaulted();
@@ -136,7 +136,7 @@ public class DataManager {
             user.pin();
             return user;
         } catch (ParseException e) {
-            Log.e("spocht.dataManager","SignUp Failed",e);
+            Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
             return new SpochtUser();
         }
     }
@@ -156,7 +156,7 @@ public class DataManager {
         }
         catch(InterruptedException e)
         {
-            Log.e("spocht.dataManager","Logout failed ",e);
+            Log.e(this.getClass().getCanonicalName(),"Logout failed ",e);
         }
     }
 
@@ -168,7 +168,7 @@ public class DataManager {
                     parseObject.pinInBackground();
                     callback.operate(parseObject);
                 } else {
-                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                    Log.e(this.getClass().getCanonicalName(), "Failed to load items:", e);
                 }
             }
         });
@@ -181,14 +181,14 @@ public class DataManager {
                     parseObject.pinInBackground();
                     callback.operate(parseObject);
                 } else {
-                    Log.e("spocht.dataManager", "Failed to load items:", e);
+                    Log.e(this.getClass().getCanonicalName(), "Failed to load items:", e);
                 }
             }
         });
     }
     public void findFacilitiesLocal(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
-        Log.d("spocht.dataManager", "Find Facilities locally @ " + location);
+        Log.d(this.getClass().getCanonicalName(), "Find Facilities locally @ " + location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         if(distance > 0) {
             query.whereWithinKilometers("location", location, distance);
@@ -202,14 +202,14 @@ public class DataManager {
                         callback.operate(list);
                     }
                 } else {
-                    Log.e("spocht.datamanager", "Error finding facilities", e);
+                    Log.e(this.getClass().getCanonicalName(), "Error finding facilities", e);
                 }
             }
         });
     }
     public void findFacilitiesRemote(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
-        Log.d("spocht.dataManager", "Find Facilities remote @ " + location);
+        Log.d(this.getClass().getCanonicalName(), "Find Facilities remote @ " + location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         query.whereWithinKilometers("location", location, distance);
         query.findInBackground(new FindCallback<Facility>() {
@@ -219,7 +219,7 @@ public class DataManager {
                     Facility.pinAllInBackground(list);
                     callback.operate(list);
                 } else {
-                    Log.e("spocht.dataManager", "Error finding facilities:", e);
+                    Log.e(this.getClass().getCanonicalName(), "Error finding facilities:", e);
                 }
             }
         });
@@ -227,13 +227,13 @@ public class DataManager {
 
     public void findFacilities(final GeoPoint location, final double distance, final InfoRetriever<List<Facility>> callback)
     {
-        Log.d("spocht.dataManager", "Find Facilities @ " + location);
+        Log.d(this.getClass().getCanonicalName(), "Find Facilities @ " + location);
         findFacilitiesLocal(location, distance, callback);
         findFacilitiesRemote(location,distance,callback);
     }
 
     public static void injectContext(Context ctx) {
-        Log.d("spocht.datamanager", "Injecting Context: " + ctx);
+        Log.d("spocht.data.dataManager", "Injecting Context: " + ctx);
         context = ctx;
     }
 
@@ -265,16 +265,16 @@ public class DataManager {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d("spocht.dataManager", "Push ["+name+"]: successfully subscribed to the channel.");
+                        Log.d(this.getClass().getCanonicalName(), "Push ["+name+"]: successfully subscribed to the channel.");
                     } else {
-                        Log.e("spocht.dataManager", "Push ["+name+"]: failed to subscribe", e);
+                        Log.e(this.getClass().getCanonicalName(), "Push ["+name+"]: failed to subscribe", e);
                     }
                 }
             });
         }
         else
         {
-            Log.e("spocht.dataManager","Push registration failed! Null Pointer");
+            Log.e(this.getClass().getCanonicalName(),"Push registration failed! Null Pointer");
         }
     }
     public void unregisterPushChannel(final String name)
@@ -284,16 +284,16 @@ public class DataManager {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d("spocht.dataManager", "Push ["+name+"]: successfully unsubscribed to the channel.");
+                        Log.d(this.getClass().getCanonicalName(), "Push ["+name+"]: successfully unsubscribed to the channel.");
                     } else {
-                        Log.e("spocht.dataManager", "Push ["+name+"]: failed to unsubscribe", e);
+                        Log.e(this.getClass().getCanonicalName(), "Push ["+name+"]: failed to unsubscribe", e);
                     }
                 }
             });
         }
         else
         {
-            Log.e("spocht.dataManager","Push registration failed! Null Pointer");
+            Log.e(this.getClass().getCanonicalName(),"Push registration failed! Null Pointer");
         }
     }
 }

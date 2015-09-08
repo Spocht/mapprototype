@@ -38,7 +38,7 @@ public class Experience extends ParseData {
             this.fetchIfNeeded();
             xp = getInt("xp");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(xp < 0)
         {
@@ -58,7 +58,7 @@ public class Experience extends ParseData {
             this.fetchIfNeeded();
             lvl = getInt("level");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(lvl < 1)
         {
@@ -100,7 +100,7 @@ public class Experience extends ParseData {
                             sport.persist();
                         }
                     } else {
-                        Log.e("spocht.data","Error saving data.",e);
+                        Log.e(this.getClass().getCanonicalName(),"Error saving data.",e);
                     }
                 }
             });
@@ -126,7 +126,7 @@ public class Experience extends ParseData {
                 }
             }
         } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
             sport = new Sport("unknown", 0);
         }
         return(sport);

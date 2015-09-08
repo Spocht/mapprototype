@@ -44,7 +44,7 @@ public class Image extends ParseData {
             this.fetchIfNeeded();
             name = getString("name");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == name)
         {
@@ -79,7 +79,7 @@ public class Image extends ParseData {
                     pic = BitmapFactory.decodeByteArray(data, 0, data.length);
             }
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
 
         if(null == pic)

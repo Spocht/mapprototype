@@ -34,7 +34,7 @@ public class Sport extends ParseData {
             this.fetchIfNeeded();
             name = getString("name");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == name)
         {
@@ -54,7 +54,7 @@ public class Sport extends ParseData {
             this.fetchIfNeeded();
             min=getInt("minPlayers");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(min <0)
         {

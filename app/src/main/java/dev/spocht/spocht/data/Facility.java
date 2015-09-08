@@ -50,7 +50,7 @@ public class Facility extends ParseData {
             this.fetchIfNeeded();
             name = getString("name");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == name)
         {
@@ -70,7 +70,7 @@ public class Facility extends ParseData {
             this.fetchIfNeeded();
             location = new GeoPoint(getParseGeoPoint("location"));
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == location)
         {
@@ -106,7 +106,7 @@ public class Facility extends ParseData {
             this.fetchIfNeeded();
             num = getInt("numberOfFields");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(num <1)
         {
@@ -126,7 +126,7 @@ public class Facility extends ParseData {
             this.fetchIfNeeded();
             comment = getString("comment");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == comment)
         {
@@ -147,7 +147,7 @@ public class Facility extends ParseData {
             this.fetchIfNeeded();
             val = (double)get("rating");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(val <0)
         {
@@ -169,7 +169,7 @@ public class Facility extends ParseData {
                             pic.persist();
                         }
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -196,7 +196,7 @@ public class Facility extends ParseData {
                 }
             }
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
             pic = new Image();
         }
         return(pic);
@@ -215,7 +215,7 @@ public class Facility extends ParseData {
                             sport.persist();
                         }
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -243,7 +243,7 @@ public class Facility extends ParseData {
                 }
             }
         } catch (com.parse.ParseException e) {
-            Log.e("spocht.data","Error getting data",e);
+            Log.e(this.getClass().getCanonicalName(),"Error getting data",e);
             sport = new Sport("unknown", 0);
         }
         return(sport);
@@ -262,7 +262,7 @@ public class Facility extends ParseData {
                                 event.persist();
                             }
                         } else {
-                            Log.e("spocht.data", "Error saving data.", e);
+                            Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                         }
                     }
                 });
@@ -289,7 +289,7 @@ public class Facility extends ParseData {
                 }
             }
         } catch (com.parse.ParseException e) {
-            Log.e("spocht.data","Error getting data",e);
+            Log.e(this.getClass().getCanonicalName(),"Error getting data",e);
             events = new ArrayList<Event>();
         }
         return(events);

@@ -22,6 +22,6 @@ public class GeoFenceState {
     }
     public void execute(final Location location)
     {
-        Log.d("geoFence","Distance to center: "+ mCtx.location().distanceTo(location)+"m");
+        Log.d(this.getClass().getCanonicalName(),"Distance to center: "+ mCtx.location().distanceTo(location)+"m");
     }
 }

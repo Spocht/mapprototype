@@ -63,8 +63,6 @@ public class MapsActivity extends AppCompatActivity
     MapFragment mMapFragment;
     private boolean mIsDetailFragmentVisible = false;
     private boolean mIsAnimating = false;
-    boolean mIsDetailFragmentVisible = false;
-    boolean mIsAnimating = false;
 
     int mScreenHeight;
     float mNewHeight = -1;

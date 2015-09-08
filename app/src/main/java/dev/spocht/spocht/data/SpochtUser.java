@@ -64,6 +64,7 @@ public class SpochtUser extends ParseData {
         try {
             this.fetchIfNeeded();
             if(this.has("user")) {
+                Log.d(this.getClass().getCanonicalName(),"User-ID: "+getString("user"));
                 user = (ParseUser) get("user");
                 if (null == user) {
                     user = this.getParseObject("_User").fetchIfNeeded();
@@ -77,7 +78,7 @@ public class SpochtUser extends ParseData {
         }
         catch (com.parse.ParseException e)
         {
-            Log.e("spocht.data","Error fetching data",e);
+            Log.e(this.getClass().getCanonicalName(),"Error fetching data",e);
             user = new ParseUser();
         }
         return(user);
@@ -106,7 +107,7 @@ public class SpochtUser extends ParseData {
             this.fetchIfNeeded();
             date = (Date)get("lastSeen");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == date)
         {
@@ -134,7 +135,7 @@ public class SpochtUser extends ParseData {
                         }
                         setUpdated();
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -157,7 +158,7 @@ public class SpochtUser extends ParseData {
         }
         catch (com.parse.ParseException e)
         {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
             xps= new ArrayList<Experience>();
         }
         return(xps);

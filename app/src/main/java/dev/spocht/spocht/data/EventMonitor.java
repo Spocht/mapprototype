@@ -25,14 +25,14 @@ public class EventMonitor {
     private GeoFenceCallback cbIn=new GeoFenceCallback() {
         @Override
         public void action() {
-            Log.d("spocht.eventMonitor","coming in danger zone");
+            Log.d(this.getClass().getCanonicalName(),"coming in danger zone");
             //do nothing when entering the fence;
         }
     };
     private GeoFenceCallback cbOut = new GeoFenceCallback() {
         @Override
         public void action() {
-            Log.d("spocht.eventMonitor","leaving danger zone");
+            Log.d(this.getClass().getCanonicalName(),"leaving danger zone");
             if(null != event())
             {
                 setEvent(null);
