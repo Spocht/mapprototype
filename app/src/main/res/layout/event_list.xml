@@ -7,19 +7,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fragment_detail_event_textContainer"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="5dp"
+            android:paddingEnd="55dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/fragment_detail_event_name"/>
+                android:id="@+id/fragment_detail_event_name"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:id="@+id/fragment_detail_event_timeStarted" />
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:id="@+id/fragment_detail_event_participant_list"
                 />
         </LinearLayout>
