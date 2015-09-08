@@ -64,7 +64,7 @@ public class SpochtUser extends ParseData {
         try {
             this.fetchIfNeeded();
             if(this.has("user")) {
-                Log.d(this.getClass().getCanonicalName(),"User-ID: "+getString("user"));
+                Log.d(this.getClass().getCanonicalName(),"User-ID: "+get("user"));
                 user = (ParseUser) get("user");
                 if (null == user) {
                     user = this.getParseObject("_User").fetchIfNeeded();
