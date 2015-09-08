@@ -25,8 +25,10 @@ function StatePlayingBlue (eventAndRequest){
 
 
         _event.set("state", "grey");
-        _event.unset("participants");
-
+        var facility = _event.get("facility");
+        //_event.unset("participants");
+        facility.remove("events", {"__type":"Pointer","className":"Event","objectId":_event.id});
+        facility.save();
 
         var eventPromise = Parse.Promise.as(_event);
         var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){

@@ -1,6 +1,10 @@
 
 var state = require("cloud/state.js");
 var stateInstance = new state;
+
+
+
+var job = require("cloud/job.js");
 //---REF
 //var stateOpenOrange = require("cloud/stateOpenOrange.js");
 //var stateOpenOrangeInstance = new stateOpenOrange;
