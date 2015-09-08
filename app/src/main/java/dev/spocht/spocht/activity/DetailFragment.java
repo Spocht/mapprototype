@@ -205,12 +205,7 @@ public class DetailFragment extends ListFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mEventName = input.getText().toString();
                             Event event = mFacility.addEvent(mEventName);
-                            try {
-                                event.save();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
+                            event.persist(); //todo review, because there might be race conditions with the facility.addEvent(). It is possible that the item is saved twice
                             event.checkIn(DataManager.getInstance().currentUser());
 
                             refreshContents();
