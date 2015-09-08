@@ -7,6 +7,7 @@ import com.parse.ParseACL;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
@@ -44,12 +45,6 @@ public class SpochtUser extends ParseData {
     }
     public String getUsername()
     {
-
-        try {
-            fetchIfNeeded();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         return user().getUsername();
     }
     public void setPassword(final String password)
@@ -66,14 +61,18 @@ public class SpochtUser extends ParseData {
     }
     public ParseUser user()
     {
+        if(null == this.getObjectId())
+        {
+            return new ParseUser();
+        }
         ParseUser user;
         try {
             this.fetchIfNeeded();
             if(this.has("user")) {
-                user = (ParseUser) get("user");
-                if (null == user) {
-                    user = this.getParseObject("_User").fetchIfNeeded();
-                }
+                ParseQuery<ParseUser> query = ParseUser.getQuery();
+                ParseUser parseUser = (ParseUser)get("user");
+                user = query.get(parseUser.getObjectId());
+                user.pin();
             }
             else
             {
@@ -83,7 +82,7 @@ public class SpochtUser extends ParseData {
         }
         catch (com.parse.ParseException e)
         {
-            Log.e("spocht.data","Error fetching data",e);
+            Log.e(this.getClass().getCanonicalName(),"Error fetching data",e);
             user = new ParseUser();
         }
         return(user);
@@ -112,7 +111,7 @@ public class SpochtUser extends ParseData {
             this.fetchIfNeeded();
             date = (Date)get("lastSeen");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == date)
         {
@@ -140,7 +139,7 @@ public class SpochtUser extends ParseData {
                         }
                         setUpdated();
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -163,7 +162,7 @@ public class SpochtUser extends ParseData {
         }
         catch (com.parse.ParseException e)
         {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
             xps= new ArrayList<Experience>();
         }
         return(xps);

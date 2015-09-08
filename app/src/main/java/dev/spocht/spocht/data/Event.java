@@ -23,30 +23,6 @@ import java.util.Map;
 @ParseClassName("Event")
 public class Event extends ParseData {
 
-//    private enum EventState
-//    {
-//        CLOSED("grey"),
-//        OPEN("orange"),
-//        DESERTED("yellow"),
-//        READY("lightblue"),
-//        PLAYING("blue");
-//
-//        private String color;
-//        private EventState(final String color)
-//        {
-//            this.color = color;
-//        }
-//        public String color()
-//        {
-//            return(color);
-//        }
-//        static public void create(String name)
-//        {
-//
-//        }
-//    }
-
-
     public Event()
     {//default constructor for Parse.com
         ;
@@ -68,7 +44,7 @@ public class Event extends ParseData {
             this.fetchIfNeeded();
             name = getString("name");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == name)
         {
@@ -88,7 +64,7 @@ public class Event extends ParseData {
             this.fetchIfNeeded();
             date = (Date)get("startTime");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == date)
         {
@@ -108,7 +84,7 @@ public class Event extends ParseData {
             this.fetchIfNeeded();
             st= getString("state");
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         if(null == st)
         {
@@ -131,7 +107,7 @@ public class Event extends ParseData {
                             participation.persist();
                         }
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -158,7 +134,7 @@ public class Event extends ParseData {
                 }
             }
         } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
             participations = new ArrayList<Participation>();
         }
         return(participations);
@@ -183,7 +159,7 @@ public class Event extends ParseData {
                             facility.persist();
                         }
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -210,7 +186,7 @@ public class Event extends ParseData {
                 }
             }
         } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
             facility = new Facility();
         }
 

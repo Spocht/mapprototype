@@ -33,7 +33,7 @@ public class Participation extends ParseData {
             this.fetchIfNeeded();
             out=Outcome.valueOf(getString("outcome"));
         } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
         }
         return (out);
     }
@@ -64,22 +64,26 @@ public class Participation extends ParseData {
     }
     public SpochtUser user()
     {
+        if(this.getObjectId() == null)
+        {
+            return new SpochtUser();
+        }
         SpochtUser user = null;
         try {
             this.fetchIfNeeded();
-            user = (SpochtUser)get("user");
-            if(null == user)
-            {
-                if(this.has("user")) {
-                        user = this.getParseObject("user").fetchIfNeeded();
-                }
-                else
+            if(this.has("user")) {
+                user = (SpochtUser)get("user");
+                if(null == user)
                 {
-                    user = new SpochtUser();
+                    user = this.getParseObject("SpochtUser").fetchIfNeeded();
                 }
             }
+            else
+            {
+                user = new SpochtUser();
+            }
         } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting user", e);
             user = new SpochtUser();
         }
         return(user);

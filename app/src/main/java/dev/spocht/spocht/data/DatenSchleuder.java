@@ -5,11 +5,16 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Log;
 
+import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.location.LocationCallback;
@@ -37,14 +42,15 @@ public class DatenSchleuder {
     }
 
     static private DatenSchleuder instance = new DatenSchleuder();
-    private ArrayList<Facility> lstFacility = new ArrayList<Facility>(10);
+    private List<Timer> lstTimer = new ArrayList<>(10);
+    private List<Facility> lstFacility = new ArrayList<Facility>(10);
     private Sport               sport       = new Sport("tabletennis",2);
-    private ArrayList<SpochtUser> lstUser   = new ArrayList<SpochtUser>(10);
+    private List<SpochtUser> lstUser   = new ArrayList<SpochtUser>(10);
     private MyLocationListener myLocationListener;
     private LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
         public Void operate(Location l) {
-            Log.d("spocht.datenschleuder","Location: "+l.toString());
+            Log.d("spocht.datenschleuder", "Location: " + l.toString());
             if((l.getLatitude() == 10)&&(l.getLongitude() == 10))
             {
                 throwInitialData();
@@ -56,6 +62,10 @@ public class DatenSchleuder {
             else if((l.getLatitude() == 30)&&(l.getLongitude() == 30))
             {
                 createUsers();
+            }
+            else if((l.getLatitude() == 25)&&(l.getLongitude() == 25))
+            {
+                insertHistory();
             }
             return null;
         }
@@ -74,7 +84,7 @@ public class DatenSchleuder {
     public void setup(Context ctx)
     {
         MyLocationListener.create(ctx);
-        MyLocationListener.getInstance().register(locationCallback, false,this);
+        MyLocationListener.getInstance().register(locationCallback, false, this);
         Log.d("spocht.datenschleuder","Setup");
     }
 
@@ -125,10 +135,10 @@ public class DatenSchleuder {
 
         ArrayList<ItemUser> users = new ArrayList<>(10);
         users.add(new ItemUser("lugi@lolwut.org","honigimkopf"));
-        users.add(new ItemUser("edm@streetparade.ch","atemlos"));
-        users.add(new ItemUser("rudi@victoryismi.ne","schwerterkaffee"));
-        users.add(new ItemUser("test@parse.com","iossucks"));
-        users.add(new ItemUser("gays@microsoft.com","redmond"));
+        users.add(new ItemUser("edm@streetparade.ch", "atemlos"));
+        users.add(new ItemUser("rudi@victoryismi.ne", "schwerterkaffee"));
+        users.add(new ItemUser("test@parse.com", "iossucks"));
+        users.add(new ItemUser("gays@microsoft.com", "redmond"));
 
         for(ItemUser u:users)
         {
@@ -172,12 +182,22 @@ public class DatenSchleuder {
     }
     public void createHistorie(final String nameEvent, final Facility facility, final SpochtUser user, final Date date, final Outcome outcome)
     {
+        Log.d(this.getClass().getCanonicalName(), "Create Event: " + nameEvent);
         Event event = facility.addEvent(nameEvent);
         event.setStartTime(date);
         Participation participation = new Participation(user, outcome);
         participation.persist();
         event.setParticipation(participation);
         event.setState("orange");
+        final Timer tim = new Timer(true);
+        tim.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                facility.persist();
+                lstTimer.remove(tim);
+            }
+        },2000);
+        lstTimer.add(tim);
     }
     private class ItemHistory{
         public String name;
@@ -192,6 +212,36 @@ public class DatenSchleuder {
             this.date = date;
         }
     }
+    public void insertHistory()
+    {
+        ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+        query.findInBackground(new FindCallback<Facility>() {
+            @Override
+            public void done(List<Facility> list, ParseException e) {
+                if(null == e) {
+                    lstFacility = list;
+                    Log.d(this.getClass().getCanonicalName(), "Facility list size is " + list.size());
+                    ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
+                    query.findInBackground(new FindCallback<SpochtUser>() {
+                        @Override
+                        public void done(List<SpochtUser> list, ParseException e) {
+                            if (null == e) {
+                                lstUser = list;
+                                Log.d(this.getClass().getCanonicalName(), "User list size is " + list.size());
+                                throwHistorie();
+                            } else {
+                                Log.e(this.getClass().getCanonicalName(), "failed to get users", e);
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    Log.e(this.getClass().getCanonicalName(),"failed to get facilities",e);
+                }
+            }
+        });
+    }
     public void throwHistorie()
     {
         ArrayList<ItemHistory> lstHist=new ArrayList<>(5);
@@ -199,6 +249,7 @@ public class DatenSchleuder {
         lstHist.add(new ItemHistory("Crack the Table (2)",lstFacility.get(1),lstUser.get(1),new Date()));
         lstHist.add(new ItemHistory("Crack the Table (3)",lstFacility.get(2),lstUser.get(2),new Date()));
         lstHist.add(new ItemHistory("Crack the Table (4)",lstFacility.get(3),lstUser.get(3),new Date()));
+        lstHist.add(new ItemHistory("Cracknigz and hookaz",lstFacility.get(3),lstUser.get(4),new Date()));
         for(ItemHistory i:lstHist)
         {
             createHistorie(i.name,i.facility,i.user,i.date,Outcome.GAVEUP);
