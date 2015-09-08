@@ -7,6 +7,7 @@ import com.parse.ParseACL;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
@@ -44,12 +45,6 @@ public class SpochtUser extends ParseData {
     }
     public String getUsername()
     {
-
-        try {
-            fetchIfNeeded();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         return user().getUsername();
     }
     public void setPassword(final String password)
@@ -70,11 +65,10 @@ public class SpochtUser extends ParseData {
         try {
             this.fetchIfNeeded();
             if(this.has("user")) {
-                Log.d(this.getClass().getCanonicalName(),"User-ID: "+get("user"));
-                user = (ParseUser) get("user");
-                if (null == user) {
-                    user = this.getParseObject("_User").fetchIfNeeded();
-                }
+                ParseQuery<ParseUser> query = ParseUser.getQuery();
+                ParseUser parseUser = (ParseUser)get("user");
+                user = query.get(parseUser.getObjectId());
+                user.pin();
             }
             else
             {

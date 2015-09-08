@@ -79,7 +79,7 @@ public class Participation extends ParseData {
                 user = new SpochtUser();
             }
         } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
+            Log.e(this.getClass().getCanonicalName(), "Error getting user", e);
             user = new SpochtUser();
         }
         return(user);
