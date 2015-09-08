@@ -38,7 +38,7 @@ public class StateImageButton extends ImageButton {
                 onClickOperate(v);
             }
         });
-        setImageResource(R.drawable.ic_new_releases_black_24dp);
+        setImageResource(R.drawable.ic_new_releases_white_24dp);
 
     }
 

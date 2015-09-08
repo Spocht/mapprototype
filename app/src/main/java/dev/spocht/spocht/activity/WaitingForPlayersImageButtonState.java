@@ -17,7 +17,7 @@ public class WaitingForPlayersImageButtonState extends ImageButtonState {
     @Override
     public void entry() {
         Log.d("StateImageButton", "Waiting for Players");
-        mContext.setImageResource(R.drawable.ic_hourglass_empty_black_24dp);
+        mContext.setImageResource(R.drawable.ic_hourglass_empty_white_24dp);
     }
 
     @Override
