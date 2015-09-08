@@ -10,7 +10,7 @@ import dev.spocht.spocht.R;
  */
 public class StartGameImageButtonState extends ImageButtonState {
 
-    public StartGameImageButtonState(StateImageButton context) {
+    public StartGameImageButtonState(NewGameStateImageButton context) {
         mContext = context;
     }
 

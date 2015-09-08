@@ -8,7 +8,7 @@ import dev.spocht.spocht.R;
  * Created by highway on 06/09/15.
  */
 public class StopGameImageButtonState extends ImageButtonState {
-    public StopGameImageButtonState(StateImageButton context) {
+    public StopGameImageButtonState(NewGameStateImageButton context) {
         mContext = context;
     }
 

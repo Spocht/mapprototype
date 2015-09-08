@@ -2,7 +2,6 @@ package dev.spocht.spocht.activity;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
 
 import dev.spocht.spocht.R;
 
@@ -10,7 +9,7 @@ import dev.spocht.spocht.R;
  * Created by highway on 06/09/15.
  */
 public class NewEventImageButtonState extends ImageButtonState {
-    public NewEventImageButtonState(StateImageButton context) {
+    public NewEventImageButtonState(NewGameStateImageButton context) {
         mContext = context;
     }
 

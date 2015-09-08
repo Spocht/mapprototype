@@ -10,7 +10,7 @@ import dev.spocht.spocht.data.Event;
  * Created by highway on 06/09/15.
  */
 public class WaitingForPlayersImageButtonState extends ImageButtonState {
-    public WaitingForPlayersImageButtonState(StateImageButton context) {
+    public WaitingForPlayersImageButtonState(NewGameStateImageButton context) {
         mContext = context;
     }
 
