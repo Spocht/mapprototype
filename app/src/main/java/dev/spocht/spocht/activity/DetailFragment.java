@@ -85,12 +85,6 @@ public class DetailFragment extends ListFragment {
 
     public void refreshContents() {
         mFacility = mActivity.getSelectedFacility();
-        if (null == mEventAdapter) {
-            ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
-
-            mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
-            setListAdapter(mEventAdapter);
-        }
 
         // individual elements are separated into according methods to simplify maintenance
         setImage();
@@ -151,9 +145,10 @@ public class DetailFragment extends ListFragment {
     }
 
     private void setEvents() {
-        mEventAdapter.clear();
-        mEventAdapter.addAll(mFacility.events());
-        mEventAdapter.notifyDataSetChanged();
+        ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
+
+        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
+        setListAdapter(mEventAdapter);
     }
 
     /**
@@ -189,7 +184,7 @@ public class DetailFragment extends ListFragment {
                     TextView tv = new TextView(context);
                     tv.setText(getString(R.string.enter_event_name));
                     tv.setPadding(40, 40, 40, 40);
-                    tv.setGravity(Gravity.LEFT);
+                    tv.setGravity(Gravity.START);
                     tv.setTextSize(20);
 
                     LinearLayout.LayoutParams tvParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -207,8 +202,10 @@ public class DetailFragment extends ListFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mEventName = input.getText().toString();
-                            Event event = mFacility.addEvent();
-                            event.setName(mEventName);
+                            Event event = mFacility.addEvent(mEventName);
+                            event.checkIn(DataManager.getInstance().currentUser());
+
+                            refreshContents();
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
