@@ -1,7 +1,10 @@
 package dev.spocht.spocht.activity;
 
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
@@ -33,6 +36,7 @@ import java.util.List;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
@@ -45,7 +49,7 @@ public class MapsActivity extends AppCompatActivity
         implements
         GoogleMap.OnMarkerClickListener {
 
-    LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+    private LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
         public Void operate(Location location) {
 
@@ -58,16 +62,49 @@ public class MapsActivity extends AppCompatActivity
         }
 
     };
+    private BroadcastReceiver recv = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            if(intent.hasExtra("event"))
+            {
+                //update the announced event
+                DataManager.getInstance().update(intent.getStringExtra("event"), Event.class, new InfoRetriever<Event>() {
+                    @Override
+                    public void operate(Event event) {
+                        Toast toastPush = Toast.makeText(
+                                context,
+                                "Event "+event.name()+" is updated!",
+                                Toast.LENGTH_LONG
+                        );
+                        toastPush.show();
+                        //only reload details if the event is selected
+                        if(mapFacility.get(mSelectedMarker).getObjectId().equals(event.facility().getObjectId())) {
+                            event.facility().updateEvents(new InfoRetriever<Facility>() {
+                                @Override
+                                public void operate(Facility facility) {
+                                    mDetailFragment.refreshContents();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            else if(intent.hasExtra("closeEvent"))
+            {
+                //todo: how to handle closing??
+            }
+        }
+    };
 
     private DetailFragment mDetailFragment;
-    MapFragment mMapFragment;
+    private MapFragment mMapFragment;
     private boolean mIsDetailFragmentVisible = false;
     private boolean mIsAnimating = false;
 
-    int mScreenHeight;
-    float mNewHeight = -1;
+    private int mScreenHeight;
+    private float mNewHeight = -1;
 
-    Marker mSelectedMarker;
+    private Marker mSelectedMarker;
 
     private HashMap<Marker,Facility> mapFacility   = new HashMap<>(20);
     private HashSet<String>          setFacilities = new HashSet<>(20);
@@ -96,6 +133,8 @@ public class MapsActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
+
+        context.registerReceiver(recv, new IntentFilter("ParsePusher"));
 
         MyLocationListener.create(context);
         MyLocationListener.getInstance().register(locationCallback, true,this);
@@ -160,7 +199,14 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        context.registerReceiver(recv,new IntentFilter("ParsePusher"));
         setUpMapIfNeeded();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        context.unregisterReceiver(recv);
     }
 
     /**
