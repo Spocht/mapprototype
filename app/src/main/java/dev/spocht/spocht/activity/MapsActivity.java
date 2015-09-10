@@ -266,7 +266,8 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d("spocht.activity", marker.getTitle());
+        Log.d(getClass().getCanonicalName(), marker.getClass().getCanonicalName());
+        Log.d(getClass().getCanonicalName(), marker.getTitle());
         System.out.println(mIsDetailFragmentVisible);
 
         mSelectedMarker = marker;

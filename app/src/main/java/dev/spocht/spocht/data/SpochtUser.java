@@ -167,4 +167,9 @@ public class SpochtUser extends ParseData {
         }
         return(xps);
     }
+
+    public boolean isThisMe(String username) {
+        return username.equals(user().getUsername());
+
+    }
 }
