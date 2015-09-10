@@ -276,7 +276,7 @@ public class Facility extends ParseData {
     {
         List<Event> events = null;
         try {
-            this.fetchIfNeeded(); //todo remove that, change it to fetchifneeded()
+            this.fetchIfNeeded();
             events = getList("events");
             if(null == events)
             {
