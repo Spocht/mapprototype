@@ -55,7 +55,7 @@ public class Event extends ParseData {
     }
     protected void setStartTime(final Date start)
     {//todo only used, when a location is linked in
-        put("startTime",start);
+        put("startTime", start);
         setUpdated();
     }
     public Date startTime()
@@ -193,6 +193,36 @@ public class Event extends ParseData {
 
         return(facility);
     }
+    public void end()
+    {
+        setIsEnded(true);
+    }
+
+    public void setIsEnded(boolean isEnded) {
+        put("isEnded", isEnded);
+        setUpdated();
+    }
+
+    public boolean getIsEnded() {
+        boolean res=false;
+        try {
+            this.fetchIfNeeded();
+            if(has("isEnded")) {
+                res = getBoolean("isEnded");
+            }
+            else
+            {
+                res=false;
+                setIsEnded(false);
+            }
+        }
+        catch (ParseException e)
+        {
+            Log.e(this.getClass().getCanonicalName(),"failed to get Ended",e);
+            res=false;
+        }
+        return res;
+    }
 
     public Boolean isUserCheckedIn(final SpochtUser user)
     {
@@ -243,18 +273,5 @@ public class Event extends ParseData {
     public void start()
     {
 
-    }
-    public void end()
-    {
-        setIsEnded(true);
-    }
-
-    public void setIsEnded(boolean isEnded) {
-        put("isEnded", isEnded);
-        setUpdated();
-    }
-
-    public boolean getIsEnded() {
-        return getBoolean("isEnded");
     }
 }
