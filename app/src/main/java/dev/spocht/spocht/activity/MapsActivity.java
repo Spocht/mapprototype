@@ -79,12 +79,7 @@ public class MapsActivity extends AppCompatActivity
                         toastPush.show();
                         //only reload details if the event is selected
                         if(mapFacility.get(mSelectedMarker).getObjectId().equals(event.facility().getObjectId())) {
-                            event.facility().updateEvents(new InfoRetriever<Facility>() {
-                                @Override
-                                public void operate(Facility facility) {
-                                    mDetailFragment.refreshContents();
-                                }
-                            });
+                            mDetailFragment.refreshContents();
                         }
                     }
                 });
