@@ -88,4 +88,27 @@ public class Participation extends ParseData {
         }
         return(user);
     }
+
+    public Event event() {
+        if (this.getObjectId() == null) {
+            return new Event();
+        }
+
+        Event event = null;
+        try {
+            this.fetchIfNeeded();
+            if (this.has("event")) {
+                event = (Event) get("event");
+
+                if (null == event) {
+                    event = this.getParseObject("Event").fetchIfNeeded();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(), "Error getting event", e);
+            event = new Event();
+        }
+
+        return event;
+     }
 }

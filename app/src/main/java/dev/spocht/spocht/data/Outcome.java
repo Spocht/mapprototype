@@ -5,7 +5,7 @@ package dev.spocht.spocht.data;
  */
 public enum Outcome {
     WIN,
-    LOOSE,
+    LOSE,
     TIE,
     GAVEUP
 }
