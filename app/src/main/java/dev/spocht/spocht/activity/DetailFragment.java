@@ -28,6 +28,7 @@ import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.InfoRetriever;
 
 public class DetailFragment extends ListFragment {
     private Facility mFacility;
@@ -87,6 +88,13 @@ public class DetailFragment extends ListFragment {
 
     public void refreshContents() {
         mFacility = mActivity.getSelectedFacility();
+
+        mFacility.updateEvents(new InfoRetriever<Facility>() {
+            @Override
+            public void operate(Facility facility) {
+                setEvents();
+            }
+        });
 
         // individual elements are separated into according methods to simplify maintenance
         setImage();

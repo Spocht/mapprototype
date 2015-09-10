@@ -276,7 +276,7 @@ public class Facility extends ParseData {
     {
         List<Event> events = null;
         try {
-            this.fetch(); //todo remove that, change it to fetchifneeded()
+            this.fetchIfNeeded(); //todo remove that, change it to fetchifneeded()
             events = getList("events");
             if(null == events)
             {
@@ -308,6 +308,25 @@ public class Facility extends ParseData {
             event.setFacility(this);
         }
         return event;
+    }
+    public void updateEvents(final InfoRetriever<Facility> callback)
+    {
+        Log.d(this.getClass().getCanonicalName(),"Updating "+ this.name());
+        ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
+        query.include("events.participants.user.user");
+        query.getInBackground(this.getObjectId(), new GetCallback<Facility>() {
+            @Override
+            public void done(Facility facility, ParseException e) {
+                if(null == e)
+                {
+                    callback.operate(facility);
+                }
+                else
+                {
+                    Log.e(this.getClass().getCanonicalName(),"Fail to update",e);
+                }
+            }
+        });
     }
 
 }

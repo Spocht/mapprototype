@@ -61,8 +61,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             View line = li.inflate(R.layout.participant_list, null);
 
             TextView tv = (TextView) line.findViewById(R.id.fragment_detail_event_participant);
-//            tv.setText(part.user().getUsername());
-            tv.setText("participation.user().getUsername() would crash me");
+            tv.setText(part.user().getUsername());
 
             participantList.addView(line);
         }

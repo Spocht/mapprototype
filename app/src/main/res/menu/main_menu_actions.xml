@@ -6,6 +6,9 @@
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
         android:showAsAction="never" />
+    <item android:id="@+id/menu_clear_local"
+        android:title="@string/menu_clear_local"
+        android:showAsAction="never" />
     <item android:id="@+id/menu_logout"
         android:title="@string/menu_logout"
         android:showAsAction="never" />

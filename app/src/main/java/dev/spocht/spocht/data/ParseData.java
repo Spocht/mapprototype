@@ -5,6 +5,7 @@ import android.util.Log;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 /**
@@ -20,6 +21,14 @@ public abstract class ParseData extends ParseObject {
         Boolean tmp = updated;
         updated = false;
         return tmp;
+    }
+    public void load(){
+        ParseQuery query = ParseQuery.getQuery(this.getClass());
+        try {
+            query.get(this.getObjectId());
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(),"Load failed",e);
+        }
     }
     public void persist() {
         try {
