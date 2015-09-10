@@ -141,7 +141,8 @@ public class MapsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_stats:
-                return false;
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
             case R.id.menu_settings:
                 return false;
             case R.id.menu_clear_local:
