@@ -30,9 +30,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
@@ -106,10 +108,16 @@ public class MapsActivity extends AppCompatActivity
     private static android.content.Context  context;
     private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
 
+    private Map<String,String> mpTypes=new HashMap<>(20);
+
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
     }
 
+    public String getType(final String key)
+    {
+        return mpTypes.get(key);
+    }
 
     //this one is needed... unfortunately it is not mentioned in the tutorial
     @Override
@@ -128,8 +136,6 @@ public class MapsActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
-
-        context.registerReceiver(recv, new IntentFilter("ParsePusher"));
 
         MyLocationListener.create(context);
         MyLocationListener.getInstance().register(locationCallback, true,this);
@@ -150,6 +156,20 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
+
+
+        List<String> listSports=new ArrayList<>(20);
+        listSports.add("tabletennis");
+
+        for(String sport:listSports) {
+            mpTypes.put(sport, (String) getResources().getText(
+                    getResources().getIdentifier(
+                            sport,
+                            "string",
+                            Application.PACKAGE_NAME
+                    )
+            ));
+        }
     }
 
     private void setUpActionBar() {
