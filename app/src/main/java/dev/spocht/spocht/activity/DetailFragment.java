@@ -28,6 +28,7 @@ import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.InfoRetriever;
 
 public class DetailFragment extends ListFragment {
     private Facility mFacility;
@@ -80,19 +81,20 @@ public class DetailFragment extends ListFragment {
 
         mActivity = (MapsActivity) getActivity();
         mFacility = mActivity.getSelectedFacility();
-        ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
-
-        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
+        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), new ArrayList<Event>());
         setListAdapter(mEventAdapter);
-
-//        refreshContents();
-
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
     }
 
     public void refreshContents() {
         mFacility = mActivity.getSelectedFacility();
 
+        mFacility.updateEvents(new InfoRetriever<Facility>() {
+            @Override
+            public void operate(Facility facility) {
+                setEvents();
+            }
+        });
 
         // individual elements are separated into according methods to simplify maintenance
         setImage();
@@ -211,12 +213,7 @@ public class DetailFragment extends ListFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mEventName = input.getText().toString();
                             Event event = mFacility.addEvent(mEventName);
-                            try {
-                                event.save();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
+                            event.persist(); //todo review, because there might be race conditions with the facility.addEvent(). It is possible that the item is saved twice
                             event.checkIn(DataManager.getInstance().currentUser());
 
                             refreshContents();

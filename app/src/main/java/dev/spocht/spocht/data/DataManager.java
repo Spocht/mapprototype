@@ -143,12 +143,7 @@ public class DataManager {
     public void logout()
     {
         currentUser().unpinInBackground();
-        findFacilitiesLocal(new GeoPoint(), -1, new InfoRetriever<List<Facility>>() {
-            @Override
-            public void operate(List<Facility> facilities) {
-                Facility.unpinAllInBackground(facilities);
-            }
-        });
+        flushLocalStore();
         Task<Void> task = ParseUser.logOutInBackground();
         try
         {
@@ -159,7 +154,15 @@ public class DataManager {
             Log.e(this.getClass().getCanonicalName(),"Logout failed ",e);
         }
     }
-
+    public void flushLocalStore()
+    {
+        findFacilitiesLocal(new GeoPoint(), -1, new InfoRetriever<List<Facility>>() {
+            @Override
+            public void operate(List<Facility> facilities) {
+                Facility.unpinAllInBackground(facilities);
+            }
+        });
+    }
     public <T extends ParseData> void request(String id, Class<T> obj, final InfoRetriever<T> callback) {
         ParseObject.createWithoutData(obj, id).fetchIfNeededInBackground(new GetCallback<T>() {
             @Override

@@ -247,26 +247,4 @@ public class Event extends ParseData {
     {
 
     }
-
-
-//    public void setGame(Game game)
-//    {
-//        addUnique("games", ParseObject.createWithoutData(Game.class, game.getObjectId()));
-//    }
-//    public List<Game> getGames()
-//    {
-//        List<Game> games=getList("games");
-//        if(null == games)
-//        {
-//            try {
-//                games = this.getParseObject("game").fetchIfNeeded();
-//            }
-//            catch (com.parse.ParseException e)
-//            {
-//                //todo log?!
-//                games= new ArrayList<Game>();
-//            }
-//        }
-//        return games;
-//    }
 }
