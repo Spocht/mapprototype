@@ -31,6 +31,7 @@ public class Event extends ParseData {
     {
         setName(name);
         setState("grey");
+        setIsEnded(false);
     }
     public void setName(final String name)
     {
@@ -245,6 +246,15 @@ public class Event extends ParseData {
     }
     public void end()
     {
+        setIsEnded(true);
+    }
 
+    public void setIsEnded(boolean isEnded) {
+        put("isEnded", isEnded);
+        setUpdated();
+    }
+
+    public boolean getIsEnded() {
+        return getBoolean("isEnded");
     }
 }
