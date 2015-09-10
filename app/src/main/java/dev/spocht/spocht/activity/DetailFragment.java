@@ -80,9 +80,9 @@ public class DetailFragment extends ListFragment {
         mComment     = (TextView)  view.findViewById(R.id.fragment_detail_comment);
 
         mActivity = (MapsActivity) getActivity();
-
-        refreshContents();
-
+        mFacility = mActivity.getSelectedFacility();
+        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), new ArrayList<Event>());
+        setListAdapter(mEventAdapter);
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
     }
 
@@ -155,10 +155,10 @@ public class DetailFragment extends ListFragment {
     }
 
     private void setEvents() {
-        ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
-
-        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
-        setListAdapter(mEventAdapter);
+        Log.d(getClass().getCanonicalName(), "setEvents()");
+        mEventAdapter.clear();
+        mEventAdapter.addAll(mFacility.events());
+        mEventAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -243,4 +243,5 @@ public class DetailFragment extends ListFragment {
             });
         }
     }
+
 }
