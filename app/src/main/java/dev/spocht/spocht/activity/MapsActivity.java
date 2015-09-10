@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,8 +30,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
@@ -62,7 +62,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
     };
-    private BroadcastReceiver recv = new BroadcastReceiver() {
+    private BroadcastReceiver mRecv = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
             if(intent.hasExtra("event"))
@@ -73,12 +73,22 @@ public class MapsActivity extends AppCompatActivity
                     public void operate(Event event) {
                         Toast toastPush = Toast.makeText(
                                 context,
-                                "Event "+event.name()+" is updated!",
+                                "Event "+event.name()+" at "+event.facility().name()+" is updated!",
                                 Toast.LENGTH_LONG
                         );
                         toastPush.show();
+                        Facility f=event.facility();
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
+                        mapFacilitiesRev.get(f.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
+                                // this will throw a NotFoundException if the icon is not found
+                                getResources()
+                                        .getIdentifier(
+                                                iconDescriptor,
+                                                "drawable",
+                                                Application.PACKAGE_NAME
+                                        )));
                         //only reload details if the event is selected
-                        if(mapFacility.get(mSelectedMarker).getObjectId().equals(event.facility().getObjectId())) {
+                        if(mapFacility.get(mSelectedMarker).getObjectId().equals(f.getObjectId())) {
                             mDetailFragment.refreshContents();
                         }
                     }
@@ -101,8 +111,8 @@ public class MapsActivity extends AppCompatActivity
 
     private Marker mSelectedMarker;
 
-    private HashMap<Marker,Facility> mapFacility   = new HashMap<>(20);
-    private HashSet<String>          setFacilities = new HashSet<>(20);
+    private Map<Marker,Facility>    mapFacility   = new HashMap<>(20);
+    private Map<String,Marker>      mapFacilitiesRev = new HashMap<>(20);
     private static android.content.Context  context;
     private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
 
@@ -129,7 +139,7 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
         MapsActivity.context = getApplicationContext();
 
-        context.registerReceiver(recv, new IntentFilter("ParsePusher"));
+        context.registerReceiver(mRecv, new IntentFilter("ParsePusher"));
 
         MyLocationListener.create(context);
         MyLocationListener.getInstance().register(locationCallback, true,this);
@@ -195,14 +205,14 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        context.registerReceiver(recv,new IntentFilter("ParsePusher"));
+        context.registerReceiver(mRecv,new IntentFilter("ParsePusher"));
         setUpMapIfNeeded();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        context.unregisterReceiver(recv);
+        context.unregisterReceiver(mRecv);
     }
 
     /**
@@ -285,9 +295,8 @@ public class MapsActivity extends AppCompatActivity
             public void operate(List<Facility> facilities) {
                 for (Facility f : facilities) {
                     Log.d("spocht.maps", "Got facility: " + f.name() + " type: " + f.sport().name());
-                    if (!setFacilities.contains(f.getObjectId())) {
-                        //todo: set color according to facility's state
-                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
+                    if (!mapFacilitiesRev.containsKey(f.getObjectId())) {
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
@@ -301,7 +310,7 @@ public class MapsActivity extends AppCompatActivity
                                                         ))).anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
-                        setFacilities.add(f.getObjectId());
+                        mapFacilitiesRev.put(f.getObjectId(), marker);
                         Log.d("spocht.maps", "stored facility: " + f.name());
                     }
                 }
@@ -377,5 +386,41 @@ public class MapsActivity extends AppCompatActivity
 
     public void createNew(View view) {
         Log.d("DetailFragment", "Create new event");
+    }
+
+    private String calcColor(final Facility facility)
+    {
+        Map<String,Integer> map=new HashMap<>(6);
+        for(Event e:facility.events())
+        {
+            String state=e.getState();
+            if(map.containsKey(state))
+            {
+                Integer i = map.get(state);
+                i=i+1;
+                map.put(state,i);
+            }
+            else
+            {
+                map.put(state,1);
+            }
+        }
+        if(map.size()==1)
+        {
+            return map.keySet().toArray(new String[map.size()])[0];
+        }
+        if(map.containsKey("blue"))
+        {
+            return "lightblue";
+        }
+        if(map.containsKey("lightblue"))
+        {
+            return "lightblue";
+        }
+        if(map.containsKey("orange"))
+        {
+            return "orange";
+        }
+        return "grey";
     }
 }
