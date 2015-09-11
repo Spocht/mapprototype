@@ -74,6 +74,7 @@ public class Image extends ParseData {
         try {
             this.fetchIfNeeded();
             imgFile = (ParseFile)get("picture");
+            Log.d(this.getClass().getCanonicalName(),"load finished");
             if(null != imgFile) {
                     byte[] data = imgFile.getData();
                     pic = BitmapFactory.decodeByteArray(data, 0, data.length);

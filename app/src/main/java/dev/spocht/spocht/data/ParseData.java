@@ -49,4 +49,26 @@ public abstract class ParseData extends ParseObject {
             Log.e("spocht.object", "Error while deleting", e);
         }
     }
+
+    public <T extends ParseObject> T fetchIfNeeded(){
+        if(this.isDataAvailable()) {
+            Log.d(this.getClass().getCanonicalName(), "i am loaded unnecessary [" + this.getObjectId() + "]");
+            return (T)this;
+        }
+        else
+        {
+            Log.d(this.getClass().getCanonicalName(), "i am loaded [" + this.getObjectId() + "]");
+            //todo: maybe we should implement a proper PARSE queue here
+            try {
+                T tmp = super.fetchIfNeeded();
+                tmp.pin();
+                return tmp;
+            }
+            catch (ParseException e)
+            {
+                Log.e(this.getClass().getCanonicalName(),"Error loading data ["+this.getObjectId()+"]",e);
+                return null;
+            }
+        }
+    }
 }

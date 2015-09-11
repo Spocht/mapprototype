@@ -104,7 +104,7 @@ public class DetailFragment extends ListFragment {
         setTitle();
         setFieldCount();
         setComment();
-//        setEvents(); todo:review this. There is no event shown until the update is finished, since we are using the same views and lists for all locations, the old events will be shown when the facility is changed
+        setEvents();
         setType();
 
         Log.d(getClass().getCanonicalName(), "Fields: " + String.valueOf(mFacility.numberOfFields()) + ", events " + mFacility.events().size());

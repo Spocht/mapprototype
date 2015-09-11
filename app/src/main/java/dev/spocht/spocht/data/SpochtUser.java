@@ -61,29 +61,35 @@ public class SpochtUser extends ParseData {
     }
     public ParseUser user()
     {
+        ParseUser user;
         if(null == this.getObjectId())
         {
-            return new ParseUser();
-        }
-        ParseUser user;
-        try {
-            this.fetchIfNeeded();
-            if(this.has("user")) {
-                ParseQuery<ParseUser> query = ParseUser.getQuery();
-                ParseUser parseUser = (ParseUser)get("user");
-                user = query.get(parseUser.getObjectId());
-                user.pin();
-            }
-            else
-            {
-                user = new ParseUser();
-                setUser(user);
-            }
-        }
-        catch (com.parse.ParseException e)
-        {
-            Log.e(this.getClass().getCanonicalName(),"Error fetching data",e);
             user = new ParseUser();
+        }
+        else {
+            try {
+                this.fetchIfNeeded();
+                if (this.has("user")) {
+                    //todo review this
+                    //                ParseQuery<ParseUser> query = ParseUser.getQuery();
+                    //                ParseUser parseUser = (ParseUser)get("user");
+                    //                user = query.get(parseUser.getObjectId());
+                    user = (ParseUser) get("user");
+                    user.fetchIfNeeded();
+                    user.pin();
+                } else {
+                    user = new ParseUser();
+                    setUser(user);
+                }
+            } catch (com.parse.ParseException e) {
+                Log.e(this.getClass().getCanonicalName(), "Error fetching data", e);
+                user = new ParseUser();
+            }
+        }
+        if(user.getObjectId()==null)
+        {
+            Log.d(this.getClass().getCanonicalName(),"John Doe created");
+            user.setUsername("John Doe");
         }
         return(user);
     }
