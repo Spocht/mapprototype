@@ -81,16 +81,15 @@ public class EventAdapter extends ArrayAdapter<Event> {
             View line = li.inflate(R.layout.participant_list, null);
 
             TextView tv = (TextView) line.findViewById(R.id.fragment_detail_event_participant);
-            tv.setText("ich auch da");
-//
-//            SpochtUser user = part.user();
-//            String username = user.getUsername();
-//            if (user.isThisMe(currentUsername)) {
-//                tv.setText("- " + username + " " + DataManager.getContext().getString(R.string.thats_me));
-//                isAlreadyCheckedIn = true;
-//            } else {
-//                tv.setText("- " + username);
-//            }
+
+            SpochtUser user = part.user();
+            String username = user.getUsername();
+            if (user.isThisMe(currentUsername)) {
+                tv.setText("- " + username + " " + DataManager.getContext().getString(R.string.thats_me));
+                isAlreadyCheckedIn = true;
+            } else {
+                tv.setText("- " + username);
+            }
 
             participantList.addView(line);
         }
