@@ -41,12 +41,8 @@ public class Event extends ParseData {
     public String name()
     {
         String name = null;
-        try {
-            this.fetchIfNeeded();
-            name = getString("name");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        name = getString("name");
         if(null == name)
         {
             name = new String("unknown");
@@ -61,12 +57,8 @@ public class Event extends ParseData {
     public Date startTime()
     {
         Date date = null;
-        try{
-            this.fetchIfNeeded();
-            date = (Date)get("startTime");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        date = (Date)get("startTime");
         if(null == date)
         {
             date = getUpdatedAt();
@@ -81,12 +73,8 @@ public class Event extends ParseData {
     public String getState()
     {
         String st=null;
-        try{
-            this.fetchIfNeeded();
-            st= getString("state");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        st= getString("state");
         if(null == st)
         {
             st = "unknown";
@@ -205,21 +193,14 @@ public class Event extends ParseData {
 
     public boolean getIsEnded() {
         boolean res=false;
-        try {
-            this.fetchIfNeeded();
-            if(has("isEnded")) {
-                res = getBoolean("isEnded");
-            }
-            else
-            {
-                res=false;
-                setIsEnded(false);
-            }
+        this.fetchIfNeeded();
+        if(has("isEnded")) {
+            res = getBoolean("isEnded");
         }
-        catch (ParseException e)
+        else
         {
-            Log.e(this.getClass().getCanonicalName(),"failed to get Ended",e);
             res=false;
+            setIsEnded(false);
         }
         return res;
     }

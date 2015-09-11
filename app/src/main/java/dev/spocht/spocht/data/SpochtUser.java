@@ -113,12 +113,8 @@ public class SpochtUser extends ParseData {
     public Date lastSeen()
     {
         Date date= null;
-        try {
-            this.fetchIfNeeded();
-            date = (Date)get("lastSeen");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        date = (Date)get("lastSeen");
         if(null == date)
         {
             date= new Date();
@@ -163,7 +159,7 @@ public class SpochtUser extends ParseData {
             xps = getList("experience");
             if(null == xps)
             {
-                    xps = this.getParseObject("experience").fetchIfNeeded();
+                xps = this.getParseObject("experience").fetchIfNeeded();
             }
         }
         catch (com.parse.ParseException e)

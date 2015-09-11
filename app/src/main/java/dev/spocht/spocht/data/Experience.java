@@ -34,12 +34,8 @@ public class Experience extends ParseData {
     public int xp()
     {
         int xp = 0;
-        try{
-            this.fetchIfNeeded();
-            xp = getInt("xp");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        xp = getInt("xp");
         if(xp < 0)
         {
             xp = 0;
@@ -54,12 +50,8 @@ public class Experience extends ParseData {
     public int level()
     {
         int lvl = 0;
-        try{
-            this.fetchIfNeeded();
-            lvl = getInt("level");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        lvl = getInt("level");
         if(lvl < 1)
         {
             lvl = 1;

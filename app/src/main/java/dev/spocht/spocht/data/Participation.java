@@ -29,12 +29,8 @@ public class Participation extends ParseData {
     public Outcome outcome()
     {
         Outcome out=Outcome.GAVEUP;
-        try {
-            this.fetchIfNeeded();
-            out=Outcome.valueOf(getString("outcome"));
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        out=Outcome.valueOf(getString("outcome"));
         return (out);
     }
 

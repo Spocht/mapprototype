@@ -40,12 +40,8 @@ public class Image extends ParseData {
     public String name()
     {
         String name = null;
-        try {
-            this.fetchIfNeeded();
-            name = getString("name");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        name = getString("name");
         if(null == name)
         {
             name = new String("unknown");
