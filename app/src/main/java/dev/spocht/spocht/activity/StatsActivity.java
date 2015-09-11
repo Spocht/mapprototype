@@ -1,8 +1,10 @@
 package dev.spocht.spocht.activity;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -12,7 +14,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import dev.spocht.spocht.R;
@@ -21,18 +22,21 @@ import dev.spocht.spocht.data.Experience;
 import dev.spocht.spocht.data.Participation;
 import dev.spocht.spocht.data.SpochtUser;
 
-public class StatsActivity extends AppCompatActivity {
+public class StatsActivity extends ListActivity {
     SpochtUser mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stats);
 
+        setContentView(R.layout.activity_stats);
         mCurrentUser = DataManager.getInstance().currentUser();
+
         loadGeneralStats();
         loadLevelStats();
     }
+
+
 
     private void loadLevelStats() {
         Log.d(getClass().getCanonicalName(), "XP preload: " + mCurrentUser.experiences().size());
@@ -67,20 +71,21 @@ public class StatsActivity extends AppCompatActivity {
         ParseQuery<Participation> participationQuery = ParseQuery.getQuery(Participation.class);
         participationQuery
                 .whereEqualTo("user", mCurrentUser)
-                .whereExists("outcome");
+                .whereExists("outcome")
+                .orderByDescending("createdAt");
 
         participationQuery.findInBackground(new FindCallback<Participation>() {
             @Override
             public void done(List<Participation> list, ParseException e) {
                 Log.d(getClass().getCanonicalName(), "found " + list.size() + " participations");
 
-                int win    = 0;
-                int lose   = 0;
-                int tie    = 0;
+                int win = 0;
+                int lose = 0;
+                int tie = 0;
                 int gaveup = 0;
 
                 for (Participation part : list) {
-                    switch  (part.outcome()) {
+                    switch (part.outcome()) {
                         case WIN:
                             win++;
                             break;
@@ -97,10 +102,10 @@ public class StatsActivity extends AppCompatActivity {
                     Log.d(getClass().getCanonicalName(), part.getObjectId() + " " + part.outcome().toString() + " event " + part.event().name());
                 }
 
-                TextView tvTotal  = (TextView) findViewById(R.id.stats_text_total);
-                TextView tvWin    = (TextView) findViewById(R.id.stats_text_win);
-                TextView tvLose   = (TextView) findViewById(R.id.stats_text_lose);
-                TextView tvTie    = (TextView) findViewById(R.id.stats_text_tie);
+                TextView tvTotal = (TextView) findViewById(R.id.stats_text_total);
+                TextView tvWin = (TextView) findViewById(R.id.stats_text_win);
+                TextView tvLose = (TextView) findViewById(R.id.stats_text_lose);
+                TextView tvTie = (TextView) findViewById(R.id.stats_text_tie);
                 TextView tvGaveup = (TextView) findViewById(R.id.stats_text_gaveup);
 
                 tvTotal.setText(String.valueOf(list.size()));
@@ -108,7 +113,21 @@ public class StatsActivity extends AppCompatActivity {
                 tvLose.setText(String.valueOf(lose));
                 tvTie.setText(String.valueOf(tie));
                 tvGaveup.setText(String.valueOf(gaveup));
+
+                loadEventStats(list);
             }
         });
+    }
+
+    private void loadEventStats(List<Participation> list) {
+        TextView tvNoEvents = (TextView) findViewById(R.id.stats_text_no_events);
+
+        if (list.size() > 0) {
+            StatsAdapter sa = new StatsAdapter(getApplicationContext(), list);
+            setListAdapter(sa);
+            tvNoEvents.setVisibility(View.GONE);
+        } else {
+            tvNoEvents.setVisibility(View.VISIBLE);
+        }
     }
 }
