@@ -68,22 +68,15 @@ public class SpochtUser extends ParseData {
         }
         else {
             this.fetchIfNeeded();
-            try {
-                if (this.has("user")) {
-                    //todo review this
-                    //                ParseQuery<ParseUser> query = ParseUser.getQuery();
-                    //                ParseUser parseUser = (ParseUser)get("user");
-                    //                user = query.get(parseUser.getObjectId());
-                    user = (ParseUser) get("user");
-                    user.fetchIfNeeded();
-                    user.pin();
-                } else {
+            if (this.has("user")) {
+                user = (ParseUser) get("user");
+                if (null == ParseData.fetchMe(user)) {
                     user = new ParseUser();
-                    setUser(user);
                 }
-            } catch (com.parse.ParseException e) {
-                Log.e(this.getClass().getCanonicalName(), "Error fetching data", e);
+            }
+            else {
                 user = new ParseUser();
+                setUser(user);
             }
         }
         if(user.getObjectId()==null)

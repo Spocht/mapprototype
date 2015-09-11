@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -123,7 +124,12 @@ public class DetailFragment extends ListFragment {
      * below are alle the methods used to update this fragments contents
      */
     private void setImage() {
-        mImage.setImageBitmap(mFacility.image().picture());
+        mImage.setImageBitmap(mFacility.image().picture(new InfoRetriever<Bitmap>() {
+            @Override
+            public void operate(Bitmap bitmap) {
+                mImage.setImageBitmap(bitmap);
+            }
+        }));
     }
 
     private void setTitle() {
