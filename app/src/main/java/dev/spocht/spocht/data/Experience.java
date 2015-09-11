@@ -104,23 +104,8 @@ public class Experience extends ParseData {
     public Sport sport()
     {
         Sport sport = null;
-        try {
-            this.fetchIfNeeded();
-            sport = (Sport)get("sport");
-            if(null == sport)
-            {
-                if(this.has("sport")) {
-                        sport = this.getParseObject("sport").fetchIfNeeded();
-                }
-                else
-                {
-                    sport = new Sport("unknown", 0);
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            sport = new Sport("unknown", 0);
-        }
+        this.fetchIfNeeded();
+        sport = (Sport)get("sport");
         return(sport);
     }
 

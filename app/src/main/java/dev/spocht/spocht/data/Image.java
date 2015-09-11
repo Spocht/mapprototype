@@ -67,8 +67,8 @@ public class Image extends ParseData {
     {
         ParseFile imgFile = null;
         Bitmap pic=null;
+        this.fetchIfNeeded();
         try {
-            this.fetchIfNeeded();
             imgFile = (ParseFile)get("picture");
             Log.d(this.getClass().getCanonicalName(),"load finished");
             if(null != imgFile) {

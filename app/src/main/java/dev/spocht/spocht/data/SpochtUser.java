@@ -67,8 +67,8 @@ public class SpochtUser extends ParseData {
             user = new ParseUser();
         }
         else {
+            this.fetchIfNeeded();
             try {
-                this.fetchIfNeeded();
                 if (this.has("user")) {
                     //todo review this
                     //                ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -154,19 +154,8 @@ public class SpochtUser extends ParseData {
     public List<Experience> experiences()
     {
         List<Experience> xps=null;
-        try {
-            this.fetchIfNeeded();
-            xps = getList("experience");
-            if(null == xps)
-            {
-                xps = this.getParseObject("experience").fetchIfNeeded();
-            }
-        }
-        catch (com.parse.ParseException e)
-        {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            xps= new ArrayList<Experience>();
-        }
+        this.fetchIfNeeded();
+        xps = getList("experience");
         return(xps);
     }
 
