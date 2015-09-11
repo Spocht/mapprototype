@@ -16,6 +16,8 @@ import java.util.ArrayList;
  */
 @ParseClassName("Experience")
 public class Experience extends ParseData {
+    public static final int XP_NEEDED_PER_LVL = 25;
+
     public Experience()
     {//default constructor for Parse.com
         ;
@@ -60,7 +62,7 @@ public class Experience extends ParseData {
     }
     public int xpForNextLevel()
     {
-        return((int)Math.pow(10,level()));
+        return XP_NEEDED_PER_LVL - (xp() % XP_NEEDED_PER_LVL)   ;
     }
     public void addXP(final int val)
     {

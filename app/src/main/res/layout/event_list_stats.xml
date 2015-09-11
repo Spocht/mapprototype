@@ -1,0 +1,55 @@
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stats_you_against"
+        android:id="@+id/stats_you_against"
+        android:padding="5dp"
+        android:layout_centerVertical="true"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_sword_white_18dp"
+        android:padding="5dp"
+        android:id="@+id/stats_icon_against"
+        android:layout_toEndOf="@id/stats_you_against"
+        android:layout_centerVertical="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/stats_icon_against"
+        android:id="@+id/stats_text_opponent"
+        android:padding="5dp"
+        android:text="{OPPONENT}"
+        android:layout_centerVertical="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/stats_text_eventname"
+        android:layout_below="@id/stats_you_against"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/stats_text_eventdate"
+        android:layout_below="@id/stats_you_against"
+        android:layout_toEndOf="@id/stats_text_eventname"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stats_icon_outcome"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        />
+</RelativeLayout>
