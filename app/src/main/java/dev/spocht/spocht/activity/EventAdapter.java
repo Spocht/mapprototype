@@ -76,23 +76,23 @@ public class EventAdapter extends ArrayAdapter<Event> {
         String currentUsername = DataManager.getInstance().currentUser().getUsername();
         boolean isAlreadyCheckedIn = false;
 
-//        for (Participation part : event.participants()) {
-//            Log.d(getClass().getCanonicalName(), "adding participation");
-//            View line = li.inflate(R.layout.participant_list, null);
-//
-//            TextView tv = (TextView) line.findViewById(R.id.fragment_detail_event_participant);
-//
-//            SpochtUser user = part.user();
-//            String username = user.getUsername();
-//            if (user.isThisMe(currentUsername)) {
-//                tv.setText("- " + username + " " + DataManager.getContext().getString(R.string.thats_me));
-//                isAlreadyCheckedIn = true;
-//            } else {
-//                tv.setText("- " + username);
-//            }
-//
-//            participantList.addView(line);
-//        }
+        for (Participation part : event.participants()) {
+            Log.d(getClass().getCanonicalName(), "adding participation");
+            View line = li.inflate(R.layout.participant_list, null);
+
+            TextView tv = (TextView) line.findViewById(R.id.fragment_detail_event_participant);
+
+            SpochtUser user = part.user();
+            String username = user.getUsername();
+            if (user.isThisMe(currentUsername)) {
+                tv.setText("- " + username + " " + DataManager.getContext().getString(R.string.thats_me));
+                isAlreadyCheckedIn = true;
+            } else {
+                tv.setText("- " + username);
+            }
+
+            participantList.addView(line);
+        }
 
         ImageButton checkInButton = (ImageButton) convertView.findViewById(R.id.fragment_detail_event_checkinButton);
 

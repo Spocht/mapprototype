@@ -46,12 +46,8 @@ public class Facility extends ParseData {
     public String name()
     {
         String name = null;
-        try {
-            this.fetchIfNeeded();
-            name = getString("name");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        name = getString("name");
         if(null == name)
         {
             name = new String("unknown");
@@ -66,12 +62,8 @@ public class Facility extends ParseData {
     public GeoPoint location()
     {
         GeoPoint location = null;
-        try{
-            this.fetchIfNeeded();
-            location = new GeoPoint(getParseGeoPoint("location"));
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        location = new GeoPoint(getParseGeoPoint("location"));
         if(null == location)
         {
             location = defaultPoint;
@@ -102,12 +94,8 @@ public class Facility extends ParseData {
     public int numberOfFields()
     {
         int num = 0;
-        try{
-            this.fetchIfNeeded();
-            num = getInt("numberOfFields");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        num = getInt("numberOfFields");
         if(num <1)
         {
             num = 1;
@@ -122,12 +110,8 @@ public class Facility extends ParseData {
     public String comment()
     {
         String comment = null;
-        try{
-            this.fetchIfNeeded();
-            comment = getString("comment");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        comment = getString("comment");
         if(null == comment)
         {
             comment = "Zone X-Ray";
@@ -143,12 +127,8 @@ public class Facility extends ParseData {
     public double rating()
     {
         double val = 0;
-        try {
-            this.fetchIfNeeded();
-            val = (double)get("rating");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        val = (double)get("rating");
         if(val <0)
         {
             val=0;
@@ -182,23 +162,8 @@ public class Facility extends ParseData {
     public Image image()
     {
         Image pic = null;
-        try{
-            this.fetchIfNeeded();
-            pic = (Image)get("image");
-            if(null == pic)
-            {
-                if(this.has("image")) {
-                    pic = this.getParseObject("image").fetchIfNeeded();
-                }
-                else
-                {
-                    pic = new Image();
-                }
-            }
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            pic = new Image();
-        }
+        this.fetchIfNeeded();
+        pic = (Image)get("image");
         return(pic);
     }
     public void setSport(final Sport sport)
@@ -229,23 +194,8 @@ public class Facility extends ParseData {
     {
         Sport sport = null;
 
-        try {
-            this.fetchIfNeeded();
-            sport = (Sport)get("sport");
-            if(null == sport)
-            {
-                if(this.has("sport")) {
-                    sport = this.getParseObject("sport").fetchIfNeeded();
-                }
-                else
-                {
-                    sport = new Sport("unknown", 0);
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(),"Error getting data",e);
-            sport = new Sport("unknown", 0);
-        }
+        this.fetchIfNeeded();
+        sport = (Sport)get("sport");
         return(sport);
     }
     public void setEvent(final Event event)
@@ -275,23 +225,8 @@ public class Facility extends ParseData {
     public List<Event> events()
     {
         List<Event> events = null;
-        try {
-            this.fetchIfNeeded(); //todo remove that, change it to fetchifneeded()
-            events = getList("events");
-            if(null == events)
-            {
-                if(this.has("events")) {
-                        events = this.getParseObject("event").fetchIfNeeded();
-                }
-                else
-                {
-                    events = new ArrayList<Event>();
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(),"Error getting data",e);
-            events = new ArrayList<Event>();
-        }
+        this.fetchIfNeeded();
+        events = getList("events");
         return(events);
     }
     public Event addEvent()

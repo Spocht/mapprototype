@@ -22,13 +22,13 @@ import dev.spocht.spocht.R;
  */
 @ParseClassName("Image")
 public class Image extends ParseData {
+    private Bitmap mPicture=null;
     public Image()
     {//default constructor for Parse.com
         ;
     }
     public Image(final String name, final Bitmap pic)
     {
-        //todo: revise the picture datatype, use a JAVA type or an other platform indepentend one.
         setName(name);
         setPicture(pic);
     }
@@ -40,12 +40,8 @@ public class Image extends ParseData {
     public String name()
     {
         String name = null;
-        try {
-            this.fetchIfNeeded();
-            name = getString("name");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        name = getString("name");
         if(null == name)
         {
             name = new String("unknown");
@@ -54,6 +50,7 @@ public class Image extends ParseData {
     }
     public void setPicture(final Bitmap pic)
     {
+        mPicture=pic;
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         pic.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();
@@ -61,31 +58,36 @@ public class Image extends ParseData {
         try {
             imgFile.save();
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e(this.getClass().getCanonicalName(), "fail to store picture", e);
         }
-
         put("picture",imgFile);
         setUpdated();
     }
-    public Bitmap picture()
+    public Bitmap picture(final InfoRetriever<Bitmap> callback)
     {
-        ParseFile imgFile = null;
-        Bitmap pic=null;
-        try {
+        if(null == mPicture) {
+            ParseFile imgFile = null;
             this.fetchIfNeeded();
-            imgFile = (ParseFile)get("picture");
-            if(null != imgFile) {
-                    byte[] data = imgFile.getData();
-                    pic = BitmapFactory.decodeByteArray(data, 0, data.length);
+            imgFile = (ParseFile) get("picture");
+            if (null != imgFile) {
+                imgFile.getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] bytes, ParseException e) {
+                        if(null == e) {
+                            Log.d(this.getClass().getCanonicalName(), "load finished");
+                            mPicture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            callback.operate(mPicture);
+                        }
+                        else
+                        {
+                            Log.e(this.getClass().getCanonicalName(),"Error loading image",e);
+                        }
+                    }
+                });
             }
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
+            mPicture= BitmapFactory.decodeResource(DataManager.getInstance().getContext().getResources(), R.drawable.spochtlogo2);
         }
 
-        if(null == pic)
-        {
-            pic = BitmapFactory.decodeResource(DataManager.getInstance().getContext().getResources(), R.drawable.spochtlogo2);
-        }
-        return (pic);
+        return (mPicture);
     }
 }

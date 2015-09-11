@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -104,7 +105,7 @@ public class DetailFragment extends ListFragment {
         setTitle();
         setFieldCount();
         setComment();
-//        setEvents(); todo:review this. There is no event shown until the update is finished, since we are using the same views and lists for all locations, the old events will be shown when the facility is changed
+        setEvents();
         setType();
 
         Log.d(getClass().getCanonicalName(), "Fields: " + String.valueOf(mFacility.numberOfFields()) + ", events " + mFacility.events().size());
@@ -123,7 +124,12 @@ public class DetailFragment extends ListFragment {
      * below are alle the methods used to update this fragments contents
      */
     private void setImage() {
-        mImage.setImageBitmap(mFacility.image().picture());
+        mImage.setImageBitmap(mFacility.image().picture(new InfoRetriever<Bitmap>() {
+            @Override
+            public void operate(Bitmap bitmap) {
+                mImage.setImageBitmap(bitmap);
+            }
+        }));
     }
 
     private void setTitle() {

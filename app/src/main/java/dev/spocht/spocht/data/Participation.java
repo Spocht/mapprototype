@@ -29,12 +29,8 @@ public class Participation extends ParseData {
     public Outcome outcome()
     {
         Outcome out=Outcome.GAVEUP;
-        try {
-            this.fetchIfNeeded();
-            out=Outcome.valueOf(getString("outcome"));
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        out=Outcome.valueOf(getString("outcome"));
         return (out);
     }
 
@@ -69,23 +65,8 @@ public class Participation extends ParseData {
             return new SpochtUser();
         }
         SpochtUser user = null;
-        try {
-            this.fetchIfNeeded();
-            if(this.has("user")) {
-                user = (SpochtUser)get("user");
-                if(null == user)
-                {
-                    user = this.getParseObject("SpochtUser").fetchIfNeeded();
-                }
-            }
-            else
-            {
-                user = new SpochtUser();
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting user", e);
-            user = new SpochtUser();
-        }
+        this.fetchIfNeeded();
+        user = (SpochtUser) get("user");
         return(user);
     }
 }
