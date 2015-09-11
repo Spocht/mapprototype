@@ -1,3 +1,4 @@
 <resources>
     <string name="stats_events">Spiele</string>
+    <string name="stats_level">Stufe</string>
 </resources>

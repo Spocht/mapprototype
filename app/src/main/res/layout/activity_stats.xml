@@ -13,21 +13,27 @@
         android:text="@string/stats_events"
         android:textAppearance="?android:attr/textAppearanceLarge"
         />
-
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/stats_general_container"
+    android:layout_below="@id/stats_title"
+    android:padding="15dp"
+    android:layout_centerInParent="true">
     <!-- TOTAL -->
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:layout_centerVertical="true"
         android:id="@+id/stats_icon_total"
-        android:layout_below="@id/stats_title"
         android:src="@drawable/ic_gamepad_variant_white_24dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:padding="5dp"
         android:id="@+id/stats_text_total"
-        android:layout_below="@id/stats_title"
         android:text="0"
         android:layout_toEndOf="@id/stats_icon_total"/>
 
@@ -36,18 +42,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:layout_centerVertical="true"
         android:id="@+id/stats_icon_win"
         android:src="@drawable/ic_thumb_up_white_24dp"
         android:layout_toEndOf="@id/stats_text_total"
-        android:layout_below="@id/stats_title"/>
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:id="@+id/stats_text_win"
+        android:layout_centerVertical="true"
         android:text="0"
-        android:layout_toEndOf="@id/stats_icon_win"
-        android:layout_below="@id/stats_title"/>
+        android:layout_toEndOf="@id/stats_icon_win"/>
 
     <!-- LOSE -->
     <ImageView
@@ -55,17 +62,17 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:id="@+id/stats_icon_lose"
+        android:layout_centerVertical="true"
         android:src="@drawable/ic_thumb_down_white_24dp"
-        android:layout_toEndOf="@id/stats_text_win"
-        android:layout_below="@id/stats_title"/>
+        android:layout_toEndOf="@id/stats_text_win"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:layout_centerVertical="true"
         android:id="@+id/stats_text_lose"
         android:text="0"
-        android:layout_toEndOf="@id/stats_icon_lose"
-        android:layout_below="@id/stats_title"/>
+        android:layout_toEndOf="@id/stats_icon_lose"/>
 
     <!-- TIE -->
     <ImageView
@@ -73,17 +80,17 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:id="@+id/stats_icon_tie"
+        android:layout_centerVertical="true"
         android:src="@drawable/ic_thumbs_up_down_white_24dp"
-        android:layout_toEndOf="@id/stats_text_lose"
-        android:layout_below="@id/stats_title"/>
+        android:layout_toEndOf="@id/stats_text_lose"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:layout_centerVertical="true"
         android:id="@+id/stats_text_tie"
         android:text="0"
-        android:layout_toEndOf="@id/stats_icon_tie"
-        android:layout_below="@id/stats_title" />
+        android:layout_toEndOf="@id/stats_icon_tie" />
 
     <!-- GAVEUP -->
     <ImageView
@@ -91,15 +98,49 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:id="@+id/stats_icon_gaveup"
+        android:layout_centerVertical="true"
         android:src="@drawable/ic_close_circle_white_24dp"
-        android:layout_toEndOf="@id/stats_text_tie"
-        android:layout_below="@id/stats_title"/>
+        android:layout_toEndOf="@id/stats_text_tie"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:id="@+id/stats_text_gaveup"
+        android:layout_centerVertical="true"
         android:text="0"
-        android:layout_toEndOf="@id/stats_icon_gaveup"
-        android:layout_below="@id/stats_title"/>
+        android:layout_toEndOf="@id/stats_icon_gaveup"/>
+</RelativeLayout>
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/stats_level_container"
+    android:layout_below="@id/stats_general_container">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_centerVertical="true"
+        android:id="@+id/stats_level_text"
+        android:text="@string/stats_level"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/stats_level_text"
+        android:id="@+id/stats_level_text_current"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0" />
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="5dp"
+        android:id="@+id/stats_level_progress"
+        android:layout_toEndOf="@id/stats_level_text_current"
+        android:layout_alignParentEnd="true"
+        />
+</RelativeLayout>
+
 </RelativeLayout>
