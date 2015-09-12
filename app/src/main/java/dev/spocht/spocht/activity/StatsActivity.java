@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.List;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Experience;
+import dev.spocht.spocht.data.InfoRetriever;
 import dev.spocht.spocht.data.Participation;
 import dev.spocht.spocht.data.SpochtUser;
 
@@ -41,26 +41,22 @@ public class StatsActivity extends ListActivity {
     private void loadLevelStats() {
         Log.d(getClass().getCanonicalName(), "XP preload: " + mCurrentUser.experiences().size());
 
-        for (ParseObject o :  mCurrentUser.experiences()) {
-
+        for (Experience ex :  mCurrentUser.experiences()) {
             // get realtime data
-            Log.d(getClass().getCanonicalName(), "XP preload IDs: " + o.getObjectId());
-            Experience ex = new Experience();
-            ex.setObjectId(o.getObjectId());
-            ex.fetchInBackground(new GetCallback<Experience>() {
+            Log.d(getClass().getCanonicalName(), "XP preload IDs: " + ex.getObjectId());
+            DataManager.getInstance().update(ex.getObjectId(), Experience.class, new InfoRetriever<Experience>() {
                 @Override
-                public void done(Experience parseObject, ParseException e) {
+                public void operate(Experience experience) {
                     // this always overwrites level data if there is expercience in more than one sport
                     // however, this prototype only has one. would need to create a ListView adapter for this to work....
 
-                    Log.d(getClass().getCanonicalName(), "XP preload: " + parseObject.get("xp") + " next in " + parseObject.xpForNextLevel());
+                    Log.d(getClass().getCanonicalName(), "XP preload: " + experience.xp() + " next in " + experience.xpForNextLevel());
                     TextView tvLevel = (TextView) findViewById(R.id.stats_level_text_current);
-                    tvLevel.setText(String.valueOf(parseObject.level()));
-
-
+                    tvLevel.setText(String.valueOf(experience.level()));
+                    
                     ProgressBar pb = (ProgressBar) findViewById(R.id.stats_level_progress);
                     pb.setMax(Experience.XP_NEEDED_PER_LVL);
-                    pb.setProgress(Experience.XP_NEEDED_PER_LVL - parseObject.xpForNextLevel());
+                    pb.setProgress(Experience.XP_NEEDED_PER_LVL - experience.xpForNextLevel());
                 }
             });
         }

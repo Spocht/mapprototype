@@ -49,7 +49,7 @@ public abstract class ParseData extends ParseObject {
             Log.e("spocht.object", "Error while deleting", e);
         }
     }
-
+    @Override
     public <T extends ParseObject> T fetchIfNeeded(){
         if(this.isDataAvailable()) {
             Log.d(this.getClass().getCanonicalName(), "i am loaded unnecessary [" + this.getObjectId() + "]");
