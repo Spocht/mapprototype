@@ -121,7 +121,7 @@ public class Facility extends ParseData {
     public void setRating(final double rating)
     {
         double old = rating();
-        put("rating",(old+rating)/2); //todo: review rating stuff
+        put("rating", (old + rating) / 2); //todo: review rating stuff
         setUpdated();
     }
     public double rating()
@@ -227,6 +227,10 @@ public class Facility extends ParseData {
         List<Event> events = null;
         this.fetchIfNeeded();
         events = getList("events");
+        if(null == events)
+        {
+            events = new ArrayList<>();
+        }
         return(events);
     }
     public Event addEvent()

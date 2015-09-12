@@ -111,6 +111,10 @@ public class Event extends ParseData {
         List<Participation> participations=null;
         this.fetchIfNeeded();
         participations = getList("participants");
+        if(null == participations)
+        {
+            participations=new ArrayList<>();
+        }
         return(participations);
     }
     protected void removeParticipation(final Participation participation) {
