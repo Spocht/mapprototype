@@ -18,7 +18,16 @@ import dev.spocht.spocht.data.Participation;
 import dev.spocht.spocht.data.SpochtUser;
 
 public class StatsActivity extends ListActivity {
-    SpochtUser mCurrentUser;
+    private SpochtUser mCurrentUser;
+
+    private TextView tvTotal;
+    private TextView tvWin;
+    private TextView tvLose;
+    private TextView tvTie;
+    private TextView tvGaveup;
+    private TextView tvNoEvents;
+    private ProgressBar pb;
+    private TextView tvLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +35,16 @@ public class StatsActivity extends ListActivity {
 
         setContentView(R.layout.activity_stats);
         mCurrentUser = DataManager.getInstance().currentUser();
+
+        tvTotal = (TextView) findViewById(R.id.stats_text_total);
+        tvWin = (TextView) findViewById(R.id.stats_text_win);
+        tvLose = (TextView) findViewById(R.id.stats_text_lose);
+        tvTie = (TextView) findViewById(R.id.stats_text_tie);
+        tvGaveup = (TextView) findViewById(R.id.stats_text_gaveup);
+        tvNoEvents = (TextView) findViewById(R.id.stats_text_no_events);
+        pb = (ProgressBar) findViewById(R.id.stats_level_progress);
+        pb.setMax(Experience.XP_NEEDED_PER_LVL);
+        tvLevel = (TextView) findViewById(R.id.stats_level_text_current);
 
         loadGeneralStats();
         loadLevelStats();
@@ -46,16 +65,11 @@ public class StatsActivity extends ListActivity {
                     // however, this prototype only has one. would need to create a ListView adapter for this to work....
 
                     Log.d(getClass().getCanonicalName(), "XP preload: " + experience.xp() + " next in " + experience.xpForNextLevel());
-                    TextView tvLevel = (TextView) findViewById(R.id.stats_level_text_current);
                     tvLevel.setText(String.valueOf(experience.level()));
-
-                    ProgressBar pb = (ProgressBar) findViewById(R.id.stats_level_progress);
-                    pb.setMax(Experience.XP_NEEDED_PER_LVL);
                     pb.setProgress(Experience.XP_NEEDED_PER_LVL - experience.xpForNextLevel());
                 }
             });
         }
-
     }
 
     private void loadGeneralStats() {
@@ -87,12 +101,6 @@ public class StatsActivity extends ListActivity {
                     Log.d(getClass().getCanonicalName(), part.getObjectId() + " " + part.outcome().toString() + " event " + part.event().name());
                 }
 
-                TextView tvTotal = (TextView) findViewById(R.id.stats_text_total);
-                TextView tvWin = (TextView) findViewById(R.id.stats_text_win);
-                TextView tvLose = (TextView) findViewById(R.id.stats_text_lose);
-                TextView tvTie = (TextView) findViewById(R.id.stats_text_tie);
-                TextView tvGaveup = (TextView) findViewById(R.id.stats_text_gaveup);
-
                 tvTotal.setText(String.valueOf(participations.size()));
                 tvWin.setText(String.valueOf(win));
                 tvLose.setText(String.valueOf(lose));
@@ -106,8 +114,6 @@ public class StatsActivity extends ListActivity {
     }
 
     private void loadEventStats(List<Participation> list) {
-        TextView tvNoEvents = (TextView) findViewById(R.id.stats_text_no_events);
-
         if (list.size() > 0) {
             StatsAdapter sa = new StatsAdapter(getApplicationContext(), list);
             setListAdapter(sa);
