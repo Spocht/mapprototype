@@ -61,29 +61,28 @@ public class SpochtUser extends ParseData {
     }
     public ParseUser user()
     {
+        ParseUser user;
         if(null == this.getObjectId())
         {
-            return new ParseUser();
+            user = new ParseUser();
         }
-        ParseUser user;
-        try {
+        else {
             this.fetchIfNeeded();
-            if(this.has("user")) {
-                ParseQuery<ParseUser> query = ParseUser.getQuery();
-                ParseUser parseUser = (ParseUser)get("user");
-                user = query.get(parseUser.getObjectId());
-                user.pin();
+            if (this.has("user")) {
+                user = (ParseUser) get("user");
+                if (null == ParseData.fetchMe(user)) {
+                    user = new ParseUser();
+                }
             }
-            else
-            {
+            else {
                 user = new ParseUser();
                 setUser(user);
             }
         }
-        catch (com.parse.ParseException e)
+        if(user.getObjectId()==null)
         {
-            Log.e(this.getClass().getCanonicalName(),"Error fetching data",e);
-            user = new ParseUser();
+            Log.d(this.getClass().getCanonicalName(),"John Doe created");
+            user.setUsername("John Doe");
         }
         return(user);
     }
@@ -107,12 +106,8 @@ public class SpochtUser extends ParseData {
     public Date lastSeen()
     {
         Date date= null;
-        try {
-            this.fetchIfNeeded();
-            date = (Date)get("lastSeen");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        date = (Date)get("lastSeen");
         if(null == date)
         {
             date= new Date();
@@ -152,19 +147,8 @@ public class SpochtUser extends ParseData {
     public List<Experience> experiences()
     {
         List<Experience> xps=null;
-        try {
-            this.fetchIfNeeded();
-            xps = getList("experience");
-            if(null == xps)
-            {
-                    xps = this.getParseObject("experience").fetchIfNeeded();
-            }
-        }
-        catch (com.parse.ParseException e)
-        {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            xps= new ArrayList<Experience>();
-        }
+        this.fetchIfNeeded();
+        xps = getList("experience");
         return(xps);
     }
 

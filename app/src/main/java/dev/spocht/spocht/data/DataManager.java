@@ -215,6 +215,8 @@ public class DataManager {
         Log.d(this.getClass().getCanonicalName(), "Find Facilities remote @ " + location);
         ParseQuery<Facility> query = ParseQuery.getQuery(Facility.class);
         query.whereWithinKilometers("location", location, distance);
+        query.include("image");
+        query.include("events");
         query.findInBackground(new FindCallback<Facility>() {
             @Override
             public void done(List<Facility> list, ParseException e) {

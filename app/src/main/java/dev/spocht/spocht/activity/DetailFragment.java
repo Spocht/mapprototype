@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
@@ -82,6 +85,7 @@ public class DetailFragment extends ListFragment {
         mActivity = (MapsActivity) getActivity();
         mFacility = mActivity.getSelectedFacility();
         mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), new ArrayList<Event>());
+        mEventAdapter.setNotifyOnChange(false);
         setListAdapter(mEventAdapter);
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
     }
@@ -120,7 +124,12 @@ public class DetailFragment extends ListFragment {
      * below are alle the methods used to update this fragments contents
      */
     private void setImage() {
-        mImage.setImageBitmap(mFacility.image().picture());
+        mImage.setImageBitmap(mFacility.image().picture(new InfoRetriever<Bitmap>() {
+            @Override
+            public void operate(Bitmap bitmap) {
+                mImage.setImageBitmap(bitmap);
+            }
+        }));
     }
 
     private void setTitle() {
@@ -142,13 +151,7 @@ public class DetailFragment extends ListFragment {
     private void setType() {
         Log.d(getClass().getCanonicalName(), "Trying to find string resource for " + mFacility.sport().name());
 
-        String type = (String) getResources().getText(
-            getResources().getIdentifier(
-                mFacility.sport().name(),
-                "string",
-                Application.PACKAGE_NAME
-            )
-        );
+        String type = mActivity.getType(mFacility.sport().name());
 
         // ensure first letter capitalized
         mType.setText(Character.toUpperCase(type.charAt(0)) + type.substring(1));

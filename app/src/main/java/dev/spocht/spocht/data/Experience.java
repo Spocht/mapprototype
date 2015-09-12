@@ -36,12 +36,8 @@ public class Experience extends ParseData {
     public int xp()
     {
         int xp = 0;
-        try{
-            this.fetchIfNeeded();
-            xp = getInt("xp");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        xp = getInt("xp");
         if(xp < 0)
         {
             xp = 0;
@@ -56,12 +52,8 @@ public class Experience extends ParseData {
     public int level()
     {
         int lvl = 0;
-        try{
-            this.fetchIfNeeded();
-            lvl = getInt("level");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        lvl = getInt("level");
         if(lvl < 1)
         {
             lvl = 1;
@@ -114,23 +106,8 @@ public class Experience extends ParseData {
     public Sport sport()
     {
         Sport sport = null;
-        try {
-            this.fetchIfNeeded();
-            sport = (Sport)get("sport");
-            if(null == sport)
-            {
-                if(this.has("sport")) {
-                        sport = this.getParseObject("sport").fetchIfNeeded();
-                }
-                else
-                {
-                    sport = new Sport("unknown", 0);
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            sport = new Sport("unknown", 0);
-        }
+        this.fetchIfNeeded();
+        sport = (Sport)get("sport");
         return(sport);
     }
 

@@ -249,10 +249,32 @@ public class DatenSchleuder {
         lstHist.add(new ItemHistory("Crack the Table (2)",lstFacility.get(1),lstUser.get(1),new Date()));
         lstHist.add(new ItemHistory("Crack the Table (3)",lstFacility.get(2),lstUser.get(2),new Date()));
         lstHist.add(new ItemHistory("Crack the Table (4)",lstFacility.get(3),lstUser.get(3),new Date()));
-        lstHist.add(new ItemHistory("Cracknigz and hookaz",lstFacility.get(3),lstUser.get(4),new Date()));
+        lstHist.add(new ItemHistory("Cracknigz and hookaz", lstFacility.get(3), lstUser.get(4), new Date()));
         for(ItemHistory i:lstHist)
         {
             createHistorie(i.name,i.facility,i.user,i.date,Outcome.GAVEUP);
         }
+    }
+    public void loadTree()
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataManager.getInstance().findFacilitiesRemote(new GeoPoint(0, 0), 9000, new InfoRetriever<List<Facility>>() {
+                    @Override
+                    public void operate(List<Facility> facilities) {
+                        for (Facility f : facilities) {
+                            Log.d(this.getClass().getCanonicalName(), "Facility: " + f.name());
+                            for (Event e : f.events()) {
+                                Log.d(this.getClass().getCanonicalName(), "> Event: " + e.name());
+                                for (Participation p : e.participants()) {
+                                    Log.d(this.getClass().getCanonicalName(), ">> Participation: " + p.user().getObjectId());
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 }

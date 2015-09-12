@@ -41,12 +41,8 @@ public class Event extends ParseData {
     public String name()
     {
         String name = null;
-        try {
-            this.fetchIfNeeded();
-            name = getString("name");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        name = getString("name");
         if(null == name)
         {
             name = new String("unknown");
@@ -61,12 +57,8 @@ public class Event extends ParseData {
     public Date startTime()
     {
         Date date = null;
-        try{
-            this.fetchIfNeeded();
-            date = (Date)get("startTime");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        date = (Date)get("startTime");
         if(null == date)
         {
             date = getUpdatedAt();
@@ -81,12 +73,8 @@ public class Event extends ParseData {
     public String getState()
     {
         String st=null;
-        try{
-            this.fetchIfNeeded();
-            st= getString("state");
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        st= getString("state");
         if(null == st)
         {
             st = "unknown";
@@ -121,28 +109,12 @@ public class Event extends ParseData {
     public List<Participation> participants()
     {
         List<Participation> participations=null;
-        try {
-            this.fetchIfNeeded();
-             participations = getList("participants");
-            if(null == participations)
-            {
-                if(this.has("participants")) {
-                        participations = this.getParseObject("participation").fetchIfNeeded();
-                }
-                else
-                {
-                    participations = new ArrayList<Participation>();
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            participations = new ArrayList<Participation>();
-        }
+        this.fetchIfNeeded();
+        participations = getList("participants");
         return(participations);
     }
-    protected void removeParticipation(final Participation participation)
-    {
-        if(null != participation) {
+    protected void removeParticipation(final Participation participation) {
+        if (null != participation) {
             removeAll("participants", Arrays.asList(participation.getObjectId()));
         }
     }
@@ -172,25 +144,8 @@ public class Event extends ParseData {
     public Facility facility()
     {
         Facility facility =null;
-        try{
-            this.fetchIfNeeded();
-            facility = (Facility)get("facility");
-            if(null == facility)
-            {
-                if(this.has("facility")) {
-                    facility = this.getParseObject("facility").fetchIfNeeded();
-
-                }
-                else
-                {
-                    facility = new Facility();
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e(this.getClass().getCanonicalName(), "Error getting data", e);
-            facility = new Facility();
-        }
-
+        this.fetchIfNeeded();
+        facility = (Facility)get("facility");
         return(facility);
     }
     public void end()
@@ -205,21 +160,14 @@ public class Event extends ParseData {
 
     public boolean getIsEnded() {
         boolean res=false;
-        try {
-            this.fetchIfNeeded();
-            if(has("isEnded")) {
-                res = getBoolean("isEnded");
-            }
-            else
-            {
-                res=false;
-                setIsEnded(false);
-            }
+        this.fetchIfNeeded();
+        if(has("isEnded")) {
+            res = getBoolean("isEnded");
         }
-        catch (ParseException e)
+        else
         {
-            Log.e(this.getClass().getCanonicalName(),"failed to get Ended",e);
             res=false;
+            setIsEnded(false);
         }
         return res;
     }
@@ -260,7 +208,7 @@ public class Event extends ParseData {
                 //memleaks here when called more than once.
                 //DataManager.getInstance().getEventMonitor().setEvent(this);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
             }
         //}
     }
