@@ -15,6 +15,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import bolts.Task;
@@ -224,7 +225,13 @@ public class DataManager {
                     Facility.pinAllInBackground(list);
                     callback.operate(list);
                 } else {
-                    Log.e(this.getClass().getCanonicalName(), "Error finding facilities:", e);
+                    if(e.getCode() == ParseException.OBJECT_NOT_FOUND)
+                    {
+                        callback.operate(new ArrayList<Facility>());
+                    }
+                    else {
+                        Log.e(this.getClass().getCanonicalName(), "Error finding facilities:", e);
+                    }
                 }
             }
         });
@@ -234,7 +241,66 @@ public class DataManager {
     {
         Log.d(this.getClass().getCanonicalName(), "Find Facilities @ " + location);
         findFacilitiesLocal(location, distance, callback);
-        findFacilitiesRemote(location,distance,callback);
+        findFacilitiesRemote(location, distance, callback);
+    }
+    public void findParticipationLocal(final InfoRetriever<List<Participation>> callback)
+    {
+        ParseQuery<Participation> participationQuery = ParseQuery.getQuery(Participation.class);
+        participationQuery
+                .whereEqualTo("user", currentUser())
+                .whereExists("outcome")
+                .orderByDescending("createdAt");
+        participationQuery.fromLocalDatastore();
+
+        participationQuery.findInBackground(new FindCallback<Participation>() {
+            @Override
+            public void done(List<Participation> list, ParseException e) {
+                if (null == e) {
+                    Participation.pinAllInBackground(list);
+                    callback.operate(list);
+                } else {
+                    if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                        callback.operate(new ArrayList<Participation>());
+                    } else {
+                        Log.e(this.getClass().getCanonicalName(), "Can not find participation", e);
+                    }
+                }
+            }
+        });
+    }
+    public void findParticipationRemote(final InfoRetriever<List<Participation>> callback)
+    {
+        ParseQuery<Participation> participationQuery = ParseQuery.getQuery(Participation.class);
+        participationQuery
+                .whereEqualTo("user", currentUser())
+                .whereExists("outcome")
+                .orderByDescending("createdAt");
+
+        participationQuery.findInBackground(new FindCallback<Participation>() {
+            @Override
+            public void done(List<Participation> list, ParseException e) {
+                if(null == e)
+                {
+                    Participation.pinAllInBackground(list);
+                    callback.operate(list);
+                }
+                else
+                {
+                    if(e.getCode() == ParseException.OBJECT_NOT_FOUND)
+                    {
+                        callback.operate(new ArrayList<Participation>());
+                    }
+                    else {
+                        Log.e(this.getClass().getCanonicalName(), "Can not find participation", e);
+                    }
+                }
+            }
+        });
+    }
+    public void findParticipation(final InfoRetriever<List<Participation>> callback)
+    {
+        findParticipationLocal(callback);
+        findParticipationRemote(callback);
     }
 
     public static void injectContext(Context ctx) {

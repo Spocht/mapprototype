@@ -8,11 +8,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-
 import java.util.List;
 
 import dev.spocht.spocht.R;
@@ -53,7 +48,7 @@ public class StatsActivity extends ListActivity {
                     Log.d(getClass().getCanonicalName(), "XP preload: " + experience.xp() + " next in " + experience.xpForNextLevel());
                     TextView tvLevel = (TextView) findViewById(R.id.stats_level_text_current);
                     tvLevel.setText(String.valueOf(experience.level()));
-                    
+
                     ProgressBar pb = (ProgressBar) findViewById(R.id.stats_level_progress);
                     pb.setMax(Experience.XP_NEEDED_PER_LVL);
                     pb.setProgress(Experience.XP_NEEDED_PER_LVL - experience.xpForNextLevel());
@@ -64,23 +59,17 @@ public class StatsActivity extends ListActivity {
     }
 
     private void loadGeneralStats() {
-        ParseQuery<Participation> participationQuery = ParseQuery.getQuery(Participation.class);
-        participationQuery
-                .whereEqualTo("user", mCurrentUser)
-                .whereExists("outcome")
-                .orderByDescending("createdAt");
-
-        participationQuery.findInBackground(new FindCallback<Participation>() {
+        DataManager.getInstance().findParticipation(new InfoRetriever<List<Participation>>() {
             @Override
-            public void done(List<Participation> list, ParseException e) {
-                Log.d(getClass().getCanonicalName(), "found " + list.size() + " participations");
+            public void operate(List<Participation> participations) {
+                Log.d(getClass().getCanonicalName(), "found " + participations.size() + " participations");
 
                 int win = 0;
                 int lose = 0;
                 int tie = 0;
                 int gaveup = 0;
 
-                for (Participation part : list) {
+                for (Participation part : participations) {
                     switch (part.outcome()) {
                         case WIN:
                             win++;
@@ -104,13 +93,14 @@ public class StatsActivity extends ListActivity {
                 TextView tvTie = (TextView) findViewById(R.id.stats_text_tie);
                 TextView tvGaveup = (TextView) findViewById(R.id.stats_text_gaveup);
 
-                tvTotal.setText(String.valueOf(list.size()));
+                tvTotal.setText(String.valueOf(participations.size()));
                 tvWin.setText(String.valueOf(win));
                 tvLose.setText(String.valueOf(lose));
                 tvTie.setText(String.valueOf(tie));
                 tvGaveup.setText(String.valueOf(gaveup));
 
-                loadEventStats(list);
+                loadEventStats(participations);
+
             }
         });
     }
