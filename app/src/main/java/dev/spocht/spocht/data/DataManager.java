@@ -128,13 +128,20 @@ public class DataManager {
     }
     public SpochtUser signup(String mail, String password)
     {
-        SpochtUser user = new SpochtUser(mail,password);
+        final SpochtUser user = new SpochtUser(mail,password);
         user.user().setEmail(mail);
         user.seen();
         try {
             user.user().signUp();
             user.updateAclBlocking();
-            user.pin("spochtLabel");
+            ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
+            List<Sport> sports = query.find();
+            for(Sport s:sports)
+            {
+                user.setExperience(new Experience(s));
+            }
+            user.pinInBackground("spochtLabel");
+            user.persist();
             return user;
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
