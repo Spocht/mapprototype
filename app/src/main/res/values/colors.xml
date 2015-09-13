@@ -11,13 +11,22 @@
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
      limitations under the License.
+
+
+     All colors taken from http://www.google.ch/design/spec/style/color.html#color-color-palette
+     using 200
 -->
 
 <resources>
 
-    <color name="red">#ff0000</color>
+    <color name="red">#EF9A9A</color>
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
-    <color name="green">#00ff00</color>
+    <color name="green">#A5D6A7</color>
+    <color name="orange">#FFCC80</color>
+    <color name="grey">#EEEEEE</color>
+    <color name="lightblue">#81D4FA</color>
+    <color name="blue">#90CAF9</color>
+    <color name="yellow">#FFF59D</color>
 
 </resources>

@@ -16,6 +16,8 @@ import java.util.ArrayList;
  */
 @ParseClassName("Experience")
 public class Experience extends ParseData {
+    public static final int XP_NEEDED_PER_LVL = 25;
+
     public Experience()
     {//default constructor for Parse.com
         ;
@@ -34,12 +36,8 @@ public class Experience extends ParseData {
     public int xp()
     {
         int xp = 0;
-        try{
-            this.fetchIfNeeded();
-            xp = getInt("xp");
-        } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        xp = getInt("xp");
         if(xp < 0)
         {
             xp = 0;
@@ -54,12 +52,8 @@ public class Experience extends ParseData {
     public int level()
     {
         int lvl = 0;
-        try{
-            this.fetchIfNeeded();
-            lvl = getInt("level");
-        } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        lvl = getInt("level");
         if(lvl < 1)
         {
             lvl = 1;
@@ -68,7 +62,7 @@ public class Experience extends ParseData {
     }
     public int xpForNextLevel()
     {
-        return((int)Math.pow(10,level()));
+        return XP_NEEDED_PER_LVL - (xp() % XP_NEEDED_PER_LVL)   ;
     }
     public void addXP(final int val)
     {
@@ -100,7 +94,7 @@ public class Experience extends ParseData {
                             sport.persist();
                         }
                     } else {
-                        Log.e("spocht.data","Error saving data.",e);
+                        Log.e(this.getClass().getCanonicalName(),"Error saving data.",e);
                     }
                 }
             });
@@ -112,23 +106,8 @@ public class Experience extends ParseData {
     public Sport sport()
     {
         Sport sport = null;
-        try {
-            this.fetchIfNeeded();
-            sport = (Sport)get("sport");
-            if(null == sport)
-            {
-                if(this.has("sport")) {
-                        sport = this.getParseObject("sport").fetchIfNeeded();
-                }
-                else
-                {
-                    sport = new Sport("unknown", 0);
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-            sport = new Sport("unknown", 0);
-        }
+        this.fetchIfNeeded();
+        sport = (Sport)get("sport");
         return(sport);
     }
 

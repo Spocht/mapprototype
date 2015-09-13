@@ -4,4 +4,7 @@
     <string name="max_allowed_events_reached">Es können nur soviele Spiele eröffnet werden wie Spielfelder vorhanden sind.</string>
     <string name="new_game">New game</string>
     <string name="enter_event_name">Gib den Namen des Spiels ein.</string>
+    <string name="started_at">gestartet</string>
+    <string name="thatsme">(Ich)</string>
+    <string name="cannot_checkin_again">Du kannst in nur einmal einem Spiel beitreten.</string>
 </resources>

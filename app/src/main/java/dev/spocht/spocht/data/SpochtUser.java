@@ -7,6 +7,7 @@ import com.parse.ParseACL;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
@@ -44,12 +45,6 @@ public class SpochtUser extends ParseData {
     }
     public String getUsername()
     {
-
-        try {
-            fetchIfNeeded();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         return user().getUsername();
     }
     public void setPassword(final String password)
@@ -67,24 +62,27 @@ public class SpochtUser extends ParseData {
     public ParseUser user()
     {
         ParseUser user;
-        try {
+        if(null == this.getObjectId())
+        {
+            user = new ParseUser();
+        }
+        else {
             this.fetchIfNeeded();
-            if(this.has("user")) {
+            if (this.has("user")) {
                 user = (ParseUser) get("user");
-                if (null == user) {
-                    user = this.getParseObject("_User").fetchIfNeeded();
+                if (null == ParseData.fetchMe(user)) {
+                    user = new ParseUser();
                 }
             }
-            else
-            {
+            else {
                 user = new ParseUser();
                 setUser(user);
             }
         }
-        catch (com.parse.ParseException e)
+        if(user.getObjectId()==null)
         {
-            Log.e("spocht.data","Error fetching data",e);
-            user = new ParseUser();
+            Log.d(this.getClass().getCanonicalName(),"John Doe created");
+            user.setUsername("John Doe");
         }
         return(user);
     }
@@ -108,12 +106,8 @@ public class SpochtUser extends ParseData {
     public Date lastSeen()
     {
         Date date= null;
-        try {
-            this.fetchIfNeeded();
-            date = (Date)get("lastSeen");
-        } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        date = (Date)get("lastSeen");
         if(null == date)
         {
             date= new Date();
@@ -140,7 +134,7 @@ public class SpochtUser extends ParseData {
                         }
                         setUpdated();
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -153,19 +147,17 @@ public class SpochtUser extends ParseData {
     public List<Experience> experiences()
     {
         List<Experience> xps=null;
-        try {
-            this.fetchIfNeeded();
-            xps = getList("experience");
-            if(null == xps)
-            {
-                    xps = this.getParseObject("experience").fetchIfNeeded();
-            }
-        }
-        catch (com.parse.ParseException e)
+        this.fetchIfNeeded();
+        xps = getList("experience");
+        if(null == xps)
         {
-            Log.e("spocht.data", "Error getting data", e);
-            xps= new ArrayList<Experience>();
+            xps=new ArrayList<>();
         }
         return(xps);
+    }
+
+    public boolean isThisMe(String username) {
+        return username.equals(user().getUsername());
+
     }
 }

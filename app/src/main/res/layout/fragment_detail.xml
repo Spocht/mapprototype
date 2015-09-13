@@ -61,9 +61,9 @@
         <ListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@id/fragment_detail_comment"
-            android:background="#ffb100" />
+            android:background="@color/white" />
 
     </RelativeLayout>
 

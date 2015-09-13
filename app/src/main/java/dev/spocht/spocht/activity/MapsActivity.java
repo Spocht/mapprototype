@@ -1,7 +1,10 @@
 package dev.spocht.spocht.activity;
 
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,12 +29,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
@@ -45,7 +49,7 @@ public class MapsActivity extends AppCompatActivity
         implements
         GoogleMap.OnMarkerClickListener {
 
-    LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
+    private LocationCallback<Void, Location> locationCallback = new LocationCallback<Void, Location>() {
         @Override
         public Void operate(Location location) {
 
@@ -58,26 +62,70 @@ public class MapsActivity extends AppCompatActivity
         }
 
     };
+    private BroadcastReceiver mRecv = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            if(intent.hasExtra("event"))
+            {
+                //update the announced event
+                DataManager.getInstance().update(intent.getStringExtra("event"), Event.class, new InfoRetriever<Event>() {
+                    @Override
+                    public void operate(Event event) {
+                        Toast toastPush = Toast.makeText(
+                                context,
+                                "Event "+event.name()+" at "+event.facility().name()+" is updated!",
+                                Toast.LENGTH_LONG
+                        );
+                        toastPush.show();
+                        Facility f=event.facility();
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
+                        mapFacilitiesRev.get(f.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
+                                // this will throw a NotFoundException if the icon is not found
+                                getResources()
+                                        .getIdentifier(
+                                                iconDescriptor,
+                                                "drawable",
+                                                Application.PACKAGE_NAME
+                                        )));
+                        //only reload details if the event is selected
+                        if(mapFacility.get(mSelectedMarker).getObjectId().equals(f.getObjectId())) {
+                            mDetailFragment.refreshContents();
+                        }
+                    }
+                });
+            }
+            else if(intent.hasExtra("closeEvent"))
+            {
+                //todo: how to handle closing??
+            }
+        }
+    };
 
     private DetailFragment mDetailFragment;
-    MapFragment mMapFragment;
+    private MapFragment mMapFragment;
     private boolean mIsDetailFragmentVisible = false;
     private boolean mIsAnimating = false;
 
-    int mScreenHeight;
-    float mNewHeight = -1;
+    private int mScreenHeight;
+    private float mNewHeight = -1;
 
-    Marker mSelectedMarker;
+    private Marker mSelectedMarker;
 
-    private HashMap<Marker,Facility> mapFacility   = new HashMap<>(20);
-    private HashSet<String>          setFacilities = new HashSet<>(20);
+    private Map<Marker,Facility>    mapFacility   = new HashMap<>(20);
+    private Map<String,Marker>      mapFacilitiesRev = new HashMap<>(20);
     private static android.content.Context  context;
     private GoogleMap                       mMap; // Might be null if Google Play services APK is not available.
+
+    private Map<String,String> mpTypes=new HashMap<>(20);
 
     public static android.content.Context getAppContext() {
         return MapsActivity.context;
     }
 
+    public String getType(final String key)
+    {
+        return mpTypes.get(key);
+    }
 
     //this one is needed... unfortunately it is not mentioned in the tutorial
     @Override
@@ -116,6 +164,20 @@ public class MapsActivity extends AppCompatActivity
 
         setUpMapIfNeeded();
         setUpActionBar();
+
+
+        List<String> listSports=new ArrayList<>(20);
+        listSports.add("tabletennis");
+
+        for(String sport:listSports) {
+            mpTypes.put(sport, (String) getResources().getText(
+                    getResources().getIdentifier(
+                            sport,
+                            "string",
+                            Application.PACKAGE_NAME
+                    )
+            ));
+        }
     }
 
     private void setUpActionBar() {
@@ -141,8 +203,12 @@ public class MapsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_stats:
-                return false;
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
             case R.id.menu_settings:
+                return false;
+            case R.id.menu_clear_local:
+                DataManager.getInstance().flushLocalStore();
                 return false;
             case R.id.menu_logout:
                 DataManager.getInstance().logout();
@@ -157,7 +223,14 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        context.registerReceiver(mRecv,new IntentFilter("ParsePusher"));
         setUpMapIfNeeded();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        context.unregisterReceiver(mRecv);
     }
 
     /**
@@ -240,9 +313,8 @@ public class MapsActivity extends AppCompatActivity
             public void operate(List<Facility> facilities) {
                 for (Facility f : facilities) {
                     Log.d("spocht.maps", "Got facility: " + f.name() + " type: " + f.sport().name());
-                    if (!setFacilities.contains(f.getObjectId())) {
-                        //todo: set color according to facility's state
-                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + "grey";
+                    if (!mapFacilitiesRev.containsKey(f.getObjectId())) {
+                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
@@ -256,7 +328,7 @@ public class MapsActivity extends AppCompatActivity
                                                         ))).anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
-                        setFacilities.add(f.getObjectId());
+                        mapFacilitiesRev.put(f.getObjectId(), marker);
                         Log.d("spocht.maps", "stored facility: " + f.name());
                     }
                 }
@@ -266,7 +338,8 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d("spocht.activity", marker.getTitle());
+        Log.d(getClass().getCanonicalName(), marker.getClass().getCanonicalName());
+        Log.d(getClass().getCanonicalName(), marker.getTitle());
         System.out.println(mIsDetailFragmentVisible);
 
         mSelectedMarker = marker;
@@ -331,5 +404,41 @@ public class MapsActivity extends AppCompatActivity
 
     public void createNew(View view) {
         Log.d("DetailFragment", "Create new event");
+    }
+
+    private String calcColor(final Facility facility)
+    {
+        Map<String,Integer> map=new HashMap<>(6);
+        for(Event e:facility.events())
+        {
+            String state=e.getState();
+            if(map.containsKey(state))
+            {
+                Integer i = map.get(state);
+                i=i+1;
+                map.put(state,i);
+            }
+            else
+            {
+                map.put(state,1);
+            }
+        }
+        if(map.size()==1)
+        {
+            return map.keySet().toArray(new String[map.size()])[0];
+        }
+        if(map.containsKey("blue"))
+        {
+            return "lightblue";
+        }
+        if(map.containsKey("lightblue"))
+        {
+            return "lightblue";
+        }
+        if(map.containsKey("orange"))
+        {
+            return "orange";
+        }
+        return "grey";
     }
 }

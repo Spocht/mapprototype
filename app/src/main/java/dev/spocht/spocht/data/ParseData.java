@@ -2,9 +2,11 @@ package dev.spocht.spocht.data;
 
 import android.util.Log;
 
+import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 /**
@@ -21,9 +23,17 @@ public abstract class ParseData extends ParseObject {
         updated = false;
         return tmp;
     }
+    public void load(){
+        ParseQuery query = ParseQuery.getQuery(this.getClass());
+        try {
+            query.get(this.getObjectId());
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(),"Load failed",e);
+        }
+    }
     public void persist() {
         try {
-            this.pin();
+            this.pin("spochtLabel");
             this.save();
         } catch (ParseException e) {
             Log.e("spocht.object", "Error while persisting", e);
@@ -38,6 +48,48 @@ public abstract class ParseData extends ParseObject {
         }catch(ParseException e)
         {
             Log.e("spocht.object", "Error while deleting", e);
+        }
+    }
+    @Override
+    public <T extends ParseObject> T fetchIfNeeded(){
+        if(this.isDataAvailable()) {
+            Log.d(this.getClass().getCanonicalName(), "i am loaded unnecessary [" + this.getObjectId() + "]");
+            return (T)this;
+        }
+        else
+        {
+            Log.d(this.getClass().getCanonicalName(), "i am loaded [" + this.getObjectId() + "]");
+            try {
+                T tmp = super.fetch();
+                tmp.pin("spochtLabel");
+                return tmp;
+            }
+            catch (ParseException e)
+            {
+                Log.e(this.getClass().getCanonicalName(),"Error loading data ["+this.getObjectId()+"]",e);
+                return null;
+            }
+        }
+    }
+    static <T extends ParseObject> T fetchMe(T obj)
+    {
+        if(obj.isDataAvailable()) {
+            Log.d(obj.getClass().getCanonicalName(), "i am loaded unnecessary [" + obj.getObjectId() + "]");
+            return obj;
+        }
+        else
+        {
+            Log.d(obj.getClass().getCanonicalName(), "i am loaded [" + obj.getObjectId() + "]");
+            try {
+                T tmp = obj.fetch();
+                tmp.pin("spochtLabel");
+                return tmp;
+            }
+            catch (ParseException e)
+            {
+                Log.e(obj.getClass().getCanonicalName(),"Error loading data ["+obj.getObjectId()+"]",e);
+                return null;
+            }
         }
     }
 }

@@ -23,30 +23,6 @@ import java.util.Map;
 @ParseClassName("Event")
 public class Event extends ParseData {
 
-//    private enum EventState
-//    {
-//        CLOSED("grey"),
-//        OPEN("orange"),
-//        DESERTED("yellow"),
-//        READY("lightblue"),
-//        PLAYING("blue");
-//
-//        private String color;
-//        private EventState(final String color)
-//        {
-//            this.color = color;
-//        }
-//        public String color()
-//        {
-//            return(color);
-//        }
-//        static public void create(String name)
-//        {
-//
-//        }
-//    }
-
-
     public Event()
     {//default constructor for Parse.com
         ;
@@ -55,6 +31,7 @@ public class Event extends ParseData {
     {
         setName(name);
         setState("grey");
+        setIsEnded(false);
     }
     public void setName(final String name)
     {
@@ -64,12 +41,8 @@ public class Event extends ParseData {
     public String name()
     {
         String name = null;
-        try {
-            this.fetchIfNeeded();
-            name = getString("name");
-        } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        name = getString("name");
         if(null == name)
         {
             name = new String("unknown");
@@ -78,18 +51,14 @@ public class Event extends ParseData {
     }
     protected void setStartTime(final Date start)
     {//todo only used, when a location is linked in
-        put("startTime",start);
+        put("startTime", start);
         setUpdated();
     }
     public Date startTime()
     {
         Date date = null;
-        try{
-            this.fetchIfNeeded();
-            date = (Date)get("startTime");
-        } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        date = (Date)get("startTime");
         if(null == date)
         {
             date = getUpdatedAt();
@@ -104,12 +73,8 @@ public class Event extends ParseData {
     public String getState()
     {
         String st=null;
-        try{
-            this.fetchIfNeeded();
-            st= getString("state");
-        } catch (ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-        }
+        this.fetchIfNeeded();
+        st= getString("state");
         if(null == st)
         {
             st = "unknown";
@@ -131,7 +96,7 @@ public class Event extends ParseData {
                             participation.persist();
                         }
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -144,28 +109,16 @@ public class Event extends ParseData {
     public List<Participation> participants()
     {
         List<Participation> participations=null;
-        try {
-            this.fetchIfNeeded();
-             participations = getList("participants");
-            if(null == participations)
-            {
-                if(this.has("participants")) {
-                        participations = this.getParseObject("participation").fetchIfNeeded();
-                }
-                else
-                {
-                    participations = new ArrayList<Participation>();
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-            participations = new ArrayList<Participation>();
+        this.fetchIfNeeded();
+        participations = getList("participants");
+        if(null == participations)
+        {
+            participations=new ArrayList<>();
         }
         return(participations);
     }
-    protected void removeParticipation(final Participation participation)
-    {
-        if(null != participation) {
+    protected void removeParticipation(final Participation participation) {
+        if (null != participation) {
             removeAll("participants", Arrays.asList(participation.getObjectId()));
         }
     }
@@ -183,7 +136,7 @@ public class Event extends ParseData {
                             facility.persist();
                         }
                     } else {
-                        Log.e("spocht.data", "Error saving data.", e);
+                        Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
@@ -195,26 +148,32 @@ public class Event extends ParseData {
     public Facility facility()
     {
         Facility facility =null;
-        try{
-            this.fetchIfNeeded();
-            facility = (Facility)get("facility");
-            if(null == facility)
-            {
-                if(this.has("facility")) {
-                    facility = this.getParseObject("facility").fetchIfNeeded();
-
-                }
-                else
-                {
-                    facility = new Facility();
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            Log.e("spocht.data", "Error getting data", e);
-            facility = new Facility();
-        }
-
+        this.fetchIfNeeded();
+        facility = (Facility)get("facility");
         return(facility);
+    }
+    public void end()
+    {
+        setIsEnded(true);
+    }
+
+    public void setIsEnded(boolean isEnded) {
+        put("isEnded", isEnded);
+        setUpdated();
+    }
+
+    public boolean getIsEnded() {
+        boolean res=false;
+        this.fetchIfNeeded();
+        if(has("isEnded")) {
+            res = getBoolean("isEnded");
+        }
+        else
+        {
+            res=false;
+            setIsEnded(false);
+        }
+        return res;
     }
 
     public Boolean isUserCheckedIn(final SpochtUser user)
@@ -253,7 +212,7 @@ public class Event extends ParseData {
                 //memleaks here when called more than once.
                 //DataManager.getInstance().getEventMonitor().setEvent(this);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
             }
         //}
     }
@@ -267,30 +226,4 @@ public class Event extends ParseData {
     {
 
     }
-    public void end()
-    {
-
-    }
-
-
-//    public void setGame(Game game)
-//    {
-//        addUnique("games", ParseObject.createWithoutData(Game.class, game.getObjectId()));
-//    }
-//    public List<Game> getGames()
-//    {
-//        List<Game> games=getList("games");
-//        if(null == games)
-//        {
-//            try {
-//                games = this.getParseObject("game").fetchIfNeeded();
-//            }
-//            catch (com.parse.ParseException e)
-//            {
-//                //todo log?!
-//                games= new ArrayList<Game>();
-//            }
-//        }
-//        return games;
-//    }
 }

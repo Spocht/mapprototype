@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -19,15 +20,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.ParseException;
 
 import java.util.ArrayList;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
+import dev.spocht.spocht.data.InfoRetriever;
 
 public class DetailFragment extends ListFragment {
     private Facility mFacility;
@@ -79,14 +79,22 @@ public class DetailFragment extends ListFragment {
         mComment     = (TextView)  view.findViewById(R.id.fragment_detail_comment);
 
         mActivity = (MapsActivity) getActivity();
-
-        refreshContents();
-
+        mFacility = mActivity.getSelectedFacility();
+        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), new ArrayList<Event>());
+        mEventAdapter.setNotifyOnChange(false);
+        setListAdapter(mEventAdapter);
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
     }
 
     public void refreshContents() {
         mFacility = mActivity.getSelectedFacility();
+
+        mFacility.updateEvents(new InfoRetriever<Facility>() {
+            @Override
+            public void operate(Facility facility) {
+                setEvents();
+            }
+        });
 
         // individual elements are separated into according methods to simplify maintenance
         setImage();
@@ -112,7 +120,12 @@ public class DetailFragment extends ListFragment {
      * below are alle the methods used to update this fragments contents
      */
     private void setImage() {
-        mImage.setImageBitmap(mFacility.image().picture());
+        mImage.setImageBitmap(mFacility.image().picture(new InfoRetriever<Bitmap>() {
+            @Override
+            public void operate(Bitmap bitmap) {
+                mImage.setImageBitmap(bitmap);
+            }
+        }));
     }
 
     private void setTitle() {
@@ -134,23 +147,17 @@ public class DetailFragment extends ListFragment {
     private void setType() {
         Log.d(getClass().getCanonicalName(), "Trying to find string resource for " + mFacility.sport().name());
 
-        String type = (String) getResources().getText(
-            getResources().getIdentifier(
-                mFacility.sport().name(),
-                "string",
-                Application.PACKAGE_NAME
-            )
-        );
+        String type = mActivity.getType(mFacility.sport().name());
 
         // ensure first letter capitalized
         mType.setText(Character.toUpperCase(type.charAt(0)) + type.substring(1));
     }
 
     private void setEvents() {
-        ArrayList<Event> events = (ArrayList<Event>) mFacility.events();
-
-        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), events);
-        setListAdapter(mEventAdapter);
+        Log.d(getClass().getCanonicalName(), "setEvents()");
+        mEventAdapter.clear();
+        mEventAdapter.addAll(mFacility.events());
+        mEventAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -205,12 +212,7 @@ public class DetailFragment extends ListFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mEventName = input.getText().toString();
                             Event event = mFacility.addEvent(mEventName);
-                            try {
-                                event.save();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
+                            event.persist(); //todo review, because there might be race conditions with the facility.addEvent(). It is possible that the item is saved twice
                             event.checkIn(DataManager.getInstance().currentUser());
 
                             refreshContents();
@@ -240,4 +242,5 @@ public class DetailFragment extends ListFragment {
             });
         }
     }
+
 }
