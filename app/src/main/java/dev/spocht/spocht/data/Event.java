@@ -200,8 +200,9 @@ public class Event extends ParseData {
             //todo if successful API call, update local Event
             try {
                 System.out.println("Calling cloud function: checkin");
-                ParseCloud.callFunction("checkin", generateParameterMap(user));
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
+                ParseCloud.callFunction("checkin", generateParameterMap(user));
+
                 //memleaks here when called more than once.
                 //DataManager.getInstance().getEventMonitor().setEvent(this);
             } catch (ParseException e) {
@@ -222,15 +223,15 @@ public class Event extends ParseData {
 
     }
 
-    public void startGame(final SpochtUser user){
+    public void startGame(final SpochtUser user) {
         try {
             System.out.println("Calling cloud function: startGame");
             ParseCloud.callFunction("startGame", generateParameterMap(user));
         } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(),"error at startGame in "+this.name(),e);
+            Log.e(this.getClass().getCanonicalName(), "error at startGame in " + this.name(), e);
         }
     }
-
+    
     public void stopGame(final SpochtUser user){
         try {
             System.out.println("Calling cloud function: stopGame");

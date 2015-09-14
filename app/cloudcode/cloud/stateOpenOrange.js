@@ -8,11 +8,6 @@ function StateOpenOrange (){
         Parse.Cloud.useMasterKey();
         var event = eventAndRequest.passedEvent;
         var request = eventAndRequest.passedRequest;
-
-
-
-
-        //var idsPromise = Parse.Promise.as();
         var ids = [];
         var idsLength = 0;
         var createdParticipant;
