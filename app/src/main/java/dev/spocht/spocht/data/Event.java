@@ -200,11 +200,11 @@ public class Event extends ParseData {
             //todo if successful API call, update local Event
             try {
                 System.out.println("Calling cloud function: checkin");
+                //The GeoFence does not work when app is restarted whilst one is checked in.
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
+                DataManager.getInstance().getEventMonitor().setEvent(this);
                 ParseCloud.callFunction("checkin", generateParameterMap(user));
 
-                //memleaks here when called more than once.
-                //DataManager.getInstance().getEventMonitor().setEvent(this);
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
             }
@@ -231,7 +231,7 @@ public class Event extends ParseData {
             Log.e(this.getClass().getCanonicalName(), "error at startGame in " + this.name(), e);
         }
     }
-    
+
     public void stopGame(final SpochtUser user){
         try {
             System.out.println("Calling cloud function: stopGame");

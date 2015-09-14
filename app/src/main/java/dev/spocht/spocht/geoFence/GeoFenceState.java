@@ -14,7 +14,9 @@ public class GeoFenceState {
     }
     public void entry()
     {
-        mCtx.cb(this.toString()).action();
+        //NPE
+        //java.lang.NullPointerException: Attempt to invoke interface method 'void dev.spocht.spocht.geoFence.GeoFenceCallback.action()' on a null object reference
+        //mCtx.cb(this.toString()).action();
     }
     public void exit()
     {
