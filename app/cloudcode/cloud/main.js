@@ -103,7 +103,7 @@ var eventQuery = new Parse.Query("Event");
 });
 
 Parse.Cloud.define("stopGame", function(request, response){
-var eventQuery = new Parse.Query("Event");
+    var eventQuery = new Parse.Query("Event");
 	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
 	eventQuery.first({
 		success : function(event) {

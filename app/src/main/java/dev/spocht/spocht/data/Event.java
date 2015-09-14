@@ -232,10 +232,12 @@ public class Event extends ParseData {
         }
     }
 
-    public void stopGame(final SpochtUser user){
+    public void stopGame(final SpochtUser user, Outcome outcome){
         try {
             System.out.println("Calling cloud function: stopGame");
-            ParseCloud.callFunction("stopGame", generateParameterMap(user));
+            Map<String, String> mappedOutcome = new HashMap<>();
+            mappedOutcome.put("value", outcome.toString());
+            ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
             DataManager.getInstance().unregisterPushChannel(this.getObjectId());
             DataManager.getInstance().getEventMonitor().setEvent(null);
         } catch (ParseException e) {
