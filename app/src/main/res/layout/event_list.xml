@@ -29,7 +29,7 @@
                 android:id="@+id/fragment_detail_event_participant_list"
                 />
         </LinearLayout>
-        <ImageButton
+        <dev.spocht.spocht.activity.button.EventStateImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fragment_detail_event_checkinButton"
