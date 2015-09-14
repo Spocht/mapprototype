@@ -43,7 +43,7 @@ function StatePlayingBlue (eventAndRequest){
         var eventId = _event.get("objectId");
         var data = {channels: [eventId], data:{alert:"Stopped game"}, where: new Parse.Query(Parse.Installation)};
         Parse.Push.send({
-                channels: [_event.id],
+                channels: ["CHN_"+_event.id],
                 data:{
                         alert:"Stopping event/game"+_event.id,
                         event: {"id": _event.id, "participants": oldParticipants }

@@ -81,14 +81,10 @@ function StateOpenOrange (){
                 );
                 participationsQuery.find().then(function(results){
 
-                    console.log("CheckinResults");
+
                     var promises = [];
                     results.forEach(function(value){
-                        console.log("CheckinResultsValue");
-                        console.log(value);
                         if (value.get("user").id != userInstance.id) {
-                            console.log("Value not the same");
-                            console.log(value.get("user"));
                             var p =
                                 participationInstance.save().then(function(object){
                                     ids.push(object.id);
@@ -114,8 +110,6 @@ function StateOpenOrange (){
             var p = new Parse.Promise();
             var promises = [];
             ids.forEach(function(value){
-                console.log("Adding");
-                console.log(value);
                 event.addUnique(
                     "participants",
                         {"__type":"Pointer",
@@ -142,7 +136,7 @@ function StateOpenOrange (){
 
         function push(){
             Parse.Push.send({
-                channels: [event.id],
+                channels: ["CHN_"+event.id],
                 data:{
                         alert:"Checked in"+event.id,
                         event: {"id": event.id, "participants": [] }
@@ -162,93 +156,15 @@ function StateOpenOrange (){
 
         //chain it all together
         return getIds()
-            .then(setParticipant)
-            .then(createParticipationIfNecessary)
-            .then(addParticipant)
-            .then(switchState)
-            .then(push)
-            .then(function(object){
-                return object;
-            });
+        .then(setParticipant)
+        .then(createParticipationIfNecessary)
+        .then(addParticipant)
+        .then(switchState)
+        .then(push)
+        .then(function(object){
+            return object;
+        });
 
-////        //works
-////        var partInst = createIfNecessary();
-////        return partInst.save(null, {
-////            success: function(object){
-////                //r.t;
-////                return Parse.Promise.as(object);
-////            }
-////        }).then(function(object){
-////            //r.tt;
-////            return Parse.Promise.as(object);
-////        }, function(error){
-////            r.error;
-////        });
-//
-//
-//
-//        //return "whatever";
-//
-//        //return createIfNecessary();
-//
-////        test().then(createIfNecessary).save().then(function(object){
-////            return "bla";
-////        });
-////        return ids;
-//
-//
-//
-////        var chainedPromises = [];
-////        chainedPromises.push(getIds);
-////        chainedPromises.push(setParticipant);
-////        return Parse.Promise.when(chainedPromises).then(function(f1){
-////            console.log("Fertsch");
-////            console.log(f1);
-////        });
-//
-//        //createIfNecessary();
-//
-//
-//
-//
-//
-//
-//
-//        var eventPromise = Parse.Promise.as(event);
-//        var pushPromise = Parse.Promise.as(event);
-//        //https://parse.com/docs/js/api/symbols/Parse.Promise.html#.as
-//        //with a little hacking from me
-//        var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
-//            _event.save().then(function(object){
-//
-//             });
-//
-//             return _event;
-//
-//        })._result;
-//
-//
-//        var eventId = event.get("objectId");
-//        var data = {channels: [eventId], data:{alert:"Checked in"}, where: new Parse.Query(Parse.Installation)};
-//
-//        Parse.Push.send({
-//                channels: [event.id],
-//                data:{
-//                        alert:"Checked in"+event.id,
-//                        event: {"id": event.id, "participants": [] }
-//                    }
-//                },
-//
-//                {
-//                success: function(bla){
-//                    // Push was successful
-//                                response.success(bla);
-//                },
-//                error: function(e){
-//                    response.error(error);
-//                }
-//            });
-//        return eventPromised;
 
     }
     this.checkout = function(eventAndRequest){
@@ -287,7 +203,7 @@ function StateOpenOrange (){
 
         }).then(function(object){
             Parse.Push.send({
-                channels: [""],
+                channels: ["CHN_"+event.id],
                 data:{
                         alert:"Checkout for:"+event.id,
                         event: {"id": event.id }

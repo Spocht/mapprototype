@@ -41,7 +41,7 @@ function StateReadyLightblue () {
 
         }).then(function(object){
             Parse.Push.send({
-                channels: [""],
+                channels: ["CHN_"+event.id],
                 data:{
                         alert:"Checkout from ready for:"+event.id,
                         event: {"id": event.id }
@@ -79,7 +79,7 @@ function StateReadyLightblue () {
         }
 
         Parse.Push.send({
-            channels: [_event.id],
+            channels: ["CHN_"+_event.id],
             data:{
                     alert:"Starting event/game:"+_event.id,
                     event: {"id": _event.id, "participants": [] }
