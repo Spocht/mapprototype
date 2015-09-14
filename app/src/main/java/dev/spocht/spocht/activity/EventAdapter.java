@@ -6,25 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.ParseUser;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.activity.button.EventStateImageButton;
-import dev.spocht.spocht.activity.button.state.StartGame;
-import dev.spocht.spocht.activity.button.state.StopGame;
-import dev.spocht.spocht.activity.button.state.WaitingForPlayers;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.EventState;

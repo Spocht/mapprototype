@@ -16,8 +16,7 @@ public class GeoFenceStateOut extends GeoFenceState {
     public void execute(Location location) {
         super.execute(location);
 
-        if((mCtx.location().distanceTo(location)/1000) >= (mCtx.distance()-0.01)) {
-            DataManager.getInstance().getEventMonitor().event().checkOut(DataManager.getInstance().currentUser());
+        if((mCtx.location().distanceTo(location)/1000) <= (mCtx.distance()-0.01)) {
             mCtx.setState(new GeoFenceStateIn(mCtx));
         }
     }
