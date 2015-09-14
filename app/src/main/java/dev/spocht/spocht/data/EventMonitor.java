@@ -35,11 +35,8 @@ public class EventMonitor {
     private GeoFenceCallback cbOut = new GeoFenceCallback() {
         @Override
         public void action() {
-            Log.d(this.getClass().getCanonicalName(),"leaving danger zone");
-            if(null != event())
-            {
-                setEvent(null);
-            }
+            Log.d(this.getClass().getCanonicalName(), "leaving danger zone");
+            setEvent(null);
         }
     };
 
