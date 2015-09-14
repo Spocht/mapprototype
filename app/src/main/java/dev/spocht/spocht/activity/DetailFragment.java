@@ -61,7 +61,8 @@ public class DetailFragment extends ListFragment {
         );
         params.addRule(RelativeLayout.ALIGN_PARENT_END);
         mNewGameImageButton.setLayoutParams(params);
-        mNewGameImageButton.setImageResource(R.drawable.ic_new_releases_white_24dp);
+        mNewGameImageButton.setImageResource(R.drawable.ic_plus_circle_outline_black_24dp);
+        mNewGameImageButton.setBackgroundColor(getResources().getColor(R.color.white));
 
         infoLayout.addView(mNewGameImageButton);
 
