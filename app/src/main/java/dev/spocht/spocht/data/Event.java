@@ -30,7 +30,7 @@ public class Event extends ParseData {
     public Event(final String name)
     {
         setName(name);
-        setState("grey");
+        setState("orange");
         setIsEnded(false);
     }
     public void setName(final String name)
