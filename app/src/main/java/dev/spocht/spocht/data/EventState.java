@@ -1,9 +1,8 @@
 package dev.spocht.spocht.data;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import dev.spocht.spocht.Application;
+import dev.spocht.spocht.activity.Application;
 
 /**
  * Created by highway on 08/09/15.

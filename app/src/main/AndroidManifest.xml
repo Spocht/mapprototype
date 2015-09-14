@@ -35,7 +35,7 @@
     <uses-permission android:name="dev.spocht.spocht.permission.C2D_MESSAGE" />
 
     <application
-        android:name=".Application"
+        android:name=".activity.Application"
         android:allowBackup="true"
         android:icon="@drawable/spocht_symbol"
         android:label="@string/app_name"

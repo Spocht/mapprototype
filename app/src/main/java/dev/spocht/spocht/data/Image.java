@@ -2,19 +2,15 @@ package dev.spocht.spocht.data;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Picture;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
 
 import java.io.ByteArrayOutputStream;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 
 /**

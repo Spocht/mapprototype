@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.location.LocationCallback;
