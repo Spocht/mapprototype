@@ -1,5 +1,6 @@
 package dev.spocht.spocht.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,8 +25,12 @@ import dev.spocht.spocht.data.SpochtUser;
  * Created by highway on 03/09/15.
  */
 public class EventAdapter extends ArrayAdapter<Event> {
-    public EventAdapter(Context context, ArrayList<Event> events) {
+    Activity mActivity;
+
+    public EventAdapter(Context context, Activity activity, ArrayList<Event> events) {
         super(context, R.layout.event_list, events);
+
+        mActivity = activity;
     }
 
     @Override
@@ -96,6 +101,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         // create button based upon event state
         EventStateImageButton checkInButton = (EventStateImageButton) convertView.findViewById(R.id.fragment_detail_event_checkinButton);
+        checkInButton.setActivity(mActivity);
         checkInButton.setEvent(event);
         checkInButton.setAmICheckedIn(isAlreadyCheckedIn);
 
@@ -112,13 +118,6 @@ public class EventAdapter extends ArrayAdapter<Event> {
                 break;
         }
 
-
-
-
         return convertView;
     }
-
-
-
-
 }

@@ -1,5 +1,6 @@
 package dev.spocht.spocht.activity.button;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -18,6 +19,9 @@ public class EventStateImageButton extends android.widget.ImageButton {
     WaitingForPlayers mWaitingForPlayersState;
 
     ImageButton mCurrentState;
+
+
+    Activity mActivity;
 
     boolean amICheckedIn = false;
     Event mEvent;
@@ -90,5 +94,13 @@ public class EventStateImageButton extends android.widget.ImageButton {
 
     public void setAmICheckedIn(boolean amICheckedIn) {
         this.amICheckedIn = amICheckedIn;
+    }
+
+    public Activity getActivity() {
+        return mActivity;
+    }
+
+    public void setActivity(Activity mActivity) {
+        this.mActivity = mActivity;
     }
 }

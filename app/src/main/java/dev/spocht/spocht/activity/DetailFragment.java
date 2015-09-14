@@ -81,10 +81,15 @@ public class DetailFragment extends ListFragment {
 
         mActivity = (MapsActivity) getActivity();
         mFacility = mActivity.getSelectedFacility();
-        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), new ArrayList<Event>());
+        mEventAdapter = new EventAdapter(
+                mActivity.getApplicationContext(),
+                mActivity,
+                new ArrayList<Event>()
+        );
         mEventAdapter.setNotifyOnChange(false);
         setListAdapter(mEventAdapter);
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
+
     }
 
     public void refreshContents() {

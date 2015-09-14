@@ -1,0 +1,39 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    >
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_button_win"
+        android:src="@drawable/ic_thumb_up_black_24dp"
+        android:onClick="onWinClick"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_button_lose"
+        android:src="@drawable/ic_thumb_down_black_24dp"
+        android:onClick="onLoseClick"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_button_tie"
+        android:src="@drawable/ic_thumbs_up_down_black_24dp"
+        android:onClick="onTieClick"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_button_giveup"
+        android:src="@drawable/ic_close_circle_black_24dp"
+        android:onClick="onGiveUpClick"
+        />
+</LinearLayout>

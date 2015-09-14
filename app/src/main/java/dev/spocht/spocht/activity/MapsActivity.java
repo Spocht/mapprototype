@@ -35,13 +35,13 @@ import java.util.List;
 import java.util.Map;
 
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.data.Event;
-import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
+import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.location.MyLocationListener;
 
 public class MapsActivity extends AppCompatActivity
@@ -222,7 +222,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        context.registerReceiver(mRecv,new IntentFilter("ParsePusher"));
+        context.registerReceiver(mRecv, new IntentFilter("ParsePusher"));
         setUpMapIfNeeded();
     }
 

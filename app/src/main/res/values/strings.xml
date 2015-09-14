@@ -11,4 +11,5 @@
     <string name="title_activity_stats">SpochT Stats</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_stop_game">StopGameActivity</string>
 </resources>
