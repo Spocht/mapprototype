@@ -111,6 +111,10 @@ public class Event extends ParseData {
         List<Participation> participations=null;
         this.fetchIfNeeded();
         participations = getList("participants");
+        if(null == participations)
+        {
+            participations=new ArrayList<>();
+        }
         return(participations);
     }
     protected void removeParticipation(final Participation participation) {
@@ -194,16 +198,9 @@ public class Event extends ParseData {
         //consult with rudee!
         //if(!isUserCheckedIn(user)) {
             //todo if successful API call, update local Event
-            Map<String, Map<String, String>> params = new HashMap<>();
-            Map<String, String> mappedEvent = new HashMap<>();
-            mappedEvent.put("id", this.getObjectId());
-            Map<String, String> mappedUser = new HashMap<>();
-            mappedUser.put("id", user.getObjectId());
-            params.put("event", mappedEvent );
-            params.put("user", mappedUser);
             try {
                 System.out.println("Calling cloud function: checkin");
-                ParseCloud.callFunction("checkin", params);
+                ParseCloud.callFunction("checkin", generateParameterMap(user));
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
                 //memleaks here when called more than once.
                 //DataManager.getInstance().getEventMonitor().setEvent(this);
@@ -214,10 +211,47 @@ public class Event extends ParseData {
     }
     public void checkOut(final SpochtUser user)
     {
-        //todo: call API
-        DataManager.getInstance().unregisterPushChannel(this.getObjectId());
-        DataManager.getInstance().getEventMonitor().setEvent(null);
+        try {
+            System.out.println("Calling cloud function: checkout");
+            ParseCloud.callFunction("checkout", generateParameterMap(user));
+            DataManager.getInstance().unregisterPushChannel(this.getObjectId());
+            DataManager.getInstance().getEventMonitor().setEvent(null);
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(),"error at checkout in "+this.name(),e);
+        }
+
     }
+
+    public void startGame(final SpochtUser user){
+        try {
+            System.out.println("Calling cloud function: startGame");
+            ParseCloud.callFunction("startGame", generateParameterMap(user));
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(),"error at startGame in "+this.name(),e);
+        }
+    }
+
+    public void stopGame(final SpochtUser user){
+        try {
+            System.out.println("Calling cloud function: stopGame");
+            ParseCloud.callFunction("stopGame", generateParameterMap(user));
+            DataManager.getInstance().unregisterPushChannel(this.getObjectId());
+            DataManager.getInstance().getEventMonitor().setEvent(null);
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(),"error at stopGame in "+this.name(),e);
+        }
+    }
+
+    private Map<String, Map<String, String>> generateParameterMap(final SpochtUser user){
+        Map<String, Map<String, String>> params = new HashMap<>();
+        Map<String, String> mappedEvent = new HashMap<>();
+        mappedEvent.put("id", this.getObjectId());
+        Map<String, String> mappedUser = new HashMap<>();
+        mappedUser.put("id", user.getObjectId());
+        params.put("event", mappedEvent );
+        params.put("user", mappedUser);
+        return params;
+    };
     public void start()
     {
 

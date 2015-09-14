@@ -25,20 +25,20 @@ function StatePlayingBlue (eventAndRequest){
 
 
         _event.set("state", "grey");
+        _event.set("isEnded", true);
         var facility = _event.get("facility");
-        //_event.unset("participants");
         facility.remove("events", {"__type":"Pointer","className":"Event","objectId":_event.id});
         facility.save();
 
         var eventPromise = Parse.Promise.as(_event);
         var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
-        _event.save().then(function(object){
+            _event.save().then(function(object){
+                return Parse.Promise.as(_event);
+            });
 
-         });
 
-         return _event;
 
-        })._result;
+        });
 
         var eventId = _event.get("objectId");
         var data = {channels: [eventId], data:{alert:"Stopped game"}, where: new Parse.Query(Parse.Installation)};

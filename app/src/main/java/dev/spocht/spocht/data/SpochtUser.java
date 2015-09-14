@@ -149,6 +149,10 @@ public class SpochtUser extends ParseData {
         List<Experience> xps=null;
         this.fetchIfNeeded();
         xps = getList("experience");
+        if(null == xps)
+        {
+            xps=new ArrayList<>();
+        }
         return(xps);
     }
 

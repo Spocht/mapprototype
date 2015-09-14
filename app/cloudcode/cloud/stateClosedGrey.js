@@ -1,44 +1,17 @@
 function StateClosedGrey (){
+    var stateOpenOrange = require("cloud/stateOpenOrange");
+    var stateOpenOrangeInstance = new stateOpenOrange;
 
+    //same functionality here as in orange.
+    this.checkin = stateOpenOrangeInstance.checkin;
+    this.checkout = function(eventAndRequest){
+        return Parse.Promise.as("Elvis cannout checkout from an empty building thus he already left.");
+    }
 
-    this.checkin = function(eventAndRequest){
-        var _event = eventAndRequest.passedEvent;
-        var request = eventAndRequest.passedRequest;
-
-        _event.addUnique("participants", {"__type":"Pointer","className":"Participation","objectId":request.params.user.id} );
-        _event.set("state", "orange");
-        var eventPromise = Parse.Promise.as(_event);
-        
-        var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
-            _event.save().then(function(object){
-             });
-             return _event;
-        })._result;
-
-        Parse.Push.send(
-            {
-                channels: [_event.id],
-                data:{
-                        alert:"Checked in from closed state"+_event.id,
-                        event: {"id": _event.id, "participants": []}
-                    }
-                },
-                {
-                success: function(bla){
-
-                },
-                error: function(e){
-                    response.error(error);
-                }
-            }
-        );
-
-        return eventPromised;
+    this.stopGame = function(eventAndRequest){
+        return Parse.Promise.as("Stopping a closed game does not make Elvis happy");
 
     }
-    this.checkout = function(eventAndRequest){
-            return "Elvis cannout checkout from an empty building thus he already left.";
-        }
     this.setState = function(){
 
     }

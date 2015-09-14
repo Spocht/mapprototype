@@ -2,6 +2,7 @@ package dev.spocht.spocht.data;
 
 import android.util.Log;
 
+import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -32,7 +33,7 @@ public abstract class ParseData extends ParseObject {
     }
     public void persist() {
         try {
-            this.pin();
+            this.pin("spochtLabel");
             this.save();
         } catch (ParseException e) {
             Log.e("spocht.object", "Error while persisting", e);
@@ -49,7 +50,7 @@ public abstract class ParseData extends ParseObject {
             Log.e("spocht.object", "Error while deleting", e);
         }
     }
-
+    @Override
     public <T extends ParseObject> T fetchIfNeeded(){
         if(this.isDataAvailable()) {
             Log.d(this.getClass().getCanonicalName(), "i am loaded unnecessary [" + this.getObjectId() + "]");
@@ -58,10 +59,9 @@ public abstract class ParseData extends ParseObject {
         else
         {
             Log.d(this.getClass().getCanonicalName(), "i am loaded [" + this.getObjectId() + "]");
-            //todo: maybe we should implement a proper PARSE queue here
             try {
-                T tmp = super.fetchIfNeeded();
-                tmp.pin();
+                T tmp = super.fetch();
+                tmp.pin("spochtLabel");
                 return tmp;
             }
             catch (ParseException e)
@@ -80,10 +80,9 @@ public abstract class ParseData extends ParseObject {
         else
         {
             Log.d(obj.getClass().getCanonicalName(), "i am loaded [" + obj.getObjectId() + "]");
-            //todo: maybe we should implement a proper PARSE queue here
             try {
-                T tmp = obj.fetchIfNeeded();
-                tmp.pin();
+                T tmp = obj.fetch();
+                tmp.pin("spochtLabel");
                 return tmp;
             }
             catch (ParseException e)
