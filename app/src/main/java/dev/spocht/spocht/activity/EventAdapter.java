@@ -66,7 +66,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         String startedAt = DataManager.getContext().getString(R.string.started_at);
         String startedAtDate = null;
         try {
-            startedAtDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(event.startTime());
+            startedAtDate = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(event.startTime());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,8 +102,14 @@ public class EventAdapter extends ArrayAdapter<Event> {
         // create button based upon event state
         EventStateImageButton checkInButton = (EventStateImageButton) convertView.findViewById(R.id.fragment_detail_event_checkinButton);
         // styling stuff
+        int buttonColor = EventState.get(event.getState(), EventState.EVENT_STATE_TINT);
+        if (0 == buttonColor) {
+            buttonColor = R.color.lightgrey;
+        }
+        checkInButton.setBackgroundColor(convertView.getResources().getColor(buttonColor));
         checkInButton.setActivity(mActivity);
         checkInButton.setEvent(event);
+        checkInButton.setElevation(R.dimen.default_elevation);
         checkInButton.setAmICheckedIn(isAlreadyCheckedIn);
 
         switch (event.getState()) {
