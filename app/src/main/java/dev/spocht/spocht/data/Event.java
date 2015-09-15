@@ -256,7 +256,9 @@ public class Event extends ParseData {
                 System.out.println("Calling cloud function: stopGame");
                 Map<String, String> mappedOutcome = new HashMap<>();
                 mappedOutcome.put("value", outcome.name());
-                String feedback = ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
+            Map<String, Map<String, String>> myMap = generateParameterMap(user);
+            myMap.put("outcome", mappedOutcome);
+            String feedback = ParseCloud.callFunction("stopGame", myMap);
                 DataManager.getInstance().unregisterPushChannel(this.getObjectId());
                 DataManager.getInstance().getEventMonitor().setEvent(null);
             } catch (ParseException e) {

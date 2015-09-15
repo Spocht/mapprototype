@@ -25,35 +25,33 @@ public class StopGameActivity extends AppCompatActivity {
     public void onWinClick(View view) {
         Event event = DataManager.getInstance().getEventMonitor().event();
         event.stopGame(DataManager.getInstance().currentUser(), Outcome.WIN);
-
-        onStop();
-
         Log.d(getClass().getCanonicalName(), "I\'m a WINNER on " + event.getObjectId());
+        finish();
+
+
     }
 
     public void onLoseClick(View view) {
         Event event = DataManager.getInstance().getEventMonitor().event();
         event.stopGame(DataManager.getInstance().currentUser(), Outcome.LOSE);
-
-        onStop();
-
         Log.d(getClass().getCanonicalName(), "I\'m a LOSER on " + event.getObjectId());
+        finish();
+
+
     }
 
     public void onTieClick(View view) {
         Event event = DataManager.getInstance().getEventMonitor().event();
         event.stopGame(DataManager.getInstance().currentUser(), Outcome.TIE);
-
-        onStop();
-
         Log.d(getClass().getCanonicalName(), "It\'s a TIE on " + event.getObjectId());
+        finish();
+
     }
 
     public void onGiveUpClick(View view) {
         Event event = DataManager.getInstance().getEventMonitor().event();
         event.stopGame(DataManager.getInstance().currentUser(), Outcome.GAVEUP);
-
-        onStop();
         Log.d(getClass().getCanonicalName(), "I GIVE UP on " + event.getObjectId());
+        finish();
     }
 }
