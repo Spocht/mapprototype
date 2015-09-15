@@ -31,7 +31,6 @@ public class StopGame extends ImageButton {
         mContext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataManager.getInstance().getEventMonitor().setEvent(mContext.getEvent(), false);
                 mContext.getActivity().startActivity(new Intent(mContext.getActivity(), StopGameActivity.class));
 
                 Log.d(getClass().getCanonicalName(), "Displaying Outcome Dialog");

@@ -62,12 +62,4 @@ public class WaitingForPlayers extends ImageButton {
 
         }
     }
-
-    @Override
-    public void onClick(View view) {
-    }
-
-    @Override
-    public void onReceivePush(Event event) {
-    }
 }

@@ -17,10 +17,6 @@ public class StartGame extends ImageButton {
     }
 
     @Override
-    public void onClick(View view) {
-    }
-
-    @Override
     public void entry() {
         mContext.setImageResource(R.drawable.ic_play_arrow_black_24dp);
 
