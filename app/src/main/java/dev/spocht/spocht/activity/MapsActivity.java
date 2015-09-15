@@ -199,11 +199,6 @@ public class MapsActivity extends AppCompatActivity
             case R.id.menu_stats:
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
-            case R.id.menu_settings:
-                return false;
-            case R.id.menu_clear_local:
-                DataManager.getInstance().flushLocalStore();
-                return false;
             case R.id.menu_logout:
                 DataManager.getInstance().logout();
                 startActivity(new Intent(this, LoginActivity.class));
