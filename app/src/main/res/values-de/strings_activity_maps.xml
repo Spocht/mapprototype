@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="welcome">Wilkommen</string>
-
+    <string name="maps_activity_eventupdated" formatted="false">Spiel %s bei %s wurde aktualisiert!</string>
 </resources>
