@@ -190,11 +190,9 @@ public class MapsActivity extends AppCompatActivity
     protected void onPostResume() {
         super.onPostResume();
 
-
         // append username to actionbar title
         ActionBar ab = getSupportActionBar();
-        CharSequence title = ab.getTitle();
-        title = title + " - " + DataManager.getInstance().currentUser().getUsername();
+        CharSequence title = getString(R.string.app_name) + " - " + DataManager.getInstance().currentUser().getUsername();
         ab.setTitle(title);
     }
 
