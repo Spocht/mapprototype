@@ -207,9 +207,15 @@ public class Event extends ParseData {
                 System.out.println("Calling cloud function: checkin");
                 //The GeoFence does not work when app is restarted whilst one is checked in.
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
-                DataManager.getInstance().getEventMonitor().setEvent(this);
                 String feedback = ParseCloud.callFunction("checkin", generateParameterMap(user));
-                Log.d(this.getClass().getCanonicalName(),"Checkin at"+feedback);
+                Log.d(this.getClass().getCanonicalName(), "Checkin at" + feedback);
+                if(feedback.equals("SUCCESS")) {
+                    DataManager.getInstance().getEventMonitor().setEvent(this);
+                }
+                else
+                {
+                    DataManager.getInstance().unregisterPushChannel(this.getObjectId());
+                }
 
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
@@ -223,8 +229,10 @@ public class Event extends ParseData {
             checkOutRun = true;
             try {
                 System.out.println("Calling cloud function: checkout");
-            String feedback = ParseCloud.callFunction("checkout", generateParameterMap(user));
-                DataManager.getInstance().getEventMonitor().setEvent(null);
+                String feedback = ParseCloud.callFunction("checkout", generateParameterMap(user));
+                if(feedback.equals("SUCCESS")) {
+                    DataManager.getInstance().getEventMonitor().setEvent(null);
+                }
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(), "error at checkout in " + this.name(), e);
             }
@@ -242,15 +250,17 @@ public class Event extends ParseData {
     }
 
     public void stopGame(final SpochtUser user, Outcome outcome){
-        try {
-            System.out.println("Calling cloud function: stopGame");
-            Map<String, String> mappedOutcome = new HashMap<>();
-            mappedOutcome.put("value", outcome.name());
-            String feedback = ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
-            DataManager.getInstance().unregisterPushChannel(this.getObjectId());
-            DataManager.getInstance().getEventMonitor().setEvent(null);
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(),"error at stopGame in "+this.name(),e);
+        if(false == checkOutRun) {//prevent a checkout when removing event from monitor
+            checkOutRun = true;
+            try {
+                System.out.println("Calling cloud function: stopGame");
+                Map<String, String> mappedOutcome = new HashMap<>();
+                mappedOutcome.put("value", outcome.name());
+                String feedback = ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
+                DataManager.getInstance().getEventMonitor().setEvent(null);
+            } catch (ParseException e) {
+                Log.e(this.getClass().getCanonicalName(), "error at stopGame in " + this.name(), e);
+            }
         }
     }
 
