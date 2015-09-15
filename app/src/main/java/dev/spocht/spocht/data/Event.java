@@ -23,6 +23,8 @@ import java.util.Map;
 @ParseClassName("Event")
 public class Event extends ParseData {
 
+    private boolean checkOutRun=false;
+
     public Event()
     {//default constructor for Parse.com
         ;
@@ -215,14 +217,17 @@ public class Event extends ParseData {
     }
     public void checkOut(final SpochtUser user)
     {
-        try {
-            System.out.println("Calling cloud function: checkout");
-            ParseCloud.callFunction("checkout", generateParameterMap(user));
-            DataManager.getInstance().getEventMonitor().setEvent(null);
-        } catch (ParseException e) {
-            Log.e(this.getClass().getCanonicalName(),"error at checkout in "+this.name(),e);
+        if(false == checkOutRun) {
+            checkOutRun = true;
+            try {
+                System.out.println("Calling cloud function: checkout");
+                ParseCloud.callFunction("checkout", generateParameterMap(user));
+                DataManager.getInstance().getEventMonitor().setEvent(null);
+            } catch (ParseException e) {
+                Log.e(this.getClass().getCanonicalName(), "error at checkout in " + this.name(), e);
+            }
+            checkOutRun = false;
         }
-
     }
 
     public void startGame(final SpochtUser user) {

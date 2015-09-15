@@ -441,6 +441,10 @@ public class MapsActivity extends AppCompatActivity
         {
             return "orange";
         }
+        if(map.containsKey("yellow"))
+        {
+            return "yellow";
+        }
         return "grey";
     }
 }
