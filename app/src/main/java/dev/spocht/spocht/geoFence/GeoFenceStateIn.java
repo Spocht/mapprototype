@@ -1,6 +1,7 @@
 package dev.spocht.spocht.geoFence;
 
 import android.location.Location;
+import android.util.Log;
 
 /**
  * Created by mueller8 on 05.09.2015.

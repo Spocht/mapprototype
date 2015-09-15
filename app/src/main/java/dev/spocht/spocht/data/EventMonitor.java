@@ -1,21 +1,10 @@
 package dev.spocht.spocht.data;
 
 import android.content.Context;
-import android.location.Location;
 import android.util.Log;
 
-import com.parse.ParseGeoPoint;
-
-import dev.spocht.spocht.Application;
-import dev.spocht.spocht.R;
-import dev.spocht.spocht.data.DataManager;
-import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.geoFence.GeoFence;
 import dev.spocht.spocht.geoFence.GeoFenceCallback;
-import dev.spocht.spocht.location.LocationCallback;
-import dev.spocht.spocht.data.Event;
-import dev.spocht.spocht.data.Facility;
-import dev.spocht.spocht.location.MyLocationListener;
 
 /**
  * Created by edm on 26.08.15.
@@ -35,11 +24,8 @@ public class EventMonitor {
     private GeoFenceCallback cbOut = new GeoFenceCallback() {
         @Override
         public void action() {
-            Log.d(this.getClass().getCanonicalName(),"leaving danger zone");
-            if(null != event())
-            {
-                setEvent(null);
-            }
+            Log.d(this.getClass().getCanonicalName(), "leaving danger zone");
+            setEvent(null);
         }
     };
 
@@ -54,10 +40,17 @@ public class EventMonitor {
     }
 
     public void setEvent(Event event) {
+        setEvent(event, true);
+    }
+
+    public void setEvent(Event event, boolean checkOutFirst) {
         if (null != mEvent) {
             Event tmp=mEvent;
             mEvent = null;
-            tmp.checkOut(DataManager.getInstance().currentUser());
+
+            if (checkOutFirst) {
+                tmp.checkOut(DataManager.getInstance().currentUser());
+            }
         }
         if(null != event)
         {
@@ -70,7 +63,5 @@ public class EventMonitor {
         }
         mEvent = event;
     }
-
-
 
 }

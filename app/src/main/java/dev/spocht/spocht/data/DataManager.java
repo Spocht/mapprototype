@@ -334,14 +334,15 @@ public class DataManager {
     }
     public void registerPushChannel(final String name)
     {
+        final String prefixedName = "CHN_"+name;
         if(null != name) {
-            ParsePush.subscribeInBackground(name, new SaveCallback() {
+            ParsePush.subscribeInBackground(prefixedName, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d(this.getClass().getCanonicalName(), "Push ["+name+"]: successfully subscribed to the channel.");
+                        Log.d(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: successfully subscribed to the channel.");
                     } else {
-                        Log.e(this.getClass().getCanonicalName(), "Push ["+name+"]: failed to subscribe", e);
+                        Log.e(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: failed to subscribe", e);
                     }
                 }
             });
@@ -353,14 +354,15 @@ public class DataManager {
     }
     public void unregisterPushChannel(final String name)
     {
+        final String prefixedName = "CHN_"+name;
         if(null != name) {
-            ParsePush.unsubscribeInBackground(name, new SaveCallback() {
+            ParsePush.unsubscribeInBackground(prefixedName, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d(this.getClass().getCanonicalName(), "Push ["+name+"]: successfully unsubscribed to the channel.");
+                        Log.d(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: successfully unsubscribed to the channel.");
                     } else {
-                        Log.e(this.getClass().getCanonicalName(), "Push ["+name+"]: failed to unsubscribe", e);
+                        Log.e(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: failed to unsubscribe", e);
                     }
                 }
             });

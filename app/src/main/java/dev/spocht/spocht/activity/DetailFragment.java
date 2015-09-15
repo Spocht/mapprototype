@@ -61,7 +61,8 @@ public class DetailFragment extends ListFragment {
         );
         params.addRule(RelativeLayout.ALIGN_PARENT_END);
         mNewGameImageButton.setLayoutParams(params);
-        mNewGameImageButton.setImageResource(R.drawable.ic_new_releases_white_24dp);
+        mNewGameImageButton.setImageResource(R.drawable.ic_plus_circle_outline_black_24dp);
+        mNewGameImageButton.setBackgroundColor(getResources().getColor(R.color.white));
 
         infoLayout.addView(mNewGameImageButton);
 
@@ -80,10 +81,15 @@ public class DetailFragment extends ListFragment {
 
         mActivity = (MapsActivity) getActivity();
         mFacility = mActivity.getSelectedFacility();
-        mEventAdapter = new EventAdapter(mActivity.getApplicationContext(), new ArrayList<Event>());
+        mEventAdapter = new EventAdapter(
+                mActivity.getApplicationContext(),
+                mActivity,
+                new ArrayList<Event>()
+        );
         mEventAdapter.setNotifyOnChange(false);
         setListAdapter(mEventAdapter);
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
+
     }
 
     public void refreshContents() {

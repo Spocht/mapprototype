@@ -3,14 +3,22 @@ function StatePlayingBlue (eventAndRequest){
         return "Noop:StatePlayingBlueCheckin";
     }
     this.checkout = function(eventAndRequest){
+        var localEAR = eventAndRequest;
+        localEAR.outcome = "LOSE";
+        return stopGame(localEAR);
+
+
+
+
         return "Noop:StatePlayingBlueCheckout";
     }
     this.startGame = function(eventAndRequest){
             return "Arrrrrr... you cannot start already starten goims, savvy?";
     }
 
-    this.stopGame = function(eventAndRequest){
-        var _event = eventAndRequest.passedEvent;
+    this.stopGame = function(eventAndRequestAndOutcome){
+        var _event = eventAndRequestAndOutcome.passedEvent;
+        var _outcome = eventAndRequestAndOutcome.outcome;
         //participants in this event need to be deleted...
         //question is: when? the pushmessage needs to send the old participants
         //for further processing in the PushReceiver.
@@ -24,26 +32,45 @@ function StatePlayingBlue (eventAndRequest){
                 }(_event);
 
 
+        var promises = [];
+
+
+
         _event.set("state", "grey");
+        _event.set("isEnded", true);
         var facility = _event.get("facility");
-        //_event.unset("participants");
         facility.remove("events", {"__type":"Pointer","className":"Event","objectId":_event.id});
-        facility.save();
 
-        var eventPromise = Parse.Promise.as(_event);
-        var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
-        _event.save().then(function(object){
 
-         });
 
-         return _event;
+        promises.push(facility.save());
+        promises.push(_event.save());
 
-        })._result;
 
-        var eventId = _event.get("objectId");
-        var data = {channels: [eventId], data:{alert:"Stopped game"}, where: new Parse.Query(Parse.Installation)};
-        Parse.Push.send({
-                channels: [_event.id],
+        function updateParticipations(){
+            console.log(_event);
+            var otherOutcome = function(outcome){
+
+            };
+            var participantPromises = new Parse.Promise();
+            _event.get("participants").forEach(function(result){
+                var participation = Parse.Object.extend("Participation");
+                var participationInstance = new participation;
+                participationInstance.id = result.id;
+                participationInstance.set("outcome", outcome);
+                promises.push(participationInstance.save());
+                console.log(result);
+            });
+            Parse.Promise.when(participantPromises).then(function(object){
+                return Parse.Promise.as();
+            });
+        }
+        promises.push(updateParticipations());
+
+        return Parse.Promise.when(promises).then(function (object){
+            var promise = new Parse.Promise();
+            Parse.Push.send({
+                channels: ["CHN_"+_event.id],
                 data:{
                         alert:"Stopping event/game"+_event.id,
                         event: {"id": _event.id, "participants": oldParticipants }
@@ -52,11 +79,31 @@ function StatePlayingBlue (eventAndRequest){
 
                 {
                 success: function(bla){
+                    promise.resolve(bla);
                 },
                 error: function(e){
+                    promise.error(e);
                 }
             });
-        return eventPromised;
+            return promise;
+        });
+
+
+
+
+
+        //var eventPromise = Parse.Promise.as(_event);
+//        var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
+//            _event.save().then(function(object){
+//                return Parse.Promise.as(_event);
+//            });
+//
+//        });
+
+        //var eventId = _event.get("objectId");
+        //var data = {channels: [eventId], data:{alert:"Stopped game"}, where: new Parse.Query(Parse.Installation)};
+
+        //return eventPromised;
     }
     this.setState = function(){
     }

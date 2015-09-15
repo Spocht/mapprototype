@@ -1,0 +1,9 @@
+<resources>
+    <declare-styleable name="EventStateImageButton">
+        <attr name="state" format="enum">
+            <enum name="orange" value="0"/>
+            <enum name="lightblue" value="1"/>
+            <enum name="blue" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>

@@ -241,7 +241,7 @@ public class Facility extends ParseData {
     {
         Event event = new Event(name);
         setEvent(event);
-        if((null == event.facility().getObjectId())||
+        if((null == event.facility())||
            (!event.facility().getObjectId().equals(this.getObjectId())))
         {
             event.setFacility(this);

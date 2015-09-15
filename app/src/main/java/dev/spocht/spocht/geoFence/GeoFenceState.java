@@ -14,7 +14,7 @@ public class GeoFenceState {
     }
     public void entry()
     {
-        mCtx.cb(this.toString()).action();
+        mCtx.cb(this.getClass().getName()).action();
     }
     public void exit()
     {

@@ -1,25 +1,20 @@
 package dev.spocht.spocht.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.ParseUser;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
+import dev.spocht.spocht.activity.button.EventStateImageButton;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.EventState;
@@ -30,8 +25,17 @@ import dev.spocht.spocht.data.SpochtUser;
  * Created by highway on 03/09/15.
  */
 public class EventAdapter extends ArrayAdapter<Event> {
-    public EventAdapter(Context context, ArrayList<Event> events) {
+    Activity mActivity;
+
+    public EventAdapter(Context context, Activity activity, ArrayList<Event> events) {
         super(context, R.layout.event_list, events);
+
+        mActivity = activity;
+    }
+
+    @Override
+    public void add(Event object) {
+        super.add(object);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         final Event event = getItem(position);
 
-        Log.d(this.getClass().getCanonicalName(),"View ["+position+"]: "+event.name());
+        Log.d(this.getClass().getCanonicalName(), "View [" + position + "]: " + event.name());
 
         int bgColor = EventState.get(event.getState());
         if (0 == bgColor) {
@@ -94,37 +98,26 @@ public class EventAdapter extends ArrayAdapter<Event> {
             participantList.addView(line);
         }
 
-        ImageButton checkInButton = (ImageButton) convertView.findViewById(R.id.fragment_detail_event_checkinButton);
 
-        if (isAlreadyCheckedIn) {
-            checkInButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast toastWelcome = Toast.makeText(
-                            v.getContext(),
-                            DataManager.getContext().getString(R.string.cannot_checkin_again),
-                            Toast.LENGTH_LONG
-                    );
-                    toastWelcome.show();
-                    Log.d(getClass().getCanonicalName(), "cannot check in again");
-                }
-            });
-        } else {
-            checkInButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    event.checkIn(DataManager.getInstance().currentUser());
+        // create button based upon event state
+        EventStateImageButton checkInButton = (EventStateImageButton) convertView.findViewById(R.id.fragment_detail_event_checkinButton);
+        checkInButton.setActivity(mActivity);
+        checkInButton.setEvent(event);
+        checkInButton.setAmICheckedIn(isAlreadyCheckedIn);
 
-                    Log.d(getClass().getCanonicalName(), "Check into existing event");
-                }
-            });
+        switch (event.getState()) {
+            case "lightblue":
+                checkInButton.setState(checkInButton.getStartGameState());
+                break;
+            case "blue":
+                checkInButton.setState(checkInButton.getStopGameState());
+                break;
+            default:
+                //orange is default
+                checkInButton.setState(checkInButton.getWaitingForPlayersState());
+                break;
         }
-
 
         return convertView;
     }
-
-
-
-
 }
