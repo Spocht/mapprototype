@@ -40,17 +40,11 @@ public class EventMonitor {
     }
 
     public void setEvent(Event event) {
-        setEvent(event, true);
-    }
-
-    public void setEvent(Event event, boolean checkOutFirst) {
         if (null != mEvent) {
             Event tmp=mEvent;
             mEvent = null;
 
-            if (checkOutFirst) {
-                tmp.checkOut(DataManager.getInstance().currentUser());
-            }
+            tmp.checkOut(DataManager.getInstance().currentUser());
         }
         if(null != event)
         {
@@ -63,5 +57,4 @@ public class EventMonitor {
         }
         mEvent = event;
     }
-
 }
