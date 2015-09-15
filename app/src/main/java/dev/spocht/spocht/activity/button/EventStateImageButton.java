@@ -20,7 +20,6 @@ public class EventStateImageButton extends android.widget.ImageButton {
 
     ImageButton mCurrentState;
 
-
     Activity mActivity;
 
     boolean amICheckedIn = false;
@@ -37,13 +36,6 @@ public class EventStateImageButton extends android.widget.ImageButton {
     public EventStateImageButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.EventStateImageButton,
-                0, 0);
-
-        // styling stuff
-        setElevation(8);          // R.dimen.default_elevation doesn't seem to work here
     }
 
     public void setState(ImageButton state) {

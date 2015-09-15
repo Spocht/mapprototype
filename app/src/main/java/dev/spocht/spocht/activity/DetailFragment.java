@@ -1,6 +1,7 @@
 package dev.spocht.spocht.activity;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,6 +52,8 @@ public class DetailFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FractionalLinearLayout view = (FractionalLinearLayout) inflater.inflate(R.layout.fragment_detail, container, false);
 
+        // Add custom elements
+        // new game button
         RelativeLayout infoLayout = (RelativeLayout) view.findViewById(R.id.details_fragment_infoContainer);
         mNewGameImageButton = new ImageButton(getActivity().getBaseContext());
 
@@ -88,8 +91,23 @@ public class DetailFragment extends ListFragment {
         );
         mEventAdapter.setNotifyOnChange(false);
         setListAdapter(mEventAdapter);
+
         Log.d(getClass().getCanonicalName(), "mFacility holds " + String.valueOf(mFacility.events().size()) + " events");
 
+        // zoom facility image
+        ImageView facilityImageButton = (ImageView) view.findViewById(R.id.fragment_detail_image);
+        facilityImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PictureFragment pf = new PictureFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+                ft.add(R.id.main_content, pf);
+                ft.addToBackStack(null);
+                ft.commit();
+
+            }
+        });
     }
 
     public void refreshContents() {
@@ -132,6 +150,8 @@ public class DetailFragment extends ListFragment {
                 mImage.setImageBitmap(bitmap);
             }
         }));
+
+
     }
 
     private void setTitle() {
