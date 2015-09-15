@@ -173,6 +173,7 @@ public class DataManager {
             user.user().signUp();
             user.updateAclBlocking();
             user.pin("spochtLabel");
+            currentUser=user;
             return user;
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
