@@ -51,8 +51,7 @@ public class SpochtUser extends ParseData {
     {
         user().setPassword(password);
     }
-    public void setUser(final ParseUser user)
-    {
+    public void setUser(final ParseUser user) {
         put("user", user);
         if(null != user().getObjectId()) {
             updateAcl();
@@ -132,6 +131,7 @@ public class SpochtUser extends ParseData {
     {
         if(null == xp.getObjectId())
         {
+            final SpochtUser user = this;
             xp.saveEventually(new SaveCallback() {
                 public void done(ParseException e) {
                     if (e == null) {
@@ -140,16 +140,25 @@ public class SpochtUser extends ParseData {
                         {
                             xp.persist();
                         }
-                        setUpdated();
+                        if((ready())&& (!clrItem()))
+                        {//ready for update and no item is left
+                            persist();
+                            clearUpdated();
+                        }
+                        else {
+                            setUpdated();
+                        }
                     } else {
                         Log.e(this.getClass().getCanonicalName(), "Error saving data.", e);
                     }
                 }
             });
+            setItem();
         }
         else {
             addUnique("experience", ParseObject.createWithoutData(Experience.class, xp.getObjectId()));
             setUpdated();
+            setItem();
         }
     }
     public List<Experience> experiences()

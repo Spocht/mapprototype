@@ -14,7 +14,9 @@ import com.parse.SaveCallback;
  */
 @ParseClassName("ParseData")
 public abstract class ParseData extends ParseObject {
-    private Boolean updated;
+    private Boolean updated=false;
+    private Boolean mReady=true;
+    private int mItemCnt=0;
     protected synchronized void setUpdated(){
         updated = true;
     }
@@ -38,6 +40,28 @@ public abstract class ParseData extends ParseObject {
         } catch (ParseException e) {
             Log.e("spocht.object", "Error while persisting", e);
         }
+    }
+    public void setReady(final Boolean ready)
+    {//set this flag to TRUE to indicate that a update trunk is finished
+        mReady=ready;
+    }
+    protected Boolean ready()
+    {
+        return mReady;
+    }
+    protected void setItem()
+    {//increment the items which are queued to be saved in background
+        if(!ready())
+        {
+            mItemCnt++;
+        }
+    }
+    protected Boolean clrItem()
+    {//decrement the items, which are saved in background. Return false, if there is nothing left
+        if(mItemCnt > 0) {
+            mItemCnt--;
+        }
+        return mItemCnt>0;
     }
     public void destroy()
     {

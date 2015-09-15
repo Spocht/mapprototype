@@ -17,6 +17,8 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import bolts.Task;
 import dev.spocht.spocht.R;
@@ -29,6 +31,7 @@ public class DataManager {
     private static Context context;
     private SpochtUser currentUser;
     private EventMonitor eventMonitor;
+    private Timer           timerUserUpdate;
 
     private DataManager() {
         if (context == null) {
@@ -166,7 +169,8 @@ public class DataManager {
     }
     public SpochtUser signup(String mail, String password)
     {
-        SpochtUser user = new SpochtUser(mail,password);
+        final SpochtUser user = new SpochtUser(mail,password);
+        user.setReady(false);
         user.user().setEmail(mail);
         user.seen();
         try {
@@ -174,6 +178,14 @@ public class DataManager {
             user.updateAclBlocking();
             user.pin("spochtLabel");
             currentUser=user;
+            ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
+            List<Sport> sports = query.find();
+            for(Sport s:sports)
+            {
+                user.setExperience(new Experience(s));
+            }
+            user.pinInBackground("spochtLabel");
+            user.setReady(true);
             return user;
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
