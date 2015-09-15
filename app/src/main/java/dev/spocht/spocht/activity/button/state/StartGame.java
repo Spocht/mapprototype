@@ -26,5 +26,17 @@ public class StartGame extends ImageButton {
                 mContext.getEvent().startGame(DataManager.getInstance().currentUser());
             }
         });
+
+        // let the user checkout using longclick
+        mContext.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mContext.getEvent().checkOut(DataManager.getInstance().currentUser());
+                mContext.setImageResource(R.drawable.ic_check_black_24dp);
+
+                Log.d(getClass().getCanonicalName(), "Checking me out");
+                return true;
+            }
+        });
     }
 }
