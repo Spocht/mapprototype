@@ -26,15 +26,20 @@ public class StopGame extends ImageButton {
      *  display a snackbar where players can set the outcome
      */
     public void entry() {
-        mContext.setImageResource(R.drawable.ic_stop_black_24dp);
+        if (mContext.amICheckedIn()) {
+            mContext.setImageResource(R.drawable.ic_stop_black_24dp);
 
-        mContext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mContext.getActivity().startActivity(new Intent(mContext.getActivity(), StopGameActivity.class));
+            mContext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mContext.getActivity().startActivity(new Intent(mContext.getActivity(), StopGameActivity.class));
 
-                Log.d(getClass().getCanonicalName(), "Displaying Outcome Dialog");
-            }
-        });
+                    Log.d(getClass().getCanonicalName(), "Displaying Outcome Dialog");
+                }
+            });
+        } else {
+            mContext.setImageResource(R.drawable.ic_hourglass_empty_black_24dp);
+            mContext.setOnClickListener(null);
+        }
     }
 }
