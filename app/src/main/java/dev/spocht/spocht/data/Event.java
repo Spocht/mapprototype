@@ -257,6 +257,7 @@ public class Event extends ParseData {
                 Map<String, String> mappedOutcome = new HashMap<>();
                 mappedOutcome.put("value", outcome.name());
                 String feedback = ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
+                DataManager.getInstance().unregisterPushChannel(this.getObjectId());
                 DataManager.getInstance().getEventMonitor().setEvent(null);
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(), "error at stopGame in " + this.name(), e);
