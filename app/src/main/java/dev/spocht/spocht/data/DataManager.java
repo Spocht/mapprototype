@@ -94,13 +94,51 @@ public class DataManager {
         if(null != ParseUser.getCurrentUser())
         {
             try {
-                loadUser();
+                restoreState();
             } catch (ParseException e) {
                 Log.e("spocht.dataManager","Fail to fetch user",e);
             }
             return true;
         }
         return(false);
+    }
+    public void restoreState() throws ParseException
+    {
+        loadUser();
+        loadCheckin();
+    }
+    public void loadCheckin()
+    {
+        ParseQuery<Event> queryEvent = ParseQuery.getQuery(Event.class);
+        queryEvent.whereEqualTo("isEnded", false);
+        ParseQuery<Participation> queryPart = ParseQuery.getQuery(Participation.class);
+        queryPart.whereEqualTo("user", currentUser());
+        queryPart.whereMatchesQuery("event", queryEvent);
+        queryPart.include("event");
+        queryPart.findInBackground(new FindCallback<Participation>() {
+            @Override
+            public void done(List<Participation> list, ParseException e) {
+                if(null == e) {
+                    if(0 == list.size())
+                    {
+                        Log.d(this.getClass().getCanonicalName(),"no active events found");
+                    }
+                    else {
+                        Log.d(this.getClass().getCanonicalName(),"found "+list.size()+" active events");
+                        Log.d(this.getClass().getCanonicalName(), "Rechecked for event " + list.get(0).event().name());
+                        getEventMonitor().setEvent(list.get(0).event());
+                    }
+                }
+                else if(e.getCode() == ParseException.OBJECT_NOT_FOUND)
+                {
+                    Log.d(this.getClass().getCanonicalName(),"no objects found");
+                }
+                else
+                {
+                    Log.e(this.getClass().getCanonicalName(),"failed to query event",e);
+                }
+            }
+        });
     }
     public void loadUser() throws ParseException {
         ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
@@ -116,7 +154,7 @@ public class DataManager {
         try {
             user.waitForCompletion();
             if(!user.isFaulted()) {
-                loadUser();
+                restoreState();
             }
         } catch (InterruptedException e) {
             return false;
@@ -135,6 +173,7 @@ public class DataManager {
             user.user().signUp();
             user.updateAclBlocking();
             user.pin("spochtLabel");
+            currentUser=user;
             return user;
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
