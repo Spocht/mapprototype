@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class MapsActivity extends AppCompatActivity
                     public void operate(Event event) {
                         Toast toastPush = Toast.makeText(
                                 context,
-                                "Event "+event.name()+" at "+event.facility().name()+" is updated!",
+                                String.format(getString(R.string.maps_activity_eventupdated), event.name(), event.facility().name()),
                                 Toast.LENGTH_LONG
                         );
                         toastPush.show();
