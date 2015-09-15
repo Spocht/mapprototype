@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -80,15 +82,7 @@ public class MapsActivity extends AppCompatActivity
                         event.cleanup(DataManager.getInstance().currentUser());
 
                         Facility f=event.facility();
-                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
-                        mapFacilitiesRev.get(f.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
-                                // this will throw a NotFoundException if the icon is not found
-                                getResources()
-                                        .getIdentifier(
-                                                iconDescriptor,
-                                                "drawable",
-                                                Application.PACKAGE_NAME
-                                        )));
+                        setMarkerIcon(f);
                         //only reload details if the event is selected
                         if(mapFacility.get(mSelectedMarker).getObjectId().equals(f.getObjectId())) {
                             mDetailFragment.refreshContents();
@@ -183,7 +177,6 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void setUpActionBar() {
-
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 //            // ActionBar was first introduced in HoneyComb
 //            ActionBar a = getActionBar();
@@ -191,6 +184,18 @@ public class MapsActivity extends AppCompatActivity
 //                a.setTitle(R.string.app_name);
 //            }
 //        }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+
+        // append username to actionbar title
+        ActionBar ab = getSupportActionBar();
+        CharSequence title = ab.getTitle();
+        title = title + " - " + DataManager.getInstance().currentUser().getUsername();
+        ab.setTitle(title);
     }
 
     @Override
@@ -207,11 +212,6 @@ public class MapsActivity extends AppCompatActivity
             case R.id.menu_stats:
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
-            case R.id.menu_settings:
-                return false;
-            case R.id.menu_clear_local:
-                DataManager.getInstance().flushLocalStore();
-                return false;
             case R.id.menu_logout:
                 DataManager.getInstance().logout();
                 startActivity(new Intent(this, LoginActivity.class));
@@ -288,6 +288,7 @@ public class MapsActivity extends AppCompatActivity
                 Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
                 updateMarkers(new GeoPoint(cameraPosition.target));
             }
+
         });
     }
 
@@ -320,19 +321,13 @@ public class MapsActivity extends AppCompatActivity
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
-                                        .icon(BitmapDescriptorFactory.fromResource(
-                                                // this will throw a NotFoundException if the icon is not found
-                                                getResources()
-                                                        .getIdentifier(
-                                                                iconDescriptor,
-                                                                "drawable",
-                                                                Application.PACKAGE_NAME
-                                                        ))).anchor(0, 1)
+                                        .anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
                         mapFacilitiesRev.put(f.getObjectId(), marker);
                         Log.d("spocht.maps", "stored facility: " + f.name());
                     }
+                    setMarkerIcon(f);
                 }
             }
         });
@@ -441,6 +436,22 @@ public class MapsActivity extends AppCompatActivity
         {
             return "orange";
         }
+        if(map.containsKey("yellow"))
+        {
+            return "yellow";
+        }
         return "grey";
+    }
+    private void setMarkerIcon(final Facility facility)
+    {
+        String iconDescriptor = "spocht_" + facility.sport().name() + "_" + calcColor(facility);
+        mapFacilitiesRev.get(facility.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
+                // this will throw a NotFoundException if the icon is not found
+                getResources()
+                        .getIdentifier(
+                                iconDescriptor,
+                                "drawable",
+                                Application.PACKAGE_NAME
+                        )));
     }
 }

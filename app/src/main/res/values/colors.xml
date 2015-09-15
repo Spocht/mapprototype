@@ -20,8 +20,6 @@
 <resources>
 
     <color name="red">#EF9A9A</color>
-    <color name="black">#000000</color>
-    <color name="white">#ffffff</color>
     <color name="green">#A5D6A7</color>
     <color name="orange">#FFCC80</color>
     <color name="grey">#EEEEEE</color>
@@ -29,4 +27,15 @@
     <color name="blue">#90CAF9</color>
     <color name="yellow">#FFF59D</color>
 
+    <color name="redtint">#E57373</color>
+    <color name="greentint">#81C784</color>
+    <color name="orangetint">#FFB74D</color>
+    <color name="greytint">#E0E0E0</color>
+    <color name="lightbluetint">#4FC3F7</color>
+    <color name="bluetint">#64B5F6</color>
+    <color name="yellowtint">#FFF176</color>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="lightgrey">#F5F5F5</color>
 </resources>

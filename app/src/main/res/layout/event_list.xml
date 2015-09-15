@@ -36,7 +36,7 @@
             android:id="@+id/fragment_detail_event_checkinButton"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:elevation="@dimen/default_elevation"
+            android:padding="@dimen/default_padding"
             android:src="@drawable/ic_favorite_white_24dp"
             />
     </RelativeLayout>
