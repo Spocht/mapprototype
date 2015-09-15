@@ -203,18 +203,18 @@ public class Event extends ParseData {
                 //The GeoFence does not work when app is restarted whilst one is checked in.
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
                 DataManager.getInstance().getEventMonitor().setEvent(this);
-                ParseCloud.callFunction("checkin", generateParameterMap(user));
+                String feedback = ParseCloud.callFunction("checkin", generateParameterMap(user));
+                Log.d(this.getClass().getCanonicalName(),"Checkin at"+feedback);
 
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
             }
-        //}
     }
     public void checkOut(final SpochtUser user)
     {
         try {
             System.out.println("Calling cloud function: checkout");
-            ParseCloud.callFunction("checkout", generateParameterMap(user));
+            String feedback = ParseCloud.callFunction("checkout", generateParameterMap(user));
             DataManager.getInstance().unregisterPushChannel(this.getObjectId());
             DataManager.getInstance().getEventMonitor().setEvent(null);
         } catch (ParseException e) {
@@ -226,7 +226,7 @@ public class Event extends ParseData {
     public void startGame(final SpochtUser user) {
         try {
             System.out.println("Calling cloud function: startGame");
-            ParseCloud.callFunction("startGame", generateParameterMap(user));
+            String feedback = ParseCloud.callFunction("startGame", generateParameterMap(user));
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(), "error at startGame in " + this.name(), e);
         }
@@ -236,8 +236,8 @@ public class Event extends ParseData {
         try {
             System.out.println("Calling cloud function: stopGame");
             Map<String, String> mappedOutcome = new HashMap<>();
-            mappedOutcome.put("value", outcome.toString());
-            ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
+            mappedOutcome.put("value", outcome.name());
+            String feedback = ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
             DataManager.getInstance().unregisterPushChannel(this.getObjectId());
             DataManager.getInstance().getEventMonitor().setEvent(null);
         } catch (ParseException e) {
