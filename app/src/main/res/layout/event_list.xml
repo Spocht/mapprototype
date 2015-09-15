@@ -1,7 +1,8 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:padding="@dimen/default_padding">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -29,12 +30,13 @@
                 android:id="@+id/fragment_detail_event_participant_list"
                 />
         </LinearLayout>
-        <ImageButton
+        <dev.spocht.spocht.activity.button.EventStateImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fragment_detail_event_checkinButton"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:elevation="@dimen/default_elevation"
             android:src="@drawable/ic_favorite_white_24dp"
             />
     </RelativeLayout>

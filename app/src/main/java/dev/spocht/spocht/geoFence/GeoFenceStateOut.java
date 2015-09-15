@@ -1,6 +1,9 @@
 package dev.spocht.spocht.geoFence;
 
 import android.location.Location;
+import android.util.Log;
+
+import dev.spocht.spocht.data.DataManager;
 
 /**
  * Created by mueller8 on 05.09.2015.
@@ -12,8 +15,8 @@ public class GeoFenceStateOut extends GeoFenceState {
     @Override
     public void execute(Location location) {
         super.execute(location);
-        if((mCtx.location().distanceTo(location)/1000) <= (mCtx.distance()-0.01))
-        {
+
+        if((mCtx.location().distanceTo(location)/1000) <= (mCtx.distance()-0.01)) {
             mCtx.setState(new GeoFenceStateIn(mCtx));
         }
     }

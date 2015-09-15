@@ -23,6 +23,8 @@ import java.util.Map;
 @ParseClassName("Event")
 public class Event extends ParseData {
 
+    private boolean checkOutRun=false;
+
     public Event()
     {//default constructor for Parse.com
         ;
@@ -30,7 +32,7 @@ public class Event extends ParseData {
     public Event(final String name)
     {
         setName(name);
-        setState("grey");
+        setState("orange");
         setIsEnded(false);
     }
     public void setName(final String name)
@@ -188,40 +190,90 @@ public class Event extends ParseData {
         }
         return false;
     }
+    public void cleanup(final SpochtUser user)
+    {
+        if(!isUserCheckedIn(user))
+        {
+            DataManager.getInstance().unregisterPushChannel(this.getObjectId());
+        }
+    }
 
     ///events to handle
     public void checkIn(final SpochtUser user)
     {
-        //when participants is empty this somehow NPEs
-        //cloudcode also checks for already logged in users,
-        //so for now this if is deactivated.
-        //consult with rudee!
-        //if(!isUserCheckedIn(user)) {
+        if(!isUserCheckedIn(user)) {
             //todo if successful API call, update local Event
-            Map<String, Map<String, String>> params = new HashMap<>();
-            Map<String, String> mappedEvent = new HashMap<>();
-            mappedEvent.put("id", this.getObjectId());
-            Map<String, String> mappedUser = new HashMap<>();
-            mappedUser.put("id", user.getObjectId());
-            params.put("event", mappedEvent );
-            params.put("user", mappedUser);
             try {
                 System.out.println("Calling cloud function: checkin");
-                ParseCloud.callFunction("checkin", params);
+                //The GeoFence does not work when app is restarted whilst one is checked in.
                 DataManager.getInstance().registerPushChannel(this.getObjectId());
-                //memleaks here when called more than once.
-                //DataManager.getInstance().getEventMonitor().setEvent(this);
+                String feedback = ParseCloud.callFunction("checkin", generateParameterMap(user));
+                Log.d(this.getClass().getCanonicalName(), "Checkin at" + feedback);
+                if(feedback.equals("SUCCESS")) {
+                    DataManager.getInstance().getEventMonitor().setEvent(this);
+                }
+                else
+                {
+                    DataManager.getInstance().unregisterPushChannel(this.getObjectId());
+                }
+
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
             }
-        //}
+
+        }
     }
     public void checkOut(final SpochtUser user)
     {
-        //todo: call API
-        DataManager.getInstance().unregisterPushChannel(this.getObjectId());
-        DataManager.getInstance().getEventMonitor().setEvent(null);
+        if(false == checkOutRun) {
+            checkOutRun = true;
+            try {
+                System.out.println("Calling cloud function: checkout");
+                String feedback = ParseCloud.callFunction("checkout", generateParameterMap(user));
+                if(feedback.equals("SUCCESS")) {
+                    DataManager.getInstance().getEventMonitor().setEvent(null);
+                }
+            } catch (ParseException e) {
+                Log.e(this.getClass().getCanonicalName(), "error at checkout in " + this.name(), e);
+            }
+            checkOutRun = false;
+        }
     }
+
+    public void startGame(final SpochtUser user) {
+        try {
+            System.out.println("Calling cloud function: startGame");
+            String feedback = ParseCloud.callFunction("startGame", generateParameterMap(user));
+        } catch (ParseException e) {
+            Log.e(this.getClass().getCanonicalName(), "error at startGame in " + this.name(), e);
+        }
+    }
+
+    public void stopGame(final SpochtUser user, Outcome outcome){
+        if(false == checkOutRun) {//prevent a checkout when removing event from monitor
+            checkOutRun = true;
+            try {
+                System.out.println("Calling cloud function: stopGame");
+                Map<String, String> mappedOutcome = new HashMap<>();
+                mappedOutcome.put("value", outcome.name());
+                String feedback = ParseCloud.callFunction("stopGame", generateParameterMap(user).put("outcome", mappedOutcome));
+                DataManager.getInstance().getEventMonitor().setEvent(null);
+            } catch (ParseException e) {
+                Log.e(this.getClass().getCanonicalName(), "error at stopGame in " + this.name(), e);
+            }
+        }
+    }
+
+    private Map<String, Map<String, String>> generateParameterMap(final SpochtUser user){
+        Map<String, Map<String, String>> params = new HashMap<>();
+        Map<String, String> mappedEvent = new HashMap<>();
+        mappedEvent.put("id", this.getObjectId());
+        Map<String, String> mappedUser = new HashMap<>();
+        mappedUser.put("id", user.getObjectId());
+        params.put("event", mappedEvent );
+        params.put("user", mappedUser);
+        return params;
+    };
     public void start()
     {
 

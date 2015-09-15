@@ -34,15 +34,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.R;
-import dev.spocht.spocht.data.Event;
-import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.data.DataManager;
 import dev.spocht.spocht.data.DatenSchleuder;
+import dev.spocht.spocht.data.Event;
 import dev.spocht.spocht.data.Facility;
 import dev.spocht.spocht.data.GeoPoint;
 import dev.spocht.spocht.data.InfoRetriever;
+import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.location.MyLocationListener;
 
 public class MapsActivity extends AppCompatActivity
@@ -77,16 +76,11 @@ public class MapsActivity extends AppCompatActivity
                                 Toast.LENGTH_LONG
                         );
                         toastPush.show();
+
+                        event.cleanup(DataManager.getInstance().currentUser());
+
                         Facility f=event.facility();
-                        String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
-                        mapFacilitiesRev.get(f.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
-                                // this will throw a NotFoundException if the icon is not found
-                                getResources()
-                                        .getIdentifier(
-                                                iconDescriptor,
-                                                "drawable",
-                                                Application.PACKAGE_NAME
-                                        )));
+                        setMarkerIcon(f);
                         //only reload details if the event is selected
                         if(mapFacility.get(mSelectedMarker).getObjectId().equals(f.getObjectId())) {
                             mDetailFragment.refreshContents();
@@ -223,7 +217,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        context.registerReceiver(mRecv,new IntentFilter("ParsePusher"));
+        context.registerReceiver(mRecv, new IntentFilter("ParsePusher"));
         setUpMapIfNeeded();
     }
 
@@ -286,6 +280,7 @@ public class MapsActivity extends AppCompatActivity
                 Log.d("spocht.mapsactivity", "new Location: " + cameraPosition.toString());
                 updateMarkers(new GeoPoint(cameraPosition.target));
             }
+
         });
     }
 
@@ -318,19 +313,13 @@ public class MapsActivity extends AppCompatActivity
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                         .position(f.location().toLatLng())
                                         .title(f.name())
-                                        .icon(BitmapDescriptorFactory.fromResource(
-                                                // this will throw a NotFoundException if the icon is not found
-                                                getResources()
-                                                        .getIdentifier(
-                                                                iconDescriptor,
-                                                                "drawable",
-                                                                Application.PACKAGE_NAME
-                                                        ))).anchor(0, 1)
+                                        .anchor(0, 1)
                         );
                         mapFacility.put(marker, f);
                         mapFacilitiesRev.put(f.getObjectId(), marker);
                         Log.d("spocht.maps", "stored facility: " + f.name());
                     }
+                    setMarkerIcon(f);
                 }
             }
         });
@@ -439,6 +428,22 @@ public class MapsActivity extends AppCompatActivity
         {
             return "orange";
         }
+        if(map.containsKey("yellow"))
+        {
+            return "yellow";
+        }
         return "grey";
+    }
+    private void setMarkerIcon(final Facility facility)
+    {
+        String iconDescriptor = "spocht_" + facility.sport().name() + "_" + calcColor(facility);
+        mapFacilitiesRev.get(facility.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
+                // this will throw a NotFoundException if the icon is not found
+                getResources()
+                        .getIdentifier(
+                                iconDescriptor,
+                                "drawable",
+                                Application.PACKAGE_NAME
+                        )));
     }
 }

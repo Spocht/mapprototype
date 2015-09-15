@@ -3,12 +3,9 @@ package dev.spocht.spocht.geoFence;
 import android.content.Context;
 import android.location.Location;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import dev.spocht.spocht.Application;
 import dev.spocht.spocht.location.LocationCallback;
 import dev.spocht.spocht.location.MyLocationListener;
 

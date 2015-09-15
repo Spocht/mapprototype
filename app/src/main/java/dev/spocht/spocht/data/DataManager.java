@@ -94,13 +94,51 @@ public class DataManager {
         if(null != ParseUser.getCurrentUser())
         {
             try {
-                loadUser();
+                restoreState();
             } catch (ParseException e) {
                 Log.e("spocht.dataManager","Fail to fetch user",e);
             }
             return true;
         }
         return(false);
+    }
+    public void restoreState() throws ParseException
+    {
+        loadUser();
+        loadCheckin();
+    }
+    public void loadCheckin()
+    {
+        ParseQuery<Event> queryEvent = ParseQuery.getQuery(Event.class);
+        queryEvent.whereEqualTo("isEnded", false);
+        ParseQuery<Participation> queryPart = ParseQuery.getQuery(Participation.class);
+        queryPart.whereEqualTo("user", currentUser());
+        queryPart.whereMatchesQuery("event", queryEvent);
+        queryPart.include("event");
+        queryPart.findInBackground(new FindCallback<Participation>() {
+            @Override
+            public void done(List<Participation> list, ParseException e) {
+                if(null == e) {
+                    if(0 == list.size())
+                    {
+                        Log.d(this.getClass().getCanonicalName(),"no active events found");
+                    }
+                    else {
+                        Log.d(this.getClass().getCanonicalName(),"found "+list.size()+" active events");
+                        Log.d(this.getClass().getCanonicalName(), "Rechecked for event " + list.get(0).event().name());
+                        getEventMonitor().setEvent(list.get(0).event());
+                    }
+                }
+                else if(e.getCode() == ParseException.OBJECT_NOT_FOUND)
+                {
+                    Log.d(this.getClass().getCanonicalName(),"no objects found");
+                }
+                else
+                {
+                    Log.e(this.getClass().getCanonicalName(),"failed to query event",e);
+                }
+            }
+        });
     }
     public void loadUser() throws ParseException {
         ParseQuery<SpochtUser> query = ParseQuery.getQuery(SpochtUser.class);
@@ -116,7 +154,7 @@ public class DataManager {
         try {
             user.waitForCompletion();
             if(!user.isFaulted()) {
-                loadUser();
+                restoreState();
             }
         } catch (InterruptedException e) {
             return false;
@@ -134,6 +172,8 @@ public class DataManager {
         try {
             user.user().signUp();
             user.updateAclBlocking();
+            user.pin("spochtLabel");
+            currentUser=user;
             ParseQuery<Sport> query = ParseQuery.getQuery(Sport.class);
             List<Sport> sports = query.find();
             for(Sport s:sports)
@@ -341,14 +381,15 @@ public class DataManager {
     }
     public void registerPushChannel(final String name)
     {
+        final String prefixedName = "CHN_"+name;
         if(null != name) {
-            ParsePush.subscribeInBackground(name, new SaveCallback() {
+            ParsePush.subscribeInBackground(prefixedName, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d(this.getClass().getCanonicalName(), "Push ["+name+"]: successfully subscribed to the channel.");
+                        Log.d(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: successfully subscribed to the channel.");
                     } else {
-                        Log.e(this.getClass().getCanonicalName(), "Push ["+name+"]: failed to subscribe", e);
+                        Log.e(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: failed to subscribe", e);
                     }
                 }
             });
@@ -360,14 +401,15 @@ public class DataManager {
     }
     public void unregisterPushChannel(final String name)
     {
+        final String prefixedName = "CHN_"+name;
         if(null != name) {
-            ParsePush.unsubscribeInBackground(name, new SaveCallback() {
+            ParsePush.unsubscribeInBackground(prefixedName, new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d(this.getClass().getCanonicalName(), "Push ["+name+"]: successfully unsubscribed to the channel.");
+                        Log.d(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: successfully unsubscribed to the channel.");
                     } else {
-                        Log.e(this.getClass().getCanonicalName(), "Push ["+name+"]: failed to unsubscribe", e);
+                        Log.e(this.getClass().getCanonicalName(), "Push ["+prefixedName+"]: failed to unsubscribe", e);
                     }
                 }
             });
