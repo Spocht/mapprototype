@@ -8,7 +8,7 @@ function StatePlayingBlue (eventAndRequest){
     }
     this.checkout = function(eventAndRequest){
         var localEAR = eventAndRequest;
-        localEAR.outcome = "LOSE";
+        localEAR.passedRequest.params.outcome.value = "GIVEUP";
         return that.stopGame(localEAR);
 
     }
@@ -18,7 +18,11 @@ function StatePlayingBlue (eventAndRequest){
 
     this.stopGame = function(eventAndRequestAndOutcome){
         var _event = eventAndRequestAndOutcome.passedEvent;
-        var _outcome = eventAndRequestAndOutcome.outcome;
+        var _request = eventAndRequestAndOutcome.passedRequest;
+        var _outcome = eventAndRequestAndOutcome.passedRequest.params.outcome.value;
+
+        Parse.Cloud.useMasterKey();
+
         //participants in this event need to be deleted...
         //question is: when? the pushmessage needs to send the old participants
         //for further processing in the PushReceiver.
@@ -50,16 +54,114 @@ function StatePlayingBlue (eventAndRequest){
         function updateParticipations(){
 
             var otherOutcome = function(outcome){
-
+            var ret = "";
+                if (outcome == "WIN") {
+                    ret = "LOSE";
+                }
+                if (outcome == "LOSE" || outcome == "GIVEUP") {
+                    ret =  "WIN";
+                }
+                if (outcome == "TIE"){
+                    ret = "TIE";
+                }
+                return ret;//Parse.Promise.as(ret);
             };
+
+            var calculateXP = function(outcome) {
+                var ret = 0;
+                if (outcome == "WIN") {
+                    ret = 6;
+                }
+                if (outcome == "LOSE") {
+                    ret = 3;
+                }
+                if (outcome == "GIVEUP") {
+                    ret = 1;
+                }
+                if (outcome == "TIE"){
+                    ret = 4;
+                }
+                return ret;//Parse.Promise.as(ret);
+            };
+
+
+
+
+            function userQueryFunc(id, _outcome) {
+                var userQuery = new Parse.Query("SpochtUser");
+                userQuery.equalTo("objectId", id).include("experience.pointer");
+                userQuery.get().then(function(object){
+                    var experience = Parse.Object.extend("Experience");
+                    var xpInstance = new experience;
+                    var promises = [];
+                    object.get("experience").forEach(function(value){
+                        value.increment("xp", _outcome);
+                        promises.push(value.save());
+                    });
+                    return Parse.Promise.when(promises).then(function(object){
+                        return Parse.Promise.as();
+                    });
+
+                });
+                return Parse.Promise.as();
+            }
+
+
+
             var participantPromises = new Parse.Promise();
             _event.get("participants").forEach(function(result){
                 var participation = Parse.Object.extend("Participation");
                 var participationInstance = new participation;
                 participationInstance.id = result.id;
-                participationInstance.set("outcome", _outcome);
-                promises.push(participationInstance.save());
-                console.log(result);
+                participationInstance.fetch().then(function(object) {
+                    //return userQueryFunc(participationInstance.get("user").id, 5).then(function(object){
+                    return Parse.Promise.as().then(function(object){
+
+
+                    //    return Parse.Promise.as(object);
+
+
+//                    var user = Parse.Object.extend("SpochtUser");
+//                    var userInstance = new user;
+//                    userInstance.id = participationInstance.get("user").id;
+                    //userInstance.fetch().then(function(object){
+//                    console.log("USER");
+//                    console.log(userInstance);
+//                    console.log("XP-SCHREIBFEHLER");
+//                    console.log(userInstance.get("experienceeeee"));
+//                    console.log("PARTICIPATIONUSER");
+//                    console.log(participationInstance.get("user"));
+
+
+                    }).then(function(object){
+                        if (participationInstance.get("user").id == _request.params.user.id) {
+                            participationInstance.set("outcome", _outcome);
+                            var myOutcome = calculateXP(_outcome);
+                            return userQueryFunc(participationInstance.get("user").id, myOutcome);
+
+
+
+                        }
+                        else {
+                            participationInstance.set("outcome", otherOutcome(_outcome));
+                            var myOtherOutcome = calculateXP(otherOutcome(_outcome));
+                            return userQueryFunc(participationInstance.get("user").id, myOtherOutcome);
+//                            var myOtherOutcome = otherOutcome(_outcome).then(function(object){
+//                                return Parse.Promise.as(object);
+//                            }).then(function(oc){
+//                                return Parse.Promise.as(calculateXP(oc));
+//                            }).then(function(object){
+//                                return userQueryFunc(participationInstance.get("user").id, myOtherOutcome));
+//                            });
+
+
+                        }
+                        //return Parse.Promise.as();
+                    });
+
+                }).then(function(object){
+                    promises.push(participationInstance.save());
+                });
             });
             Parse.Promise.when(participantPromises).then(function(object){
                 return Parse.Promise.as();
@@ -88,6 +190,10 @@ function StatePlayingBlue (eventAndRequest){
             });
             return promise;
         });
+
+        function addXP() {
+
+        }
 
 
 
