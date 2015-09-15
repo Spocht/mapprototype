@@ -170,6 +170,7 @@ public class DataManager {
     public SpochtUser signup(String mail, String password)
     {
         final SpochtUser user = new SpochtUser(mail,password);
+        user.setReady(false);
         user.user().setEmail(mail);
         user.seen();
         try {
@@ -184,16 +185,7 @@ public class DataManager {
                 user.setExperience(new Experience(s));
             }
             user.pinInBackground("spochtLabel");
-
-            final Timer tim = new Timer(true);
-            tim.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    user.persist();
-                    timerUserUpdate=null;
-                }
-            }, 5000);
-            timerUserUpdate=tim;
+            user.setReady(true);
             return user;
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
