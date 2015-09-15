@@ -42,7 +42,8 @@ public class EventStateImageButton extends android.widget.ImageButton {
                 R.styleable.EventStateImageButton,
                 0, 0);
 
-
+        // styling stuff
+        setElevation(8);          // R.dimen.default_elevation doesn't seem to work here
     }
 
     public void setState(ImageButton state) {

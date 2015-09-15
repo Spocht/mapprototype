@@ -20,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.ArrayList;
 
 import dev.spocht.spocht.R;
@@ -63,6 +62,7 @@ public class DetailFragment extends ListFragment {
         mNewGameImageButton.setLayoutParams(params);
         mNewGameImageButton.setImageResource(R.drawable.ic_plus_circle_outline_black_24dp);
         mNewGameImageButton.setBackgroundColor(getResources().getColor(R.color.white));
+        mNewGameImageButton.setElevation(8);        // R.dimen.default_elevation doesn't seem to work here
 
         infoLayout.addView(mNewGameImageButton);
 
