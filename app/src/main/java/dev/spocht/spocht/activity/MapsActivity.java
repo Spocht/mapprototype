@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -175,7 +177,6 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void setUpActionBar() {
-
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 //            // ActionBar was first introduced in HoneyComb
 //            ActionBar a = getActionBar();
@@ -183,6 +184,18 @@ public class MapsActivity extends AppCompatActivity
 //                a.setTitle(R.string.app_name);
 //            }
 //        }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+
+        // append username to actionbar title
+        ActionBar ab = getSupportActionBar();
+        CharSequence title = ab.getTitle();
+        title = title + " - " + DataManager.getInstance().currentUser().getUsername();
+        ab.setTitle(title);
     }
 
     @Override
