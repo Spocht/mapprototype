@@ -48,7 +48,7 @@ function StatePlayingBlue (eventAndRequest){
 
 
         function updateParticipations(){
-            console.log(_event);
+
             var otherOutcome = function(outcome){
 
             };
