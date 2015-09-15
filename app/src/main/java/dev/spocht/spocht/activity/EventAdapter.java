@@ -101,6 +101,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         // create button based upon event state
         EventStateImageButton checkInButton = (EventStateImageButton) convertView.findViewById(R.id.fragment_detail_event_checkinButton);
+        // styling stuff
         checkInButton.setActivity(mActivity);
         checkInButton.setEvent(event);
         checkInButton.setAmICheckedIn(isAlreadyCheckedIn);

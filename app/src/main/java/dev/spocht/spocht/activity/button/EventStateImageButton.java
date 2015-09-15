@@ -20,7 +20,6 @@ public class EventStateImageButton extends android.widget.ImageButton {
 
     ImageButton mCurrentState;
 
-
     Activity mActivity;
 
     boolean amICheckedIn = false;
@@ -36,12 +35,6 @@ public class EventStateImageButton extends android.widget.ImageButton {
 
     public EventStateImageButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.EventStateImageButton,
-                0, 0);
-
 
     }
 

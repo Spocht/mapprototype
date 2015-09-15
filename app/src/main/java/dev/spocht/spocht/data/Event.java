@@ -188,15 +188,18 @@ public class Event extends ParseData {
         }
         return false;
     }
+    public void cleanup(final SpochtUser user)
+    {
+        if(!isUserCheckedIn(user))
+        {
+            DataManager.getInstance().unregisterPushChannel(this.getObjectId());
+        }
+    }
 
     ///events to handle
     public void checkIn(final SpochtUser user)
     {
-        //when participants is empty this somehow NPEs
-        //cloudcode also checks for already logged in users,
-        //so for now this if is deactivated.
-        //consult with rudee!
-        //if(!isUserCheckedIn(user)) {
+        if(!isUserCheckedIn(user)) {
             //todo if successful API call, update local Event
             try {
                 System.out.println("Calling cloud function: checkin");
@@ -209,13 +212,14 @@ public class Event extends ParseData {
             } catch (ParseException e) {
                 Log.e(this.getClass().getCanonicalName(),"error at checkin in "+this.name(),e);
             }
+
+        }
     }
     public void checkOut(final SpochtUser user)
     {
         try {
             System.out.println("Calling cloud function: checkout");
             String feedback = ParseCloud.callFunction("checkout", generateParameterMap(user));
-            DataManager.getInstance().unregisterPushChannel(this.getObjectId());
             DataManager.getInstance().getEventMonitor().setEvent(null);
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"error at checkout in "+this.name(),e);

@@ -64,7 +64,14 @@ public class SpochtUser extends ParseData {
         ParseUser user;
         if(null == this.getObjectId())
         {
-            user = new ParseUser();
+            if(this.has("user"))
+            {
+                user = (ParseUser) get("user");
+            }
+            else {
+                user = new ParseUser();
+                setUser(user);
+            }
         }
         else {
             this.fetchIfNeeded();
@@ -79,7 +86,8 @@ public class SpochtUser extends ParseData {
                 setUser(user);
             }
         }
-        if(user.getObjectId()==null)
+        //todo: check the default username thing
+        if(user.get("username")==null)
         {
             Log.d(this.getClass().getCanonicalName(),"John Doe created");
             user.setUsername("John Doe");

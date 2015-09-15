@@ -76,6 +76,9 @@ public class MapsActivity extends AppCompatActivity
                                 Toast.LENGTH_LONG
                         );
                         toastPush.show();
+
+                        event.cleanup(DataManager.getInstance().currentUser());
+
                         Facility f=event.facility();
                         String iconDescriptor = "spocht_" + f.sport().name() + "_" + calcColor(f);
                         mapFacilitiesRev.get(f.getObjectId()).setIcon(BitmapDescriptorFactory.fromResource(
