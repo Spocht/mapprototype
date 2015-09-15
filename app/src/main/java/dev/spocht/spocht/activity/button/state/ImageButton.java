@@ -18,12 +18,4 @@ abstract public class ImageButton {
     public void exit() {
 
     }
-
-    public void onClick(View view) {
-
-    }
-
-    public void onReceivePush(Event event) {
-
-    }
 }

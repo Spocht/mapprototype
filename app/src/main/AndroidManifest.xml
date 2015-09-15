@@ -109,7 +109,8 @@
         </activity>
         <activity
             android:name=".activity.StopGameActivity"
-            android:theme="@style/Theme.AppCompat.Dialog" >
+            android:label="@string/stop_dialog_window_title"
+            android:theme="@style/SpochtDialog" >
         </activity>
     </application>
 

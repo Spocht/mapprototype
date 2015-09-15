@@ -9,6 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dialog_button_win"
+        android:backgroundTint="@color/white"
         android:src="@drawable/ic_thumb_up_black_24dp"
         android:onClick="onWinClick"
         />
@@ -17,6 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dialog_button_lose"
+        android:backgroundTint="@color/white"
         android:src="@drawable/ic_thumb_down_black_24dp"
         android:onClick="onLoseClick"
         />
@@ -25,6 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dialog_button_tie"
+        android:backgroundTint="@color/white"
         android:src="@drawable/ic_thumbs_up_down_black_24dp"
         android:onClick="onTieClick"
         />
@@ -33,6 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/dialog_button_giveup"
+        android:backgroundTint="@color/white"
         android:src="@drawable/ic_close_circle_black_24dp"
         android:onClick="onGiveUpClick"
         />
