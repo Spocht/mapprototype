@@ -17,6 +17,8 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import bolts.Task;
 import dev.spocht.spocht.R;
@@ -29,6 +31,7 @@ public class DataManager {
     private static Context context;
     private SpochtUser currentUser;
     private EventMonitor eventMonitor;
+    private Timer           timerUserUpdate;
 
     private DataManager() {
         if (context == null) {
@@ -181,7 +184,16 @@ public class DataManager {
                 user.setExperience(new Experience(s));
             }
             user.pinInBackground("spochtLabel");
-            user.persist();
+
+            final Timer tim = new Timer(true);
+            tim.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    user.persist();
+                    timerUserUpdate=null;
+                }
+            }, 5000);
+            timerUserUpdate=tim;
             return user;
         } catch (ParseException e) {
             Log.e(this.getClass().getCanonicalName(),"SignUp Failed",e);
