@@ -1,4 +1,6 @@
 function StateReadyLightblue () {
+
+    var expirationSeconds = 300;
     this.checkin = function(eventAndRequest) {
         return "StateReadyLightblueCheckin does not allow checkins. Fukk off, will ya?";
     }
@@ -42,6 +44,7 @@ function StateReadyLightblue () {
         }).then(function(object){
             Parse.Push.send({
                 channels: ["CHN_"+event.id],
+                expiration_interval: expirationSeconds,
                 data:{
                         alert:"Checkout from ready for:"+event.id,
                         event: {"id": event.id }
@@ -80,6 +83,7 @@ function StateReadyLightblue () {
 
         Parse.Push.send({
             channels: ["CHN_"+_event.id],
+            expiration_interval: expirationSeconds,
             data:{
                     alert:"Starting event/game:"+_event.id,
                     event: {"id": _event.id, "participants": [] }

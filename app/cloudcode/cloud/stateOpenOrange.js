@@ -2,6 +2,9 @@
 
 function StateOpenOrange (){
     var that = {};
+
+    var expirationSeconds = 300;
+
     this.checkin = function(eventAndRequest){
 
 
@@ -132,6 +135,7 @@ function StateOpenOrange (){
         function push(){
             Parse.Push.send({
                 channels: ["CHN_"+event.id],
+                expiration_interval: expirationSeconds,
                 data:{
                         alert:"Checked in"+event.id,
                         event: {"id": event.id, "participants": [] }
@@ -199,6 +203,7 @@ function StateOpenOrange (){
         }).then(function(object){
             Parse.Push.send({
                 channels: ["CHN_"+event.id],
+                expiration_interval: expirationSeconds,
                 data:{
                         alert:"Checkout for:"+event.id,
                         event: {"id": event.id }
@@ -366,12 +371,6 @@ function StateOpenOrange (){
 
         var length = event.get("participants").length;
         var counter = 0;
-
-
-
-
-        //console.log("IDS");
-        //console.log(ids);
 
 
 

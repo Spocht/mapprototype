@@ -44,9 +44,10 @@ Parse.Cloud.define("checkin", function(request, response) {
 			var eventState = stateInstance.getStateOfEvent(thatEventAndRequest);
 			stateInstance.setState(eventState);
 			var resp = stateInstance.checkin(thatEventAndRequest).then(function(object){
-			    return response.success(object);
+			    return response.success("SUCCESS");
+			},function(object){
+			    return response.error("FAILED");
 			});
-			//response.success(stateInstance.checkin(thatEventAndRequest));
         }
     });
 });
@@ -67,10 +68,10 @@ Parse.Cloud.define("checkout", function(request, response) {
         	stateInstance.setState(eventState);
         	//if participants is empty, then this call hangs.
         	stateInstance.checkout(thatEventAndRequest).then(function(object){
-        	    return response.success(object);
+        	    return response.success("SUCCESS");
         	});
 		}, error: function(error) {
-			response.error(error);
+			response.error("FAILED");
 		}
 	});
 
@@ -93,11 +94,11 @@ var eventQuery = new Parse.Query("Event");
 			stateInstance.setState(eventState);
 
 			stateInstance.startGame(thatEventAndRequest).then(function(object){
-			    response.success(object);
+			    response.success("SUCCESS");
 			});
 		},
 		error : function(error) {
-			response.error(error);
+			response.error("FAILED");
 		}
 	});
 });
@@ -112,11 +113,11 @@ Parse.Cloud.define("stopGame", function(request, response){
 			stateInstance.setState(eventState);
 
 			stateInstance.stopGame(thatEventAndRequest).then(function(object){
-			    response.success(object);
+			    response.success("SUCCESS");
 			});
 		},
 		error : function(error) {
-			response.error(error);
+			response.error("FAILED");
 		}
 	});
 });

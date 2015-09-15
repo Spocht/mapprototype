@@ -1,16 +1,16 @@
 function StatePlayingBlue (eventAndRequest){
+    var that = this;
+
+    var expirationSeconds = 300;
+
     this.checkin = function(){
         return "Noop:StatePlayingBlueCheckin";
     }
     this.checkout = function(eventAndRequest){
         var localEAR = eventAndRequest;
         localEAR.outcome = "LOSE";
-        return stopGame(localEAR);
+        return that.stopGame(localEAR);
 
-
-
-
-        return "Noop:StatePlayingBlueCheckout";
     }
     this.startGame = function(eventAndRequest){
             return "Arrrrrr... you cannot start already starten goims, savvy?";
@@ -57,7 +57,7 @@ function StatePlayingBlue (eventAndRequest){
                 var participation = Parse.Object.extend("Participation");
                 var participationInstance = new participation;
                 participationInstance.id = result.id;
-                participationInstance.set("outcome", outcome);
+                participationInstance.set("outcome", _outcome);
                 promises.push(participationInstance.save());
                 console.log(result);
             });
@@ -70,6 +70,7 @@ function StatePlayingBlue (eventAndRequest){
         return Parse.Promise.when(promises).then(function (object){
             var promise = new Parse.Promise();
             Parse.Push.send({
+                expiration_interval: expirationSeconds,
                 channels: ["CHN_"+_event.id],
                 data:{
                         alert:"Stopping event/game"+_event.id,
