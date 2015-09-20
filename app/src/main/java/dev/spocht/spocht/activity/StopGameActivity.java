@@ -27,8 +27,6 @@ public class StopGameActivity extends AppCompatActivity {
         event.stopGame(DataManager.getInstance().currentUser(), Outcome.WIN);
         Log.d(getClass().getCanonicalName(), "I\'m a WINNER on " + event.getObjectId());
         finish();
-
-
     }
 
     public void onLoseClick(View view) {
