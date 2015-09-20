@@ -42,14 +42,18 @@ Parse.Cloud.job("housekeeping", function(request, status) {
         event.set("state", "grey");
         var greyPromises = [];
 
-        event.get("participants").forEach(function(result) {
-            var participation = Parse.Object.extend("Participation");
-            var participationInstance = new participation;
-            participationInstance.id = result.id;
-            console.log("Participations loop");
-            console.log(participationInstance);
-            greyPromises.push(participationInstance.destroy());
-        });
+        try {
+            event.get("participants").forEach(function(result) {
+                var participation = Parse.Object.extend("Participation");
+                var participationInstance = new participation;
+                participationInstance.id = result.id;
+                console.log("Participations loop");
+                console.log(participationInstance);
+                greyPromises.push(participationInstance.destroy());
+            });
+        } catch (e){
+            //more logic here in case forEach was empty
+        }
 
         return Parse.Promise.when(greyPromises).then(function(object){
             console.log("Promises resolved");

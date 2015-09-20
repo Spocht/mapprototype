@@ -2,7 +2,7 @@ function StateReadyLightblue () {
 
     var expirationSeconds = 300;
     this.checkin = function(eventAndRequest) {
-        return "StateReadyLightblueCheckin does not allow checkins. Fukk off, will ya?";
+        return Parse.Promise.as("StateReadyLightblueCheckin does not allow checkins. Fukk off, will ya?");
     }
 
 
