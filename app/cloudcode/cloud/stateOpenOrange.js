@@ -223,8 +223,6 @@ function StateOpenOrange (){
         });
 
 
-
-
     }
     this.setState = function(){
 
@@ -282,30 +280,6 @@ function StateOpenOrange (){
            });
 
         })._result;
-            //console.log(_event.get("participants")[i]);
-            //return _event.get("participants")[i].id;
-            //var participationObject = Parse.Object.extend("Participation");
-            //var participationInstance = new participationObject();
-            //participationInstance.id = _event.get("participants")[i].id;
-            //participationsQuery.get(participationInstance.id);
-            //return participationsQuery.containedIn("objectId", _event.get("participants"));
-            //var participations;
-            //var id = function(e) {
-            //    return e.id;
-            //}(_event.get("participants")[i]);
-
-
-
-            //participationsQuery.equalTo("objectId", id);
-
-
-
-
-    //            if (participation.id == _event.get("participants")[i]) {
-    //                alreadyInThere = true;
-    //                break;
-    //            }
-
 
 
 
@@ -322,26 +296,6 @@ function StateOpenOrange (){
             participationInstance.set("user", userInstance);
             console.log("yeah");
             return participationInstance.save();
-//            var promises = [];
-//            promises.push(participationInstance.save());
-//            Parse.Promise.when(promises).then(function(object){
-//                console.log("at least");
-//                createdParticipant = participationInstance;
-//                return Parse.Promise.as("whats up");
-//            }, function(error){
-//                console.log(error);
-//                return "OOPS";
-//            });
-            //participationInstance.save()
-//            return participationInstance.save().then(function(result){
-//                createdParticipant = participationInstance;
-//                console.log("Resolved");
-//                p.resolve(result);
-//            }, function(error){
-//                console.log(error);
-//            });
-//            return p;
-
 
     }
 
@@ -365,7 +319,6 @@ function StateOpenOrange (){
         var eventObject = Parse.Object.extend("Participant");
         var eventInstance = new eventObject();
         eventInstance.id = event.id;
-        //return event;
 
         var localEvent = event;
 

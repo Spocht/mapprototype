@@ -1,5 +1,4 @@
 Parse.Cloud.job("housekeeping", function(request, status) {
-    //Parse.Cloud.useMasterKey();
 
     var expirationSeconds = 300;
 
@@ -7,7 +6,7 @@ Parse.Cloud.job("housekeeping", function(request, status) {
     var participationsQuery = new Parse.Query(pq);
     participationsQuery.containedIn("state", ["orange", "lightblue", "yellow"]);
     var currentDate = new Date();
-    var compareDate = new Date(currentDate - 5 * 1000);
+    var compareDate = new Date(currentDate - 1800 * 1000);
     participationsQuery.lessThan("updatedAt", compareDate);
 
 
@@ -52,7 +51,8 @@ Parse.Cloud.job("housekeeping", function(request, status) {
                 greyPromises.push(participationInstance.destroy());
             });
         } catch (e){
-            //more logic here in case forEach was empty
+            //catch not needed since when event.get("participants") is empty, there is
+            //no deletion needed.
         }
 
         return Parse.Promise.when(greyPromises).then(function(object){

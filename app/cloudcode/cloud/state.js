@@ -3,7 +3,7 @@
 
 //FORMAT für PushReceiver
 
-//{"event": {"id": "8vK94WXVGe", "state":"orange"}}
+
 //push nicht nur bei transitionen, sondern bei allen operationen, die Event verändern.
 var state;
 

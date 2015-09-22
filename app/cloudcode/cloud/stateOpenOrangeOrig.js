@@ -1,30 +1,16 @@
 
 
 function StateOpenOrange (){
-    //require ("cloud/main.js");
+
 
     var that = {};
     this.checkin = function(eventAndRequest){
 
 
         Parse.Cloud.useMasterKey();
-        /*var query = new Parse.Query("Drivers");
-          query.equalTo("user", {
-                  __type: "Pointer",
-                  className: "_User",
-                  objectId: userID
-              });
-
-          query.find({*/
-
-
-        //yeah... please understand that i was temporarily increative
-        //in regard to naming variables.
         var _event = eventAndRequest.passedEvent;
         var request = eventAndRequest.passedRequest;
 
-        //var p;
-        //var participants;
         var participantsCount = 0;
         var retIds = [];
         try {
@@ -36,8 +22,6 @@ function StateOpenOrange (){
             retIds.push(makeNewParticipation(request));
         }
 
-        //callback for foreach
-        //var retIds = [];
         var ids = {
             retrieveIds : function(elem) {
                 var id = elem.id;
@@ -77,9 +61,6 @@ function StateOpenOrange (){
         var promisess = [];
         promisess.push(county);
 
-
-                //promises.push(participationInstance.save());
-
         Parse.Promise.when(promisess).then(function(){
                 console.log(arguments);
             }, function(){
@@ -88,7 +69,7 @@ function StateOpenOrange (){
         );
 
 
-        console.log(county);
+
 
 
 

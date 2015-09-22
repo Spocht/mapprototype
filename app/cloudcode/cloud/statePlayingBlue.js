@@ -64,7 +64,7 @@ function StatePlayingBlue (eventAndRequest){
                 if (outcome == "TIE"){
                     ret = "TIE";
                 }
-                return ret;//Parse.Promise.as(ret);
+                return ret;
             };
 
             var calculateXP = function(outcome) {
@@ -81,7 +81,7 @@ function StatePlayingBlue (eventAndRequest){
                 if (outcome == "TIE"){
                     ret = 4;
                 }
-                return ret;//Parse.Promise.as(ret);
+                return ret;
             };
 
 
@@ -114,23 +114,9 @@ function StatePlayingBlue (eventAndRequest){
                 var participationInstance = new participation;
                 participationInstance.id = result.id;
                 participationInstance.fetch().then(function(object) {
-                    //return userQueryFunc(participationInstance.get("user").id, 5).then(function(object){
                     return Parse.Promise.as().then(function(object){
 
 
-                    //    return Parse.Promise.as(object);
-
-
-//                    var user = Parse.Object.extend("SpochtUser");
-//                    var userInstance = new user;
-//                    userInstance.id = participationInstance.get("user").id;
-                    //userInstance.fetch().then(function(object){
-//                    console.log("USER");
-//                    console.log(userInstance);
-//                    console.log("XP-SCHREIBFEHLER");
-//                    console.log(userInstance.get("experienceeeee"));
-//                    console.log("PARTICIPATIONUSER");
-//                    console.log(participationInstance.get("user"));
 
 
                     }).then(function(object){
@@ -146,17 +132,7 @@ function StatePlayingBlue (eventAndRequest){
                             participationInstance.set("outcome", otherOutcome(_outcome));
                             var myOtherOutcome = calculateXP(otherOutcome(_outcome));
                             return userQueryFunc(participationInstance.get("user").id, myOtherOutcome);
-//                            var myOtherOutcome = otherOutcome(_outcome).then(function(object){
-//                                return Parse.Promise.as(object);
-//                            }).then(function(oc){
-//                                return Parse.Promise.as(calculateXP(oc));
-//                            }).then(function(object){
-//                                return userQueryFunc(participationInstance.get("user").id, myOtherOutcome));
-//                            });
-
-
                         }
-                        //return Parse.Promise.as();
                     });
 
                 }).then(function(object){
@@ -195,22 +171,6 @@ function StatePlayingBlue (eventAndRequest){
 
         }
 
-
-
-
-
-        //var eventPromise = Parse.Promise.as(_event);
-//        var eventPromised = Parse.Promise.when(eventPromise).then(function(_event){
-//            _event.save().then(function(object){
-//                return Parse.Promise.as(_event);
-//            });
-//
-//        });
-
-        //var eventId = _event.get("objectId");
-        //var data = {channels: [eventId], data:{alert:"Stopped game"}, where: new Parse.Query(Parse.Installation)};
-
-        //return eventPromised;
     }
     this.setState = function(){
     }

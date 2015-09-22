@@ -2,7 +2,7 @@ function StateReadyLightblue () {
 
     var expirationSeconds = 300;
     this.checkin = function(eventAndRequest) {
-        return Parse.Promise.as("StateReadyLightblueCheckin does not allow checkins. Fukk off, will ya?");
+        return Parse.Promise.as("StateReadyLightblueCheckin does not allow checkins.");
     }
 
 
@@ -10,7 +10,6 @@ function StateReadyLightblue () {
         var event = eventAndRequest.passedEvent;
         var request = eventAndRequest.passedRequest;
         var minPlayers = event.get("facility").get("sport").get("minPlayers");
-
         var pq = Parse.Object.extend("Participation");
         var participationsQuery = new Parse.Query(pq);
         participationsQuery.equalTo("event",
@@ -53,12 +52,9 @@ function StateReadyLightblue () {
                 {
                 success: function(bla){
                     return Parse.Promise.as(event);
-                    // Push was successful
-                    //response.success(bla);
                 },
                 error: function(e){
                     return Parse.Promise.error(event);
-                    //response.error(error);
                 }
             });
         });

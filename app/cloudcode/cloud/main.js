@@ -1,15 +1,7 @@
 
 var state = require("cloud/state.js");
 var stateInstance = new state;
-
-
-
 var job = require("cloud/job.js");
-//---REF
-//var stateOpenOrange = require("cloud/stateOpenOrange.js");
-//var stateOpenOrangeInstance = new stateOpenOrange;
-
-
 
 Parse.Cloud.define("spochtRokks", function(request, response) {
 	var query = new Parse.Query("MyUser");
@@ -28,7 +20,7 @@ Parse.Cloud.define("spochtRokks", function(request, response) {
 
 
 //Test curl:
-//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkin
+//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "'$eventId'"}, "user":{"id" : "'$userId'"}, "outcome" : {"value": "'$outcome'"}}'  https://api.parse.com/1/functions/checkin
 
 Parse.Cloud.define("checkin", function(request, response) {
 
@@ -54,10 +46,9 @@ Parse.Cloud.define("checkin", function(request, response) {
 
 
 
-//Log out a user from an ongoing event in case they get too far away.
+//Log out a user from an ongoing event.
 //Test curl:
-//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "8vK94WXVGe"}, "user":{"id" : "PGcfBOKlmE"}}'  https://api.parse.com/1/functions/checkout
-
+//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "'$eventId'"}, "user":{"id" : "'$userId'"}, "outcome" : {"value": "'$outcome'"}}'  https://api.parse.com/1/functions/checkout
 Parse.Cloud.define("checkout", function(request, response) {
 	var eventQuery = new Parse.Query("Event");
 	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
@@ -82,8 +73,8 @@ Parse.Cloud.define("checkout", function(request, response) {
 
 });
 
-
-
+//Test curl:
+//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "'$eventId'"}, "user":{"id" : "'$userId'"}, "outcome" : {"value": "'$outcome'"}}'  https://api.parse.com/1/functions/startGame
 Parse.Cloud.define("startGame", function(request, response){
 var eventQuery = new Parse.Query("Event");
 	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
@@ -103,6 +94,8 @@ var eventQuery = new Parse.Query("Event");
 	});
 });
 
+//Test curl:
+//curl -X POST  -H "X-Parse-Application-Id: $ID"  -H "X-Parse-REST-API-Key: $KEY"  -H "Content-Type: application/json"  -d '{"event":{"id" : "'$eventId'"}, "user":{"id" : "'$userId'"}, "outcome" : {"value": "'$outcome'"}}'  https://api.parse.com/1/functions/stopGame
 Parse.Cloud.define("stopGame", function(request, response){
     var eventQuery = new Parse.Query("Event");
 	eventQuery.equalTo("objectId", request.params.event.id).include("facility.sport");
@@ -277,29 +270,9 @@ function participants(eventAndRequest) {
                     });
                 }
 
-
-                //var checkParticipants = participants(thatEventAndRequest);
-
             }).then(function(result){
-                //var promise = new Parse.Promise();
-                //return promise.resolve(result);
+
             });
-
-
-//
-//        if (!alreadyInThere) {
-//            _event.addUnique(
-//            "participants",
-//                {"__type":"Pointer",
-//                "className":"Participation",
-//                "objectId":request.params.user.id}
-//            );
-//            participantsCount++;
-//        }
-//
-//        if (participantsCount >= _event.get("facility").get("sport").get("minPlayers")) {
-//            _event.set("state", "lightblue");
-//        }
 
         var eventPromise = Parse.Promise.as(event);
         var pushPromise = Parse.Promise.as(event);
@@ -313,28 +286,6 @@ function participants(eventAndRequest) {
              return _event;
 
         })._result;
-
-
-//                var eventId = event.get("objectId");
-//                var data = {channels: [eventId], data:{alert:"Checked in"}, where: new Parse.Query(Parse.Installation)};
-//
-//                Parse.Push.send({
-//                        channels: [event.id],
-//                        data:{
-//                                alert:"Checked in"+event.id,
-//                                event: {"id": event.id, "participants": [] }
-//                            }
-//                        },
-//
-//                        {
-//                        success: function(bla){
-//                            // Push was successful
-//                                        response.success(bla);
-//                        },
-//                        error: function(e){
-//                            response.error(error);
-//                        }
-//                    });
         return eventPromised;
     }
 
