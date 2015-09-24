@@ -7,9 +7,8 @@ function StatePlayingBlue (eventAndRequest){
         return "Noop:StatePlayingBlueCheckin";
     }
     this.checkout = function(eventAndRequest){
-        var localEAR = eventAndRequest;
-        localEAR.passedRequest.params.outcome.value = "GIVEUP";
-        return that.stopGame(localEAR);
+        eventAndRequest.passedRequest.params.outcome = {"value":"GIVEUP"};
+        return that.stopGame(eventAndRequest);
 
     }
     this.startGame = function(eventAndRequest){

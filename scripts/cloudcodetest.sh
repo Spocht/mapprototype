@@ -44,7 +44,7 @@ sleep 5
 
 
 echo "StopGame"
-retStopGame=`curl -X POST  -H "X-Parse-Application-Id: IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd"  -H "X-Parse-REST-API-Key: MfTV1x7f62HBQp0CMHj64dFpQBWZ3EcNpB2FnBtJ"  -H "Content-Type: application/json"  -d '{"event":{"id" : "'$eventId'"}, "user":{"id" : "'$otherUserId'"}, "outcome" : {"value": "'$outcome'"}}'  https://api.parse.com/1/functions/stopGame`
+retStopGame=`curl -X POST  -H "X-Parse-Application-Id: IvP2CsQV7fRqfg0tSQs2Ugot9YCDo4VAdRUYsQFd"  -H "X-Parse-REST-API-Key: MfTV1x7f62HBQp0CMHj64dFpQBWZ3EcNpB2FnBtJ"  -H "Content-Type: application/json"  -d '{"event":{"id" : "'$eventId'"}, "user":{"id" : "'$origUserId'"}, "outcome" : {"value": "'$outcome'"}}'  https://api.parse.com/1/functions/stopGame`
 echo $retStopGame
 sleep 5
 
